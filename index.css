@@ -1,0 +1,100 @@
+﻿
+:root {
+    --canvas-width: 800px;
+    --canvas-height: 600px;
+    --element-height: 50px;
+}
+
+/* <!------------------ top panel ----------------> */
+input[type="text"],
+select,
+button {
+    vertical-align: top;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+    height: var(--element-height);
+}
+
+select,
+button {
+    background-color: rgb(42, 111, 113);
+    padding-top: 8px;
+}
+
+input[type="checkbox"] {
+    background-color: rgb(42, 111, 113);
+}
+
+input[type="text"] {
+    width: 200px;
+    padding: 6px;
+}
+
+select {
+    width: 120px;
+    color: white;
+}
+
+#helpButton {
+    background-color: lightblue;
+}
+
+#info {
+    margin-left: 50px;
+    font-size: large;
+}
+
+#info2 {
+    margin-left: 50px;
+    font-size: small;
+}
+
+label {
+    display: inline;
+}
+
+section {
+    margin-bottom: 6px;
+}
+
+#visRange {
+    width: 120px;
+}
+/* <!------------------ canvases ----------------> */
+
+.canvas-frame {
+    position: relative;
+    width: var(--canvas-width);
+    height: var(--canvas-height);
+} 
+
+#canvas,
+#canvas2 {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#canvas {
+    z-index: 2;
+}
+#canvas2 {
+    z-index: 1;
+}
+
+/* <!------------------ bottom panel ----------------> */
+.bottom-panel {
+   margin-top: 4px;
+   width: var(--canvas-width);
+} 
+
+.scene-textarea {
+    display: inline; 
+    height: var(--element-height);
+    width: calc(var(--canvas-width) - 154px);
+}
+.scene-btn {
+    vertical-align: top; 
+    background-color: lightblue;
+    width: 70px;
+}

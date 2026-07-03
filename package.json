@@ -1,0 +1,22 @@
+{
+  "name": "Gas2d",
+  "version": "0.0.1",
+  "description": "TypeScript application",
+  "main": "main.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "start": "node scripts/build.js && npx live-server dist --port=5503"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.28.1",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "three": "^0.184.0"
+  }
+}
