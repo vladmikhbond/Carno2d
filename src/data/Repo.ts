@@ -6,15 +6,13 @@ import { Measurer} from '../model/Measurer.js';
 import { Heater} from '../model/Heaters.js';
 import Bomb from '../model/Bomb.js';
 
-
-
 // types for serialization only
 type _Plunger = {x1: number, y1: number, x2: number, y2: number, v: number, m: number, };
 type _Line = {x1: number, y1: number, x2: number, y2: number, c: string};
 type _Device = {x1: number, y1: number, x2: number, y2: number, type: string, rate: number, color: string};
 
 
-export default class Image 
+export default class Repo 
 {
     space: Space;
 
@@ -97,7 +95,7 @@ export default class Image
             } 
         });
 
-        // globus
+        // glo
         Object.assign(glo, globals);
         // page.optionsGloElement.value = Options.obj2str(globals);
     } 
@@ -109,9 +107,8 @@ export default class Image
         // page.optionsGloElement.value = Options.obj2str(obj);
     }
 
-    save(key: string) {
-        const json = this.serialize();
-        // page.imageElement.value = `${key}: '${json}',`;
+    save(): string {
+        return this.serialize();
     }
 
     

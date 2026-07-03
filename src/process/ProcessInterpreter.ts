@@ -4,7 +4,7 @@ import Controller from '../controller/Controller.js';
 import Bomb from '../model/Bomb.js';
 import {glo} from '../globals/globals.js';
 import { Plunger } from '../model/Plunger.js';
-import Image from '../data/Image.js';
+import Repo from '../data/Repo.js';
 
 
 
@@ -170,7 +170,7 @@ export class ProcessInterpreter
         str = str.slice(beg).trim();
         let end = str.indexOf('\n');
         let imgStr = str.slice(1, end-2).trim();
-        new Image(this.controller.space).load(imgStr); 
+        new Repo(this.controller.space).load(imgStr); 
         
         this.controller.view.draw();
     }

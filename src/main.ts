@@ -1,4 +1,4 @@
-import {glo, doc} from './globals/globals.js';
+import {glo} from './globals/globals.js';
 import Space from './model/Space.js';
 import View from './view/View.js';
 import Controller from './controller/Controller.js';
@@ -25,6 +25,7 @@ const area = <HTMLTextAreaElement>document.getElementById('process-script');
 
     startProcessButton.addEventListener('click',  async (e) => {
         ProcessInterpreter.procState = ProcessState.Stop;
+        view.removeHilights();
         //
         setTimeout(async () => {
 

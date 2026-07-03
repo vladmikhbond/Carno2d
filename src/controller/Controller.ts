@@ -7,6 +7,7 @@ import BallHandler from './BallHandler.js';
 import LineHandler from './LineHandler.js';
 import DeviceHandler from './DeviceHandler.js';
 import { getSizeParams, getSpaceParams } from './params.js';
+import Repo from '../data/Repo.js';
 
 
 export default class Controller 
@@ -143,11 +144,12 @@ export default class Controller
         const areaEl = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
-            areaEl.value = sceneToJson(this.space);
+            areaEl.value = new Repo(this.space).save();
         });
 
         document.getElementById("loadSceneButton")!.addEventListener("click", () => {
-            restoreSceneFromJson(areaEl.value, this.space);
+            new Repo(this.space).load(areaEl.value);
+            // restoreSceneFromJson(areaEl.value, this.space);
             this.stop();
             this.time = 0;
             this.view.draw();
