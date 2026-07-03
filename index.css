@@ -60,6 +60,11 @@ section {
 #visRange {
     width: 120px;
 }
+
+#process-script {
+    width: var(--canvas-width);
+    height: 200px;
+}
 /* <!------------------ canvases ----------------> */
 
 .canvas-frame {

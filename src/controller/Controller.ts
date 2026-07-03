@@ -1,7 +1,7 @@
 import {glo, doc} from '../globals/globals.js';
 import Space, { CreateMode } from '../model/Space.js';
 import View from '../view/View.js';
-import { restoreSceneFromJson, sceneToJson} from '../globals/utils.js';
+
 import Handler from './Handlers.js';
 import BallHandler from './BallHandler.js';
 import LineHandler from './LineHandler.js';
@@ -115,12 +115,6 @@ export default class Controller
             this.createMode = CreateMode[key];            
         }); 
 
-        document.getElementById('runButton')!.addEventListener('click', () => {
-            if (this.timer == 0) 
-                this.run();
-            else
-                this.stop();
-        });
 
         document.getElementById("helpButton")!.addEventListener("click", () => {
             window.open("help.html", "_blank")?.focus();
@@ -149,7 +143,6 @@ export default class Controller
 
         document.getElementById("loadSceneButton")!.addEventListener("click", () => {
             new Repo(this.space).load(areaEl.value);
-            // restoreSceneFromJson(areaEl.value, this.space);
             this.stop();
             this.time = 0;
             this.view.draw();

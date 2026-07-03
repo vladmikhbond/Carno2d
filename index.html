@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Gas2d</title>
+        <title>Carno2d</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">   
         <link rel="stylesheet" href="index.css">        
 
@@ -13,7 +13,7 @@
 <body>
 <main class="container">
     <h1>
-        Gas 2d  
+        Carno 2d  
         <span id="info"> </span> 
         <span id="info2"></span>
     </h1>
@@ -33,12 +33,19 @@
         <input id="wallParams" type="text" value="type='r'" title="type='r[ectangle]'|'p[lunger]'"  style="width: 250px;" >
         <input id="devsParams" type="text" value="type='m'; c='red'; r=1.001 " title="type='m[eter]'|'h[eater]'"  style="width: 250px;">
 
-        <button id="runButton" title="Run | Stop">Run</button>
+        <button id="start-process-btn" class="command">Go</button>
+        <button id="pause-process-btn" class="command" title="Play-Pause">►</button>
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
     <section>
         Vis <input id="visRange" type="range" min="0", max="6" value="2" title="visibility percentage">
         <span id="visPercentage">10%</span>
+    </section>
+        <section> 
+        <textarea id="process-script" spellcheck="false" title="Вікно команд">
+load: Norm
+run:             
+        </textarea>
     </section>
 
     <!-- ------------------canvases------------------  -->
@@ -56,15 +63,7 @@
     </div>
 <!-- =========================================================================== -->
  
-    <div> 
-        <button id="start-process-btn" class="command">Go</button>
-        <button id="pause-process-btn" class="command" title="Play-Pause">►</button>
-        
-        <textarea id="process-script" spellcheck="false" rows="8"  title="Вікно команд">
-load: Norm
-run:             
-        </textarea>
-    </div>
+
 
 
     <textarea id="db" spellcheck="false"  rows="30" >
