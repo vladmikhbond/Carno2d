@@ -58,9 +58,9 @@ export class ProcessInterpreter
     space: Space
     view: View
     controller: Controller
+    process: Process | null = null;
 
-    static process: Process;
-    static procState = ProcessState.Pause;    // 0-pause,   1-run,   2-stop,
+
 
     constructor(space: Space, view: View, controller: Controller) {
 
@@ -100,8 +100,8 @@ export class ProcessInterpreter
                     break;
                 case 'plunger':
                     this.createDefaultPlunger(params);
-                    this.startProcess();
-                    await ProcessInterpreter.process.calm(1000);
+                    this.createProcess();
+                    await this.process!.calm(1000);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
@@ -111,50 +111,50 @@ export class ProcessInterpreter
                     break;
                 case 'adiabatic':
                     if (params.dir.startsWith('inc')) {
-                        await ProcessInterpreter.process!.adiabaticExtention(params.m);
+                        await this.process!.adiabaticExtention(params.m);
                     } else if (params.dir.startsWith('dec')) {
-                        await ProcessInterpreter.process!.adiabaticCompression(params.m);
+                        await this.process!.adiabaticCompression(params.m);
                     }
                     break;
                 case 'isobaric':
                     if (params.dir.startsWith('inc')) {
-                        await ProcessInterpreter.process!.isobaricExtention(params.v);
+                        await this.process!.isobaricExtention(params.v);
                     } else if (params.dir.startsWith('dec')) {
-                        await ProcessInterpreter.process!.isobaricCompression(params.v);
+                        await this.process!.isobaricCompression(params.v);
                     }
                     break;
                 case 'isothermic':
                     if (params.dir.startsWith('inc')) {
-                        await ProcessInterpreter.process!.isothermicExtention(params.m);
+                        await this.process!.isothermicExtention(params.m);
                     } else if (params.dir.startsWith('dec')) {
-                        await ProcessInterpreter.process!.isothermicCompression(params.m);
+                        await this.process!.isothermicCompression(params.m);
                     }
                     break;
                 case 'isohoric':
                     if (params.dir.startsWith('inc')) {
-                        await ProcessInterpreter.process!.isohoricExtention(params.m);
+                        await this.process!.isohoricExtention(params.m);
                     } else if (params.dir.startsWith('dec')) {
-                        await ProcessInterpreter.process!.isohoricCompression(params.m);
+                        await this.process!.isohoricCompression(params.m);
                     }
                     break;
 
                 //#region Цикл Отто (бензиновий)
 
                 case 'intake':
-                    this.startProcess();
-                    await ProcessInterpreter.process!.intake(10000, params.v);  // n = 10 000
+                    this.createProcess();
+                    await this.process!.intake(10000, params.v);  // n = 10 000
                     break;
                 case 'compression':
-                    await ProcessInterpreter.process!.compression(params.m, params.v);
+                    await this.process!.compression(params.m, params.v);
                     break;
                 case 'ignition':
-                    await ProcessInterpreter.process!.ignition(params.rate, params.t);
+                    await this.process!.ignition(params.rate, params.t);
                     break;
                 case 'expansion':
-                    await ProcessInterpreter.process!.expansion(params.m, params.v);
+                    await this.process!.expansion(params.m, params.v);
                     break;
                 case 'exhaust':
-                    await ProcessInterpreter.process!.exhaust(params.m, params.v);
+                    await this.process!.exhaust(params.m, params.v);
                     break;
                 //#endregion
 
@@ -165,8 +165,8 @@ export class ProcessInterpreter
         }
     }
 
-    private startProcess() {
-        ProcessInterpreter.process = new Process(this.controller);
+    private createProcess() {
+        this.process = new Process(this.controller);
     }
 
     private load(imgName: string) 
@@ -187,10 +187,10 @@ export class ProcessInterpreter
     {
         params.t ??= 100500;
         try {      
-            this.startProcess();
+            this.createProcess();
             let limit:number = this.controller.time + params.t;
 
-            await ProcessInterpreter.process.whileAsync(
+            await this.process!.whileAsync(
                     () => this.controller.time < limit, 
                     () => {this.space.warming()});
         } catch(er) {  
@@ -220,7 +220,5 @@ export class ProcessInterpreter
             new Bomb(gas_n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, gas_t, gas_r, gas_m, gas_c));        
     }
     
-
-
 
 }

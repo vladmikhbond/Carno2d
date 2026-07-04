@@ -23,31 +23,23 @@ const startProcessButton = <HTMLButtonElement>document.getElementById('start-pro
 const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
 const area = <HTMLTextAreaElement>document.getElementById('process-script');
 
-startProcessButton.addEventListener('click', (e) => {
-    ProcessInterpreter.procState = ProcessState.Pause;
-    view.removeHilights();
-    //
+startProcessButton.addEventListener('click', (e) => {    
     setTimeout(async () => {
-
-        let selLength = area.selectionEnd - area.selectionStart;
-        let script = selLength ? area.value.slice(area.selectionStart, area.selectionEnd) : area.value; 
-        script = script.replaceAll('►', '');               
-        ProcessInterpreter.procState = ProcessState.Pause;
+        area.value = area.value.replaceAll('►', '');  
         pauseProcessButton.innerHTML = '►'; 
-
-        await interpreter.interpret(script);
+        await interpreter.interpret(area.value);
     }, 100);
 
 } ) 
 
 pauseProcessButton.addEventListener('click', () => {
-    switch (ProcessInterpreter.procState) {
+    switch (interpreter.process!.procState) {
         case ProcessState.Pause:
-            ProcessInterpreter.procState = ProcessState.Run;
+            interpreter.process!.procState = ProcessState.Run;
             pauseProcessButton.innerHTML = '■';
             break;
         case ProcessState.Run: 
-            ProcessInterpreter.procState = ProcessState.Pause;
+            interpreter.process!.procState = ProcessState.Pause;
             pauseProcessButton.innerHTML = '►';
             break;
     }
@@ -56,9 +48,9 @@ pauseProcessButton.addEventListener('click', () => {
 doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
     switch (e.key) {
         case '2': 
-            ProcessInterpreter.procState = ProcessState.Run;
+            interpreter.process!.procState = ProcessState.Run;
             setTimeout(() => {
-                ProcessInterpreter.procState = ProcessState.Pause;
+                interpreter.process!.procState = ProcessState.Pause;
                 view.draw();
                 view.showTimeAndInfo(controller.time);                 
             }, 10);    

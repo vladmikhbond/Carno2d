@@ -11,6 +11,7 @@ export default class ProcessBase {
     controller: Controller;
     plunger: Plunger; 
     view: View;
+    procState = ProcessState.Pause;    // 0-pause,   1-run,   2-stop,
 
     constructor(controller: Controller) 
     {    
@@ -23,12 +24,15 @@ export default class ProcessBase {
         this.view.drawMeasure(); 
     }
 
-    async whileAsync(condition: () => boolean, act = () => {}) 
+    async whileAsync(
+        condition: () => boolean, 
+        act = () => {} 
+    ) 
     {
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
                 try {
-                    if (ProcessInterpreter.procState == ProcessState.Run) {
+                    if (this.procState == ProcessState.Run) {
                         act();    
                         this.controller.step();
 
@@ -36,7 +40,7 @@ export default class ProcessBase {
                             clearInterval(timer);
                             res(this.controller.timer);
                         }                 
-                    } else if (ProcessInterpreter.procState == ProcessState.Abort) {
+                    } else if (this.procState == ProcessState.Abort) {
                         throw Error('stop process');
                     }              
                 } catch (err) {

@@ -405,16 +405,16 @@ export default class View
         area.value = area.value.slice(0, start) + '►' +  area.value.slice(start);
     }
 
-    removeHilights() 
-    {   
-        const area = <HTMLTextAreaElement>document.getElementById("process-script");
-        const lines = area.value.split('\n');
-        for (let i = 0; i < lines.length; i++) {
-            if (lines[i].startsWith('►'))
-                lines[i] = lines[i].slice(1);
-        }
-        area.value = lines.join('\n');
-    }
+    // removeHilights() 
+    // {   
+    //     const area = <HTMLTextAreaElement>document.getElementById("process-script");
+    //     const lines = area.value.split('\n');
+    //     for (let i = 0; i < lines.length; i++) {
+    //         if (lines[i].startsWith('►'))
+    //             lines[i] = lines[i].slice(1);
+    //     }
+    //     area.value = lines.join('\n');
+    // }
 
 
 //#endregion DOM

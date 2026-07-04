@@ -10,6 +10,7 @@ export default class Controller
 {
     space: Space;
     view: View;
+    
     timer: number | 0 = 0;
     time = 0           // такти часу
     
