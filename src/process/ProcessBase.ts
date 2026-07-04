@@ -36,7 +36,7 @@ export default class ProcessBase {
                             clearInterval(timer);
                             res(this.controller.timer);
                         }                 
-                    } else if (ProcessInterpreter.procState == ProcessState.Stop) {
+                    } else if (ProcessInterpreter.procState == ProcessState.Abort) {
                         throw Error('stop process');
                     }              
                 } catch (err) {

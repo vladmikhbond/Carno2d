@@ -103,8 +103,6 @@ export default class Repo
     load(json: string) 
     {
         this.deserialize(json);
-        const obj = {g: glo.g, gBall: glo.gBall, quant: glo.quant, metr: glo.metr};
-        // page.optionsGloElement.value = Options.obj2str(obj);
     }
 
     save(): string {

@@ -11,7 +11,6 @@ export const glo =
     quant: 5,          // квант простору             
 
     strikes: 0,        // заг. кількість зіткнень    
-
 };
 
 export const doc = { 

@@ -2,11 +2,11 @@ import {doc, glo} from './globals/globals.js';
 import Space from './model/Space.js';
 import View from './view/View.js';
 import Controller from './controller/Controller.js';
-import { getSizeParams, getSpaceParams } from "./controller/params.js";
+import { getSizeParams } from "./controller/params.js";
 import { ProcessInterpreter, ProcessState } from './process/ProcessInterpreter.js';
 
 // params from index.html         
-[glo.g, glo.gBall] = getSpaceParams()!;
+
 
 const space = new Space(...getSizeParams()!);
 
@@ -17,14 +17,14 @@ view.draw();
 
 // ===========================
 
-const interpreter = new ProcessInterpreter(controller);
+const interpreter = new ProcessInterpreter(space, view, controller);
 
 const startProcessButton = <HTMLButtonElement>document.getElementById('start-process-btn');
 const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
 const area = <HTMLTextAreaElement>document.getElementById('process-script');
 
 startProcessButton.addEventListener('click', (e) => {
-    ProcessInterpreter.procState = ProcessState.Stop;
+    ProcessInterpreter.procState = ProcessState.Pause;
     view.removeHilights();
     //
     setTimeout(async () => {

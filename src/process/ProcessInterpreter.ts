@@ -5,6 +5,8 @@ import Bomb from '../model/Bomb.js';
 import {glo} from '../globals/globals.js';
 import { Plunger } from '../model/Plunger.js';
 import Repo from '../data/Repo.js';
+import Space from '../model/Space.js';
+import View from '../view/View.js';
 
 
 
@@ -47,18 +49,23 @@ function obj2str(obj: object): string
 export enum ProcessState {
     Pause = 0,
     Run = 1,
-    Stop = 2,
+    Abort = 2,
 }
 
 export class ProcessInterpreter 
 {
 
-    controller: Controller;
+    space: Space
+    view: View
+    controller: Controller
 
     static process: Process;
     static procState = ProcessState.Pause;    // 0-pause,   1-run,   2-stop,
 
-    constructor(controller: Controller) {
+    constructor(space: Space, view: View, controller: Controller) {
+
+        this.space = space;
+        this.view = view;
         this.controller = controller
     }
 
@@ -76,7 +83,7 @@ export class ProcessInterpreter
         for (let line of lines) {
             if (!line)
                 continue;
-            this.controller.view.hilightCommand(line); 
+            this.view.hilightCommand(line); 
             // елементи чергової команди
             let [command, restLine, params] = ProcessInterpreter.parse(line);
 
@@ -97,7 +104,7 @@ export class ProcessInterpreter
                     await ProcessInterpreter.process.calm(1000);
                     break;
                 case 'scale':
-                    const plunger = this.controller.space.plunger;
+                    const plunger = this.space.plunger;
                     if (plunger) {
                         Object.assign(plunger.scales, params);
                     }
@@ -170,9 +177,9 @@ export class ProcessInterpreter
         str = str.slice(beg).trim();
         let end = str.indexOf('\n');
         let imgStr = str.slice(1, end-2).trim();
-        new Repo(this.controller.space).load(imgStr); 
+        new Repo(this.space).load(imgStr); 
         
-        this.controller.view.draw();
+        this.view.draw();
     }
 
 
@@ -185,7 +192,7 @@ export class ProcessInterpreter
 
             await ProcessInterpreter.process.whileAsync(
                     () => this.controller.time < limit, 
-                    () => {this.controller.space.warming()});
+                    () => {this.space.warming()});
         } catch(er) {  
             console.error(er);
         }        
@@ -193,7 +200,7 @@ export class ProcessInterpreter
 
 
     private createDefaultPlunger(params: any) {
-        this.controller.space.clear();
+        this.space.clear();
 
         // default values
         let x1 = 100, y1 = 20, x2 = 300, y2 = 480, m = 100, gas_n = 10000, gas_m = 0.4, gas_r = 0.5, gas_c = 'red', gas_t = 100;
@@ -205,11 +212,11 @@ export class ProcessInterpreter
 
         const y = gas_n * glo.BOLTZ * gas_t / (m * glo.g);
         // add plunger
-        let plun = this.controller.space.addPlunger(x1, y1, x2, y2, "blue");
+        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
         plun.m = m;
         plun.move(0, -y + Plunger.GAP);
         // add gass
-        this.controller.space.addBomb(
+        this.space.addBomb(
             new Bomb(gas_n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, gas_t, gas_r, gas_m, gas_c));        
     }
     

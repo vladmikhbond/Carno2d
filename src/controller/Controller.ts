@@ -1,12 +1,8 @@
 import {glo, doc} from '../globals/globals.js';
-import Space, { CreateMode } from '../model/Space.js';
+import Space from '../model/Space.js';
 import View from '../view/View.js';
 
-import Handler from './Handlers.js';
-import BallHandler from './BallHandler.js';
-import LineHandler from './LineHandler.js';
-import DeviceHandler from './DeviceHandler.js';
-import { getSizeParams, getSpaceParams } from './params.js';
+import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
 
 
@@ -17,60 +13,23 @@ export default class Controller
     timer: number | 0 = 0;
     time = 0           // такти часу
     
-    private ballHandler: BallHandler;
-    private lineHandler: LineHandler;
-    private deviceHandler: DeviceHandler;
-
-    private _createMode = CreateMode.Gas;
 
     constructor(space: Space, view: View) 
     {
         this.space = space;
         this.view = view;
-        this.ballHandler = new BallHandler(this);
-        this.lineHandler = new LineHandler(this);
-        this.deviceHandler = new DeviceHandler(this);
         this.time = 0;
         glo.strikes = 0;
         
         this.addHandlers();
         this.addDataHandlers();
+        this.addProcessHandlers();
         this.setModelSize();
-        this.createMode = CreateMode.Gas;
     }
 
-    
-    set createMode(mode: CreateMode) 
-    {
-        let gas = document.getElementById("gasParams")!.style;
-        let wal = document.getElementById("wallParams")!.style;
-        let dev = document.getElementById("devsParams")!.style;
-        gas.display = wal.display = dev.display = "none";
-
-        this._createMode = mode;
-        switch(mode) {
-            case CreateMode.Info:
-                break;
-            case CreateMode.Gas:
-                this.switchHandlers(this.ballHandler);
-                gas.display = "inline";
-                break;
-            case CreateMode.Wall:
-                this.switchHandlers(this.lineHandler);
-                wal.display = "inline";
-                break;
-            case CreateMode.Devs:
-                this.switchHandlers(this.deviceHandler);
-                dev.display = "inline";
-                break;
-        }
-                 
+    addProcessHandlers() {
+       
     }
-
-    get createMode() {
-        return this._createMode;
-    }
-
 
     setModelSize() {
         let [w, h] = [this.space.width, this.space.height];
@@ -96,25 +55,6 @@ export default class Controller
             }                
         }); 
 
-        // Space params changed
-        document.getElementById("spaceParams")!.addEventListener("keydown", (e: KeyboardEvent) => 
-        {
-            if (e.key == "Enter") {
-                const ps = getSpaceParams();
-                if (ps) {
-                    [glo.g, glo.gBall] = ps!;                
-                }
-            }      
-        });
-
-        // Change Create Mode
-        document.getElementById("createMode")!.addEventListener("change", (e: Event) =>
-        {
-            let str = (e.target as HTMLSelectElement).value;
-            const key = str as keyof typeof CreateMode;
-            this.createMode = CreateMode[key];            
-        }); 
-
 
         document.getElementById("helpButton")!.addEventListener("click", () => {
             window.open("help.html", "_blank")?.focus();
@@ -129,6 +69,41 @@ export default class Controller
             this.view.draw();
             document.getElementById("visPercentage")!.innerHTML = proc[v]! + '%';
 
+        });
+
+
+        doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
+            switch (e.key) {
+                case 'P': case 'p': case 'V': case 'v': case 'T': case 't': case 'S': case 's': case 'X': case 'x':
+                    // маштабування тиску на PV і TV-діаграмі
+                    if (this.space.plunger) {
+                        this.space.plunger.scale(e.key);
+                        this.view.drawMeasure();
+                    }
+                    break;
+                case '0':
+                    // очистити журнал вимірювань
+                    if (this.space.plunger) {
+                        this.space.plunger.clearMeterings();
+                        this.view.drawMeasure();
+                    }
+                    break;
+                case '1': 
+                    this.stop();            
+                    this.step();
+                    break;
+                case 'f':
+                    // зафіксувати-розфіксувати поршень
+                    if (this.space.plunger) {
+                        this.space.plunger.fixed = !this.space.plunger.fixed;
+                        this.view.draw();
+                    }
+                    break;
+            }
+        });
+
+        doc.canvas.addEventListener("mousedown", (e: MouseEvent) => {
+            doc.canvas.focus({focusVisible: true})
         });
 
     } 
@@ -149,13 +124,6 @@ export default class Controller
         });
     }
  
-
-    private switchHandlers(handler: Handler)  {
-        doc.canvas.onmousedown = (e) => handler.mousedown(e);
-        doc.canvas.onmousemove = (e) => handler.mousemove(e);
-        doc.canvas.onmouseup = (e) => handler.mouseup(e);
-        doc.canvas.onkeydown = (e) => handler.keydown(e);
-    }
 
     step() {
         this.time++;
