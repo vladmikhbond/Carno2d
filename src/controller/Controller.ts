@@ -4,6 +4,7 @@ import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
+import { ProcessInterpreter, ProcessState } from '../process/ProcessInterpreter.js';
 
 
 export default class Controller 
@@ -13,7 +14,7 @@ export default class Controller
     
     timer: number | 0 = 0;
     time = 0           // такти часу
-    
+    interpreter: ProcessInterpreter
 
     constructor(space: Space, view: View) 
     {
@@ -21,14 +22,55 @@ export default class Controller
         this.view = view;
         this.time = 0;
         glo.strikes = 0;
+        this.interpreter = new ProcessInterpreter(space, view, this);
         
         this.addHandlers();
         this.addDataHandlers();
         this.addProcessHandlers();
+
         this.setModelSize();
     }
 
     addProcessHandlers() {
+        const startProcessButton = <HTMLButtonElement>document.getElementById('start-process-btn');
+        const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
+        const area = <HTMLTextAreaElement>document.getElementById('process-script');
+
+        startProcessButton.addEventListener('click', (e) => {    
+            setTimeout(async () => {
+                area.value = area.value.replaceAll('►', '');  
+                pauseProcessButton.innerHTML = '►'; 
+                await this.interpreter.interpret(area.value);
+            }, 100);
+
+        }); 
+
+        pauseProcessButton.addEventListener('click', () => {
+            switch (this.interpreter.process!.procState) {
+                case ProcessState.Pause:
+                    this.interpreter.process!.procState = ProcessState.Run;
+                    pauseProcessButton.innerHTML = '■';
+                    break;
+                case ProcessState.Run: 
+                    this.interpreter.process!.procState = ProcessState.Pause;
+                    pauseProcessButton.innerHTML = '►';
+                    break;
+            }
+        });
+
+        doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
+            switch (e.key) {
+                case '2': 
+                    this.interpreter.process!.procState = ProcessState.Run;
+                    setTimeout(() => {
+                        this.interpreter.process!.procState = ProcessState.Pause;
+                        this.view.draw();
+                        this.view.showTimeAndInfo(this.time);                 
+                    }, 10);    
+                    break;
+            }
+
+        });
        
     }
 
