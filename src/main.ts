@@ -23,7 +23,7 @@ const startProcessButton = <HTMLButtonElement>document.getElementById('start-pro
 const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
 const area = <HTMLTextAreaElement>document.getElementById('process-script');
 
-startProcessButton.addEventListener('click',  async (e) => {
+startProcessButton.addEventListener('click', (e) => {
     ProcessInterpreter.procState = ProcessState.Stop;
     view.removeHilights();
     //
@@ -61,8 +61,7 @@ doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
                 ProcessInterpreter.procState = ProcessState.Pause;
                 view.draw();
                 view.showTimeAndInfo(controller.time);                 
-            }, 10); 
-       
+            }, 10);    
             break;
     }
 

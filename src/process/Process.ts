@@ -4,9 +4,9 @@ import Bomb from '../model/Bomb.js';
 
 export default class Process extends ProcessBase {
 
-    private get veloK() {
-        return Math.abs(this.plunger.velo) > 0.2 ? 1 : 0.999;    
-    }
+    // private get veloK() {
+    //     return Math.abs(this.plunger.velo) > 0.2 ? 1 : 0.999;    
+    // }
 
     //#region adiabatic 
 
@@ -27,16 +27,20 @@ export default class Process extends ProcessBase {
     //#endregion
     
     //#region  isothermic 
-
+    
+    // тиск (маса) зменшується, об'їм зростає, енергія додається, але t = const
     async isothermicExtention(minMass: number) {
         let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m > minMass, () => {
-            const k = this.plunger.velo > 0.2 ? 1 : 0.999;
+            const k = this.plunger.velo > 0.2 ? 0.9999 : 0.999;
             this.plunger.m *= k;
             let currT = this.plunger.measureTemperature();
-            heater.rate = currT < initT ? 1.001 :  0.999;              
+            heater.rate = currT < initT ? 1.001 :  0.999; 
+            
+ 
+               
             heater.warm();  
         }); 
         heater.dispose();
@@ -47,8 +51,8 @@ export default class Process extends ProcessBase {
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            const k = this.plunger.velo < -0.2 ? 1 : 0.999;
-            this.plunger.m /= k;
+            const k = this.plunger.velo < -0.2 ? 0.9999 : 0.999;
+            this.plunger.m /= 0.999;
             let currT = this.plunger.measureTemperature();
             heater.rate = currT < initT ? 1.001 :  0.999;              
             heater.warm();    
@@ -66,8 +70,8 @@ export default class Process extends ProcessBase {
         this.space.addDevice(heater);
         this.plunger.fixed = true;
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            let k = this.veloK;
-            this.plunger.m /= k;        // k = 0.999
+            let k = this.plunger.velo > 0.2 ? 1.001 : 0.999;
+            this.plunger.m /= k;        
             heater.rate = k**-0.5;
             heater.warm();
         }); 
@@ -82,7 +86,7 @@ export default class Process extends ProcessBase {
         this.space.addDevice(heater);
         this.plunger.fixed = true;
         await this.whileAsync(() => this.plunger.m > mimMass, () => {
-            let k = this.veloK;     // k = 0.999
+            let k = this.plunger.velo < -0.2 ? 1.001 : 0.999;
             this.plunger.m *= k;
             heater.rate = k**0.5;
             heater.warm();
