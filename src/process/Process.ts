@@ -5,7 +5,7 @@ import Bomb from '../model/Bomb.js';
 export default class Process extends ProcessBase {
 
     private get veloK() {
-        return Math.abs(this.plunger.velo) > 0.2 ? 0.9999 : 0.999;
+        return Math.abs(this.plunger.velo) > 0.2 ? 1 : 0.999;    
     }
 
     //#region adiabatic 
@@ -33,7 +33,8 @@ export default class Process extends ProcessBase {
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m > minMass, () => {
-            this.plunger.m *= this.veloK;
+            const k = this.plunger.velo > 0.2 ? 1 : 0.999;
+            this.plunger.m *= k;
             let currT = this.plunger.measureTemperature();
             heater.rate = currT < initT ? 1.001 :  0.999;              
             heater.warm();  
@@ -46,7 +47,8 @@ export default class Process extends ProcessBase {
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            this.plunger.m /= this.veloK;
+            const k = this.plunger.velo < -0.2 ? 1 : 0.999;
+            this.plunger.m /= k;
             let currT = this.plunger.measureTemperature();
             heater.rate = currT < initT ? 1.001 :  0.999;              
             heater.warm();    

@@ -1,4 +1,4 @@
-import {glo} from './globals/globals.js';
+import {doc, glo} from './globals/globals.js';
 import Space from './model/Space.js';
 import View from './view/View.js';
 import Controller from './controller/Controller.js';
@@ -23,36 +23,50 @@ const startProcessButton = <HTMLButtonElement>document.getElementById('start-pro
 const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
 const area = <HTMLTextAreaElement>document.getElementById('process-script');
 
-    startProcessButton.addEventListener('click',  async (e) => {
-        ProcessInterpreter.procState = ProcessState.Stop;
-        view.removeHilights();
-        //
-        setTimeout(async () => {
+startProcessButton.addEventListener('click',  async (e) => {
+    ProcessInterpreter.procState = ProcessState.Stop;
+    view.removeHilights();
+    //
+    setTimeout(async () => {
 
-            let selLength = area.selectionEnd - area.selectionStart;
-            let script = selLength ? area.value.slice(area.selectionStart, area.selectionEnd) : area.value; 
-            script = script.replaceAll('►', '');               
+        let selLength = area.selectionEnd - area.selectionStart;
+        let script = selLength ? area.value.slice(area.selectionStart, area.selectionEnd) : area.value; 
+        script = script.replaceAll('►', '');               
+        ProcessInterpreter.procState = ProcessState.Pause;
+        pauseProcessButton.innerHTML = '►'; 
+
+        await interpreter.interpret(script);
+    }, 100);
+
+} ) 
+
+pauseProcessButton.addEventListener('click', () => {
+    switch (ProcessInterpreter.procState) {
+        case ProcessState.Pause:
+            ProcessInterpreter.procState = ProcessState.Run;
+            pauseProcessButton.innerHTML = '■';
+            break;
+        case ProcessState.Run: 
             ProcessInterpreter.procState = ProcessState.Pause;
-            pauseProcessButton.innerHTML = '►'; 
+            pauseProcessButton.innerHTML = '►';
+            break;
+    }
+})
 
-            await interpreter.interpret(script);
-        }, 100);
-
-    } ) 
-
-    pauseProcessButton.addEventListener('click', () => {
-        switch (ProcessInterpreter.procState) {
-            case ProcessState.Pause:
-                ProcessInterpreter.procState = ProcessState.Run;
-                pauseProcessButton.innerHTML = '■';
-                break;
-            case ProcessState.Run: 
+doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
+    switch (e.key) {
+        case '2': 
+            ProcessInterpreter.procState = ProcessState.Run;
+            setTimeout(() => {
                 ProcessInterpreter.procState = ProcessState.Pause;
-                pauseProcessButton.innerHTML = '►';
-                break;
-        }
-    })
+                view.draw();
+                view.showTimeAndInfo(controller.time);                 
+            }, 10); 
+       
+            break;
+    }
 
+})
 
 
 
