@@ -10,15 +10,13 @@ import View from '../view/View.js';
 import {str2obj} from "../globals/utils.js"
 
 
-export class ProcessInterpreter 
+export class Interpreter 
 {
 
     space: Space
     view: View
     controller: Controller
     process: Process | null = null;
-
-
 
     constructor(space: Space, view: View, controller: Controller) {
 
@@ -43,7 +41,7 @@ export class ProcessInterpreter
                 continue;
             this.view.hilightCommand(line); 
             // елементи чергової команди
-            let [command, restLine, params] = ProcessInterpreter.parse(line);
+            let [command, restLine, params] = Interpreter.parse(line);
 
             switch (command) {
                 case 'load':

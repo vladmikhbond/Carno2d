@@ -4,7 +4,7 @@ import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
-import { ProcessInterpreter} from '../process/ProcessInterpreter.js';
+import { Interpreter} from '../process/Interpreter.js';
 import { ProcessState } from '../process/Process.js';
 
 
@@ -15,7 +15,7 @@ export default class Controller
     
     timer: number | 0 = 0;
     time = 0           // такти часу
-    interpreter: ProcessInterpreter
+    interpreter: Interpreter
 
     constructor(space: Space, view: View) 
     {
@@ -23,7 +23,7 @@ export default class Controller
         this.view = view;
         this.time = 0;
         glo.strikes = 0;
-        this.interpreter = new ProcessInterpreter(space, view, this);
+        this.interpreter = new Interpreter(space, view, this);
         
         this.addHandlers();
         this.addDataHandlers();
