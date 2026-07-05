@@ -34,7 +34,8 @@ export default class Process
 
     async whileAsync(
         condition: () => boolean, 
-        act = () => {} 
+        act = () => {},
+        msec = 10 
     ) {
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
@@ -54,12 +55,12 @@ export default class Process
                     clearInterval(timer);
                     rej(err);
                 }
-            }, 10);   // former globus.STEP_PERIOD
+            }, msec);   // former globus.STEP_PERIOD
         });
     }
 
     
-    async calm(balanceTime = 0) {
+    async calm(balanceTime = 100) {
         let stopStep = this.controller.time + balanceTime;
         this.plunger.withFriction = true;
         await this.whileAsync(() => this.controller.time < stopStep, () => {
@@ -254,7 +255,7 @@ export default class Process
         // close bottom anime
         await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
 
-        await this.calm(100);
+        await this.calm();
     }
 
     //#endregion Otto Cicle

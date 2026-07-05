@@ -34,13 +34,14 @@ export class Interpreter
     }
 
     async interpret(script: string) {
-        if (this.process) 
+        if (this.process) {
             this.process.procState = ProcessState.Pause;
-
+        }
+        
         const lines = script.split('\n').map(l => l.trim());
 
         for (let line of lines) {
-            if (!line)
+            if (!line || line.startsWith("//"))
                 continue;
             this.view.hilightCommand(line); 
             // елементи чергової команди
@@ -60,7 +61,7 @@ export class Interpreter
                 case 'plunger':
                     this.createDefaultPlunger(params);
                     this.createProcess();
-                    await this.process!.calm(1000);
+                    await this.process!.calm(300);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
@@ -88,7 +89,7 @@ export class Interpreter
                 case '-isothermic':
                     await this.process!.isothermicCompression(params.m);
                     break;  
-                                      
+
                 case '+isohoric':
                     await this.process!.isohoricExtention(params.m);
                     break;

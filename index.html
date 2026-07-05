@@ -21,8 +21,8 @@
     <section>
         <input id="sizeParams" type="text" value="W=600; H=550">
     
-        <button id="startButton" class="command">Ready</button>
-        <button id="pauseButton" class="command" title="Play-Pause">Run</button>
+        <button id="readyButton" class="command">Ready</button>
+        <button id="runButton" class="command" title="Play-Pause">Run</button>
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
     <section>
@@ -31,13 +31,14 @@
     </section>
         <section> 
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
-title:   Цикл Брайтона (квазістаціонарний)
-plunger: m=3000, T=111.4
-scale: P=5.5, T=9.2, S=0.36, X=1.5
-+isobaric:  v=36000 
-+adiabatic: m=550
--isobaric:  v=57000 
--adiabatic: m=3000 
+title:         Цикл Отто (бензиновий)
+load: otto_plunger
+scale:         P=0.16, T=-1, S=0.33, X=0.12
+intake:                v=90000
+compression: m=8500,   v=12000
+ignition:    rate=1.5, t=2000
+expansion:   m=16000,  v=88000
+exhaust:     m=1000,   v=8000 
         </textarea>
     </section>
 
@@ -54,6 +55,7 @@ scale: P=5.5, T=9.2, S=0.36, X=1.5
         </textarea>
         <button id="loadSceneButton" class="scene-btn" title="Import scene">⬆</button>
     </div>
+
 <!-- =========================================================================== -->
     <textarea id="repoArea" spellcheck="false"  rows="30" >
 
@@ -134,12 +136,7 @@ otto_plunger: '{"bombs":[],"lines":[{"x1":40,"y1":480,"x2":240,"y2":480,"c":"blu
 load: Norm
 run: 
     </textarea>  
-
-
-
-
     <script type="module" src="main.js"></script>
-
 </main>
 </body>
 </html>

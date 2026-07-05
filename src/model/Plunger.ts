@@ -52,6 +52,10 @@ export class Plunger extends Line
       return (this.x2 - this.x1) * (this.realBottom - this.y1);
    }
 
+   set volume(vol: number){
+      this.y1 = this.realBottom + vol / (this.x2 - this.x1);
+   }
+   
    // get realBottom(): number {
    //    return this.bottom + Plunger.GAP;
    // }

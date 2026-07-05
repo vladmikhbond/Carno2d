@@ -34,42 +34,31 @@ export default class Controller
 
     addProcessHandlers() 
     {
-        const startButton = <HTMLButtonElement>document.getElementById('startButton');
-        const pauseButton = <HTMLButtonElement>document.getElementById('pauseButton');
+        const readyButton = <HTMLButtonElement>document.getElementById('readyButton');
+        const runButton = <HTMLButtonElement>document.getElementById('runButton');
         const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
 
-        startButton.addEventListener('click', async (e) => {
+        readyButton.addEventListener('click', async (e) => {
             this.stop();
             setTimeout(async () => {
-                processArea.value = processArea.value.replaceAll('►', '');  
+                processArea.value = processArea.value.replaceAll('►', '');
+                this.time = 0;  
                 await this.interpreter.interpret(processArea.value);
             }, 100);
 
         }); 
 
-        pauseButton.addEventListener('click', () => {
-            switch (this.interpreter.process!.procState) {
+        runButton.addEventListener('click', () => {
+            if (!this.interpreter.process) 
+                return;
+            switch (this.interpreter.process.procState) {
                 case ProcessState.Pause:
-                    this.interpreter.process!.procState = ProcessState.Run;
+                    this.interpreter.process.procState = ProcessState.Run;
                     break;
                 case ProcessState.Run: 
-                    this.interpreter.process!.procState = ProcessState.Pause;
+                    this.interpreter.process.procState = ProcessState.Pause;
                     break;
             }
-        });
-
-        doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
-            switch (e.key) {
-                case '2': 
-                    this.interpreter.process!.procState = ProcessState.Run;
-                    setTimeout(() => {
-                        this.interpreter.process!.procState = ProcessState.Pause;
-                        this.view.draw();
-                        this.view.showTimeAndInfo(this.time);                 
-                    }, 10);    
-                    break;
-            }
-
         });
        
     }
@@ -131,10 +120,6 @@ export default class Controller
                         this.view.drawMeasure();
                     }
                     break;
-                // case '1': 
-                //     this.stop();            
-                //     this.step();
-                //     break;
                 case '1': 
                     this.interpreter.process!.procState = ProcessState.Run;
                     setTimeout(() => {
