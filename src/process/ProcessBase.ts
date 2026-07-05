@@ -27,8 +27,7 @@ export default class ProcessBase {
     async whileAsync(
         condition: () => boolean, 
         act = () => {} 
-    ) 
-    {
+    ) {
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
                 try {

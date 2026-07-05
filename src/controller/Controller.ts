@@ -132,10 +132,18 @@ export default class Controller
                         this.view.drawMeasure();
                     }
                     break;
+                // case '1': 
+                //     this.stop();            
+                //     this.step();
+                //     break;
                 case '1': 
-                    this.stop();            
-                    this.step();
-                    break;
+                    this.interpreter.process!.procState = ProcessState.Run;
+                    setTimeout(() => {
+                        this.interpreter.process!.procState = ProcessState.Pause;
+                        this.view.draw();
+                        this.view.showTimeAndInfo(this.time);                 
+                    }, 10); 
+                    break;                    
                 case 'f':
                     // зафіксувати-розфіксувати поршень
                     if (this.space.plunger) {
@@ -168,7 +176,7 @@ export default class Controller
         });
     }
  
-
+     
     step() {
         this.time++;
         this.space.step();

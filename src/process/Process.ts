@@ -8,14 +8,14 @@ export default class Process extends ProcessBase {
 
     async adiabaticExtention(minMass: number) {
         await this.whileAsync(() => this.plunger.m > minMass, () => {
-            const k = this.plunger.velo < -0.2 ? 0.9999 : 0.999;
+            const k = this.plunger.velo < -0.2 ? 1.001 : 0.999;
             this.plunger.m *= k;
         }); 
     }
 
     async adiabaticCompression(maxMass: number) {
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            const k = this.plunger.velo > 0.2 ? 0.9999 : 0.999;
+            const k = this.plunger.velo > 0.2 ? 1.001 : 0.999;
             this.plunger.m /= k;
         }); 
 

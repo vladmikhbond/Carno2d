@@ -8,9 +8,6 @@ import Repo from '../data/Repo.js';
 import Space from '../model/Space.js';
 import View from '../view/View.js';
 
-
-
-
 // Перетворює рядок "x1 = 200, y1 = 0, x2 = 200, y2 = 450, c = blue, "
 // на об'єкт {x1: 200, y1: 0, x2: 200, y2: 450, c: "blue", }
 function str2obj(str: string)
@@ -166,7 +163,11 @@ export class ProcessInterpreter
     }
 
     private createProcess() {
+        if (this.process) {
+            clearInterval(this.process.controller.timer)
+        }
         this.process = new Process(this.controller);
+        return this.process;
     }
 
     private load(imgName: string) 
