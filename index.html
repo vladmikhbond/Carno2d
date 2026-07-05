@@ -19,10 +19,10 @@
     </h1>
     <!------------------ top panel ---------------->
     <section>
-        <input id="sizeParams" type="text" value="W=600; H=600">
+        <input id="sizeParams" type="text" value="W=600; H=550">
     
-        <button id="startButton" class="command">Go</button>
-        <button id="pauseButton" class="command" title="Play-Pause">►</button>
+        <button id="startButton" class="command">Ready</button>
+        <button id="pauseButton" class="command" title="Play-Pause">Run</button>
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
     <section>
@@ -33,11 +33,11 @@
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
 title:   Цикл Брайтона (квазістаціонарний)
 plunger: m=3000, T=111.4
-scale:   P=5.5, T=9.2, S=0.36, X=1.5
-isobaric:  dir=inc, v=36000 
-adiabatic: dir=inc, m=550
-isobaric:  dir=dec, v=57000 
-adiabatic: dir=dec, m=3000 
+scale: P=5.5, T=9.2, S=0.36, X=1.5
++isobaric:  v=36000 
++adiabatic: m=550
+-isobaric:  v=57000 
+-adiabatic: m=3000 
         </textarea>
     </section>
 
@@ -70,55 +70,55 @@ exhaust:     m=1000,   v=8000
 title:   Цикл Брайтона (квазістаціонарний)
 plunger: m=3000, T=111.4
 scale:   P=5.5, T=9.2, S=0.36, X=1.5
-isobaric:  dir=inc, v=36000 
-adiabatic: dir=inc, m=550
-isobaric:  dir=dec, v=57000 
-adiabatic: dir=dec, m=3000            
++isobaric:   v=36000 
++adiabatic:  m=550
+-isobaric:   v=57000 
+-adiabatic:  m=3000            
 
 
 title:   Зворотний цикл Брайтона
 plunger: m=3000, T=111.4
 scale:   P=5.5, T=9.2, S=0.36, X=1.5
-adiabatic: dir=inc, m=550
-isobaric:  dir=inc, v=86000 
-adiabatic: dir=dec, m=3000 
-isobaric:  dir=dec, v=24700 
++adiabatic:  m=550
++isobaric:   v=86000 
+-adiabatic:  m=3000 
+-isobaric:   v=24700 
     
 
 title:   Цикл Карно
 plunger: m=3000, T=126
 scale:   P=6, T=10, S=0.7, X=1.6
-isothermic: dir=inc, m=1600
-adiabatic:  dir=inc, m=600
-isothermic: dir=dec, m=1100
-adiabatic:  dir=dec, m=3000
++isothermic:  m=1600
++adiabatic:   m=600
+-isothermic:  m=1100
+-adiabatic:   m=3000
 
 
 title:   Зворотний цикл Карно
 plunger: m=3000, T=126
 scale:   P=6, T=10, S=0.7, X=1.6
-adiabatic:  dir=inc, m=1100
-isothermic: dir=inc, m=600
-adiabatic:  dir=dec, m=1600
-isothermic: dir=dec, m=3000
++adiabatic:   m=1100
++isothermic:  m=600
+-adiabatic:   m=1600
+-isothermic:  m=3000
 
 
 title:   Цикл Отто (квазістаціонарний)
 plunger: m=3000, T=126
 scale:   P=6, T=11, S=0.33, X=1.6
-adiabatic: dir=inc, m=1000
-isohoric:  dir=dec, m=300
-adiabatic: dir=dec, m=900
-isohoric:  dir=inc, m=3000
++adiabatic:  m=1000
+-isohoric:   m=300
+-adiabatic:  m=900
++isohoric:   m=3000
 
 
 title:   Зворотний цикл Отто (квазістаціонарний)
 plunger: m=3000, T=126
 scale:   P=6, T=11, S=0.33, X=1.6
-isohoric:  dir=dec, m=900
-adiabatic: dir=inc, m=300
-isohoric:  dir=inc, m=1000
-adiabatic: dir=dec, m=3000
+-isohoric:   m=900
++adiabatic:  m=300
++isohoric:   m=1000
+-adiabatic:  m=3000
 
 
 
@@ -133,13 +133,6 @@ otto_plunger: '{"bombs":[],"lines":[{"x1":40,"y1":480,"x2":240,"y2":480,"c":"blu
 ===============================================
 load: Norm
 run: 
-
-
-Carn: '{"bombs":[{"n":4000,"x1":100,"y1":420,"x2":300,"y2":480,"r":0.5,"m":1,"c":"red","t":126}],"lines":[{"x1":100,"y1":480,"x2":300,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":100,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":300,"y2":20,"c":"blue"},{"x1":300,"y1":20,"x2":300,"y2":480,"c":"blue"}],"plungers":[{"x1":100,"y1":20,"x2":300,"y2":480,"v":11650,"m":3000}],"devices":[],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":1}}',
-
-Otto: '{"bombs":[],"lines":[{"x1":260,"y1":465,"x2":360,"y2":465,"c":"blue"},{"x1":260,"y1":40,"x2":260,"y2":465,"c":"blue"},{"x1":360,"y1":40,"x2":360,"y2":465,"c":"blue"}],"plungers":[{"x1":260, "y1":40, "x2":360, "y2":465, "v":4000, "m":100}],"devices":[],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":1}}',
-
-Bray: '{"bombs":[{"n":10000,"x1":100, "y1":355, "x2":300, "y2":480, "r":0.5,"m":0.4,"c":"red","t":111.4}],"lines":[{"x1":100,"y1":480,"x2":300,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":100,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":300,"y2":20,"c":"blue"},{"x1":300, "y1":20, "x2":300, "y2":480, "c":"blue"}],"plungers":[{"x1":100, "y1":20, "x2":300, "y2":480, "v":25000, "m":3000}],"devices":[],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":1}}',
     </textarea>  
 
 

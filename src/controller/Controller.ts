@@ -38,10 +38,10 @@ export default class Controller
         const pauseButton = <HTMLButtonElement>document.getElementById('pauseButton');
         const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
 
-        startButton.addEventListener('click', (e) => {    
+        startButton.addEventListener('click', async (e) => {
+            this.stop();
             setTimeout(async () => {
                 processArea.value = processArea.value.replaceAll('►', '');  
-                pauseButton.innerHTML = '►'; 
                 await this.interpreter.interpret(processArea.value);
             }, 100);
 
@@ -51,11 +51,9 @@ export default class Controller
             switch (this.interpreter.process!.procState) {
                 case ProcessState.Pause:
                     this.interpreter.process!.procState = ProcessState.Run;
-                    pauseButton.innerHTML = '■';
                     break;
                 case ProcessState.Run: 
                     this.interpreter.process!.procState = ProcessState.Pause;
-                    pauseButton.innerHTML = '►';
                     break;
             }
         });

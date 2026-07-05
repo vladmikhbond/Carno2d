@@ -1,4 +1,4 @@
-import Process from './Process.js';
+import Process, { ProcessState } from './Process.js';
 import Controller from '../controller/Controller.js';
 
 import Bomb from '../model/Bomb.js';
@@ -34,8 +34,11 @@ export class Interpreter
     }
 
     async interpret(script: string) {
+        if (this.process) 
+            this.process.procState = ProcessState.Pause;
 
         const lines = script.split('\n').map(l => l.trim());
+
         for (let line of lines) {
             if (!line)
                 continue;
@@ -52,7 +55,7 @@ export class Interpreter
                     break;
 
                 case 'title':
-                    /// page.pageTitle.innerHTML = restLine;
+                    document.getElementById("info")!.innerHTML = restLine;
                     break;
                 case 'plunger':
                     this.createDefaultPlunger(params);
@@ -65,33 +68,32 @@ export class Interpreter
                         Object.assign(plunger.scales, params);
                     }
                     break;
-                case 'adiabatic':
-                    if (params.dir.startsWith('inc')) {
-                        await this.process!.adiabaticExtention(params.m);
-                    } else if (params.dir.startsWith('dec')) {
-                        await this.process!.adiabaticCompression(params.m);
-                    }
+                case '+adiabatic':
+                    await this.process!.adiabaticExtention(params.m);
                     break;
-                case 'isobaric':
-                    if (params.dir.startsWith('inc')) {
-                        await this.process!.isobaricExtention(params.v);
-                    } else if (params.dir.startsWith('dec')) {
-                        await this.process!.isobaricCompression(params.v);
-                    }
+                case '-adiabatic':
+                    await this.process!.adiabaticCompression(params.m);
                     break;
-                case 'isothermic':
-                    if (params.dir.startsWith('inc')) {
-                        await this.process!.isothermicExtention(params.m);
-                    } else if (params.dir.startsWith('dec')) {
-                        await this.process!.isothermicCompression(params.m);
-                    }
+
+                case '+isobaric':
+                    await this.process!.isobaricExtention(params.v);
                     break;
-                case 'isohoric':
-                    if (params.dir.startsWith('inc')) {
-                        await this.process!.isohoricExtention(params.m);
-                    } else if (params.dir.startsWith('dec')) {
-                        await this.process!.isohoricCompression(params.m);
-                    }
+                case '-isobaric':
+                    await this.process!.isobaricCompression(params.v);
+                    break;
+
+                case '+isothermic':
+                    await this.process!.isothermicExtention(params.m);
+                    break;
+                case '-isothermic':
+                    await this.process!.isothermicCompression(params.m);
+                    break;  
+                                      
+                case '+isohoric':
+                    await this.process!.isohoricExtention(params.m);
+                    break;
+                case '-isohoric':
+                    await this.process!.isohoricCompression(params.m);
                     break;
 
                 //#region Цикл Отто (бензиновий)
@@ -122,12 +124,12 @@ export class Interpreter
     }
 
     private createProcess() {
-        if (this.process) {
-            clearInterval(this.process.controller.timer)
-        }
+        this.controller!.stop();
         this.process = new Process(this.controller);
         return this.process;
     }
+
+
 
     private load(imgName: string) 
     {
