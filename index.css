@@ -61,7 +61,7 @@ section {
     width: 120px;
 }
 
-#process-script {
+#processArea {
     width: var(--canvas-width);
     height: 200px;
 }
@@ -102,4 +102,8 @@ section {
     vertical-align: top; 
     background-color: lightblue;
     width: 70px;
+}
+
+#repoArea {
+    width: var(--canvas-width);
 }

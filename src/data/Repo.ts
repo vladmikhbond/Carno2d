@@ -97,7 +97,7 @@ export default class Repo
 
         // glo
         Object.assign(glo, globals);
-        // page.optionsGloElement.value = Options.obj2str(globals);
+
     } 
 
     load(json: string) 

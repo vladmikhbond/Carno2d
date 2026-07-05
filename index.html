@@ -19,10 +19,10 @@
     </h1>
     <!------------------ top panel ---------------->
     <section>
-        <input id="sizeParams" type="text" value="W=1000; H=600">
+        <input id="sizeParams" type="text" value="W=600; H=600">
     
-        <button id="start-process-btn" class="command">Go</button>
-        <button id="pause-process-btn" class="command" title="Play-Pause">►</button>
+        <button id="startButton" class="command">Go</button>
+        <button id="pauseButton" class="command" title="Play-Pause">►</button>
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
     <section>
@@ -30,7 +30,7 @@
         <span id="visPercentage">10%</span>
     </section>
         <section> 
-        <textarea id="process-script" spellcheck="false" title="Вікно команд">
+        <textarea id="processArea" spellcheck="false" title="Вікно команд">
 load: Norm
 run:             
         </textarea>
@@ -50,11 +50,7 @@ run:
         <button id="loadSceneButton" class="scene-btn" title="Import scene">⬆</button>
     </div>
 <!-- =========================================================================== -->
- 
-
-
-
-    <textarea id="db" spellcheck="false"  rows="30" >
+    <textarea id="repoArea" spellcheck="false"  rows="30" >
 
 title:         Цикл Отто (бензиновий)
 load: otto_plunger
@@ -127,9 +123,9 @@ Norm: '{"bombs":[{"n":4000,"x1":107,"x2":288,"y1":126,"y2":304,"vx":0,"vy":0,"t"
 
 MFP:  '{"bombs":[{"n":5000,"x1":100,"x2":300,"y1":100,"y2":440,"vx":0,"vy":0,"t":1000,"r":0.0625,"m":1,"c":"red"}],"lines":[{"x1":100,"y1":440,"x2":300,"y2":440,"c":"black"},{"x1":100,"y1":80,"x2":100,"y2":440,"c":"black"},{"x1":300,"y1":80,"x2":300,"y2":440,"c":"black"}],"plungers":[{"x1":100,"y1":80,"x2":300,"y2":440,"v":68000,"m":5000}],"devices":[],"devices":[{"x1":100,"y1":245,"x2":300,"y2":440,"type":"m","rate":0}],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":10}}',
     
-otto_plunger: '{"bombs":[],"lines":[{"x1":100,"y1":480,"x2":300,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":100,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":300,"y2":20,"c":"blue"},{"x1":300,"y1":20,"x2":300,"y2":480,"c":"blue"}],"plungers":[{"x1":100,"y1":20,"x2":300,"y2":480,"v":8000,"m":100}],"devices":[],"glo":{"g":0.1,"gBall":0,"cell":20,"viz":10,"quant":5,"metr":1}}',
+otto_plunger: '{"bombs":[],"lines":[{"x1":40,"y1":480,"x2":240,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":40,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":240,"y2":20,"c":"blue"},{"x1":240,"y1":20,"x2":240,"y2":480,"c":"blue"}],"plungers":[{"x1":40,"y1":20,"x2":240,"y2":480,"v":8000,"m":100}],"devices":[],"glo":{"g":0.1,"gBall":0,"cell":20,"viz":10,"quant":5,"metr":1}}',
 
-
+===============================================
 Carn: '{"bombs":[{"n":4000,"x1":100,"y1":420,"x2":300,"y2":480,"r":0.5,"m":1,"c":"red","t":126}],"lines":[{"x1":100,"y1":480,"x2":300,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":100,"y2":480,"c":"blue"},{"x1":100,"y1":20,"x2":300,"y2":20,"c":"blue"},{"x1":300,"y1":20,"x2":300,"y2":480,"c":"blue"}],"plungers":[{"x1":100,"y1":20,"x2":300,"y2":480,"v":11650,"m":3000}],"devices":[],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":1}}',
 
 Otto: '{"bombs":[],"lines":[{"x1":260,"y1":465,"x2":360,"y2":465,"c":"blue"},{"x1":260,"y1":40,"x2":260,"y2":465,"c":"blue"},{"x1":360,"y1":40,"x2":360,"y2":465,"c":"blue"}],"plungers":[{"x1":260, "y1":40, "x2":360, "y2":465, "v":4000, "m":100}],"devices":[],"glo":{"g":0.1, "gBall":0, "cell":20, "viz":10, "quant":5, "metr":1}}',

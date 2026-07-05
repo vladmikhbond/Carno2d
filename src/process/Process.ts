@@ -4,10 +4,6 @@ import Bomb from '../model/Bomb.js';
 
 export default class Process extends ProcessBase {
 
-    // private get veloK() {
-    //     return Math.abs(this.plunger.velo) > 0.2 ? 1 : 0.999;    
-    // }
-
     //#region adiabatic 
 
     async adiabaticExtention(minMass: number) {
@@ -38,9 +34,7 @@ export default class Process extends ProcessBase {
             this.plunger.m *= k;
             let currT = this.plunger.measureTemperature();
             heater.rate = currT < initT ? 1.001 :  0.999; 
-            
- 
-               
+              
             heater.warm();  
         }); 
         heater.dispose();
@@ -176,7 +170,7 @@ export default class Process extends ProcessBase {
 
         // open bottom anime
         let x1 = line.x1;
-        await this.whileAsync(() => line.x1 > x1 - width, () => { line.move(-10, 0) } );
+        await this.whileAsync(() => line.x1 < x1 + width, () => { line.move(10, 0) } );
         
         // 
         await this.whileAsync(() => this.plunger.volume > minVolume * 2 , () => {
@@ -188,7 +182,7 @@ export default class Process extends ProcessBase {
         this.plunger.withFriction = false;
 
         // close bottom anime
-        await this.whileAsync(() => line.x1 < x1, () => { line.move(10, 0) } );
+        await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
 
         await this.calm(100);
     }

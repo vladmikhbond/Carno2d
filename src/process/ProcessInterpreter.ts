@@ -171,8 +171,8 @@ export class ProcessInterpreter
 
     private load(imgName: string) 
     {
-        const dbArea = <HTMLTextAreaElement>document.getElementById('db');
-        let str = dbArea.value;
+        const area = <HTMLTextAreaElement>document.getElementById('repoArea');
+        let str = area.value;
         let beg = str.indexOf(imgName + ':') + imgName.length + 1;
         str = str.slice(beg).trim();
         let end = str.indexOf('\n');
@@ -203,7 +203,8 @@ export class ProcessInterpreter
         this.space.clear();
 
         // default values
-        let x1 = 100, y1 = 20, x2 = 300, y2 = 480, m = 100, gas_n = 10000, gas_m = 0.4, gas_r = 0.5, gas_c = 'red', gas_t = 100;
+        let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, gas_n = 10000, 
+            gas_m = 0.4, gas_r = 0.5, gas_c = 'red', gas_t = 100;
 
         gas_t = params.T ?? gas_t;
         gas_n = params.n ?? gas_n;

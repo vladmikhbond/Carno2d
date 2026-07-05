@@ -278,7 +278,7 @@ export default class View
             return;
         }
 
-        let W = plun.x2 - plun.x1 ;
+        let W = 300 // plun.x2 - plun.x1 ;
         let H = plun.realBottom - plun.top; 
         let X = doc.canvas2.width - W - 10;
         let Y = plun.top
@@ -307,7 +307,7 @@ export default class View
            
         // captions
         ctx.fillStyle = 'black';
-        ctx.fillText(`Q+: ${this.space.givenHeat.toPrecision(4)}  Q-: ${this.space.takenHeat.toPrecision(4)} `, 10, 10);
+        ctx.fillText(`Q+: ${this.space.givenHeat.toPrecision(4)}  Q-: ${this.space.takenHeat.toPrecision(4)} `, X, 10);
         ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toPrecision(3)}  T: ${last.t.toPrecision(4)}  S: ${last.s.toPrecision(4)}`+
                      `  A: ${plun.u.toPrecision(4)}  Los: ${plun.loss.toPrecision(4)}`, X, Y - 5);                    
 
@@ -400,21 +400,10 @@ export default class View
 
     hilightCommand(line: string ) 
     {   
-        const area = <HTMLTextAreaElement>document.getElementById("process-script");
+        const area = <HTMLTextAreaElement>document.getElementById("processArea");
         let start = area.value.indexOf(line);
         area.value = area.value.slice(0, start) + '►' +  area.value.slice(start);
     }
-
-    // removeHilights() 
-    // {   
-    //     const area = <HTMLTextAreaElement>document.getElementById("process-script");
-    //     const lines = area.value.split('\n');
-    //     for (let i = 0; i < lines.length; i++) {
-    //         if (lines[i].startsWith('►'))
-    //             lines[i] = lines[i].slice(1);
-    //     }
-    //     area.value = lines.join('\n');
-    // }
 
 
 //#endregion DOM

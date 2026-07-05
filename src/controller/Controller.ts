@@ -31,29 +31,30 @@ export default class Controller
         this.setModelSize();
     }
 
-    addProcessHandlers() {
-        const startProcessButton = <HTMLButtonElement>document.getElementById('start-process-btn');
-        const pauseProcessButton = <HTMLButtonElement>document.getElementById('pause-process-btn');
-        const area = <HTMLTextAreaElement>document.getElementById('process-script');
+    addProcessHandlers() 
+    {
+        const startButton = <HTMLButtonElement>document.getElementById('startButton');
+        const pauseButton = <HTMLButtonElement>document.getElementById('pauseButton');
+        const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
 
-        startProcessButton.addEventListener('click', (e) => {    
+        startButton.addEventListener('click', (e) => {    
             setTimeout(async () => {
-                area.value = area.value.replaceAll('►', '');  
-                pauseProcessButton.innerHTML = '►'; 
-                await this.interpreter.interpret(area.value);
+                processArea.value = processArea.value.replaceAll('►', '');  
+                pauseButton.innerHTML = '►'; 
+                await this.interpreter.interpret(processArea.value);
             }, 100);
 
         }); 
 
-        pauseProcessButton.addEventListener('click', () => {
+        pauseButton.addEventListener('click', () => {
             switch (this.interpreter.process!.procState) {
                 case ProcessState.Pause:
                     this.interpreter.process!.procState = ProcessState.Run;
-                    pauseProcessButton.innerHTML = '■';
+                    pauseButton.innerHTML = '■';
                     break;
                 case ProcessState.Run: 
                     this.interpreter.process!.procState = ProcessState.Pause;
-                    pauseProcessButton.innerHTML = '►';
+                    pauseButton.innerHTML = '►';
                     break;
             }
         });
