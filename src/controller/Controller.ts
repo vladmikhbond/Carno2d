@@ -4,7 +4,8 @@ import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
-import { ProcessInterpreter, ProcessState } from '../process/ProcessInterpreter.js';
+import { ProcessInterpreter} from '../process/ProcessInterpreter.js';
+import { ProcessState } from '../process/Process.js';
 
 
 export default class Controller 
