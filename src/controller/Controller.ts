@@ -41,7 +41,7 @@ export default class Controller
         readyButton.addEventListener('click', async (e) => {
             this.stop();
             setTimeout(async () => {
-                processArea.value = processArea.value.replaceAll('►', '');
+                this.view.removeHilights();
                 this.time = 0;  
                 await this.interpreter.interpret(processArea.value);
             }, 100);

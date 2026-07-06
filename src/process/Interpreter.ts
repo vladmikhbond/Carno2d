@@ -43,10 +43,10 @@ export class Interpreter
         for (let line of lines) {
             if (!line || line.startsWith("//"))
                 continue;
-            this.view.hilightCommand(line); 
+             
             // елементи чергової команди
             let [command, restLine, params] = Interpreter.parse(line);
-
+            this.view.hilightBefore(line);
             switch (command) {
                 case 'load':
                     this.load(restLine.trim());
@@ -61,12 +61,12 @@ export class Interpreter
                 case 'plunger':
                     this.createDefaultPlunger(params);
                     this.createProcess();
-                    await this.process!.calm(300);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
                     if (plunger) {
                         Object.assign(plunger.scales, params);
+                        await this.process!.calm(500);
                     }
                     break;
                 case '+adiabatic':
@@ -121,6 +121,8 @@ export class Interpreter
                     alert(`Wrong command: ${command}`);
                     break;
             }
+            // підсвічування 
+            this.view.hilightAfter();
         }
     }
 

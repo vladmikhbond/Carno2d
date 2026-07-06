@@ -116,7 +116,7 @@ export default class View
     {
         const ctx = this.ctx;
         // device color
-        if (device instanceof Measurer) {
+        if (device instanceof Measurer || device instanceof Heater && device.rate == 1 ) {
             ctx.strokeStyle = 'gray';
             ctx.fillStyle = '#00000011';
         } else {
@@ -300,7 +300,7 @@ export default class View
         let last = meterings[meterings.length - 1];             
 
         // PTSVX graphics 
-        this.ctx2.lineWidth = plun.scales.w;
+        ctx.lineWidth = plun.scales.w;
         if (plun.scales.P > 0) diagram(3, 0, 'red');    // xy = VP
         if (plun.scales.T > 0) diagram(3, 1, 'black');  // xy = VT
         if (plun.scales.S > 0) diagram(4, 2, 'green');  // xy = XS
@@ -398,12 +398,23 @@ export default class View
         el.innerHTML = `T=${time} &nbsp;&nbsp; N=${this.space.N}, &nbsp;&nbsp; strikes=${strikes}%`;
     } 
 
-    hilightCommand(line: string ) 
+    hilightBefore(line: string ) 
     {   
         const area = <HTMLTextAreaElement>document.getElementById("processArea");
         let start = area.value.indexOf(line);
         area.value = area.value.slice(0, start) + '►' +  area.value.slice(start);
     }
+
+    hilightAfter() 
+    {   
+        const area = <HTMLTextAreaElement>document.getElementById("processArea");
+        area.value = area.value.replace('►', '√');
+    }
+    removeHilights() {
+        const area = <HTMLTextAreaElement>document.getElementById("processArea");
+        area.value = area.value.replaceAll('►', '').replaceAll('√', '');
+    }
+    
 
 
 //#endregion DOM
