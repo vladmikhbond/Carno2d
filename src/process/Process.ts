@@ -75,7 +75,6 @@ export default class Process
     }
 
 
-
     //#region adiabatic 
 
     async adiabaticExtention(minMass: number) {
@@ -93,76 +92,9 @@ export default class Process
 
     }
     //#endregion
+ 
     
-    //#region  isothermic 
-    
-    // тиск (маса) зменшується, об'їм зростає, енергія додається, але t = const
-    async isothermicExtention(minMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
-        this.space.addDevice(heater);
-        let initT = this.plunger.measureTemperature();
-        await this.whileAsync(() => this.plunger.m > minMass, () => {
-            const k = this.plunger.velo > 0.2 ? 0.9999 : 0.999;
-            this.plunger.m *= k;
-            let currT = this.plunger.measureTemperature();
-            heater.rate = currT < initT ? 1.001 :  0.999; 
-              
-            heater.warm();  
-        }); 
-        heater.dispose();
-    }
-    
-    async isothermicCompression(maxMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red")
-        this.space.addDevice(heater);
-        let initT = this.plunger.measureTemperature();
-        await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            const k = this.plunger.velo < -0.2 ? 0.9999 : 0.999;
-            this.plunger.m /= 0.999;
-            let currT = this.plunger.measureTemperature();
-            heater.rate = currT < initT ? 1.001 :  0.999;              
-            heater.warm();    
-        }); 
-        heater.dispose();
-    }  
-      
-    //#endregion
-
-    //#region isohoric
-
-    // нагрівання
-    async isohoricExtention(maxMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
-        this.space.addDevice(heater);
-        this.plunger.fixed = true;
-        await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            let k = this.plunger.velo > 0.2 ? 1.001 : 0.999;
-            this.plunger.m /= k;        
-            heater.rate = k**-0.5;
-            heater.warm();
-        }); 
-        this.plunger.fixed = false;
-        heater.dispose();
-
-    }
-    
-    // охолодження
-    async isohoricCompression(mimMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
-        this.space.addDevice(heater);
-        this.plunger.fixed = true;
-        await this.whileAsync(() => this.plunger.m > mimMass, () => {
-            let k = this.plunger.velo < -0.2 ? 1.001 : 0.999;
-            this.plunger.m *= k;
-            heater.rate = k**0.5;
-            heater.warm();
-        }); 
-        this.plunger.fixed = false;
-        heater.dispose();       
-    }
-    //#endregion
-    
-    //#region isobaric
+    //#region isobaric 
 
     async isobaricExtention(maxVolume: number) {
 
@@ -183,7 +115,6 @@ export default class Process
         heater.dispose();
     }
     
-    
     async isobaricCompression(minVolume: number) {
 
         let heater = new Heater(this.plunger.x1 - 5,  this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
@@ -202,6 +133,101 @@ export default class Process
         heater.dispose();
     }      
     //#endregion
+
+
+    //#region  isothermic 
+    
+    async isothermicExtention(minMass: number) {
+        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        this.space.addDevice(heater);
+
+        let initT = this.plunger.measureTemperature();
+        await this.whileAsync(() => this.plunger.m > minMass, () => {
+            const k = this.plunger.velo > 0.1 ? 1 : 0.9995;
+            this.plunger.m *= k;
+            let currT = this.plunger.measureTemperature();  
+            heater.rate = (initT - currT) * 0.001 + 1;
+            heater.warm();  
+
+            // replace real pressure metering with ideal one
+            // let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
+            // this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+            // this.plunger.meterings[this.plunger.meterings.length - 1].t = initT;            
+        }); 
+        heater.dispose();
+    }
+    
+    async isothermicCompression(maxMass: number) {
+        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red")
+        this.space.addDevice(heater);
+        let initT = this.plunger.measureTemperature();
+        await this.whileAsync(() => this.plunger.m < maxMass, () => {
+            const k = this.plunger.velo < -0.1 ? 1 : 0.9995;
+            this.plunger.m /= k;
+            let currT = this.plunger.measureTemperature(); 
+            heater.rate = (initT - currT) * 0.001 + 1;             
+            heater.warm(); 
+
+            // replace real pressure metering with ideal one
+            // let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
+            // this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+            // this.plunger.meterings[this.plunger.meterings.length - 1].t = initT; 
+        }); 
+        heater.dispose();
+    }  
+      
+    //#endregion
+
+    //#region isohoric 
+
+    // охолодження, маса зменшується
+    async isohoricCompression(mimMass: number) {
+        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        this.space.addDevice(heater);
+        const vol = this.plunger.volume
+        await this.whileAsync(() => this.plunger.m > mimMass, () => {
+            // гасіння коливань зміною маси вантажу
+            if (this.plunger.volume > vol) {
+                if (this.plunger.velo < 0) {
+                    this.plunger.m *= 1 + Math.min(0.002, (-this.plunger.velo) ** 0.5)
+                }
+            } else if (this.plunger.volume < vol) {
+                if (this.plunger.velo > 0) {
+                    this.plunger.m *= 1 - Math.min(0.002, this.plunger.velo ** 0.5)
+                }
+            }
+            this.plunger.m *= 0.999;
+            heater.rate = 0.999 ** 0.5 ;
+            heater.warm();
+        }); ;
+        heater.dispose();      
+    }
+
+    // нагрівання, маса збільшується
+    async isohoricExtention(maxMass: number) {
+        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        this.space.addDevice(heater);
+        const vol = this.plunger.volume
+        await this.whileAsync(() => this.plunger.m < maxMass, () => {
+            // гасіння коливань зміною маси вантажу
+            if (this.plunger.volume > vol) {
+                if (this.plunger.velo < 0) {
+                    this.plunger.m *= 1 + Math.min(0.002, (-this.plunger.velo) ** 0.5)
+                }
+            } else if (this.plunger.volume < vol) {
+                if (this.plunger.velo > 0) {
+                    this.plunger.m *= 1 - Math.min(0.002, this.plunger.velo ** 0.5)
+                }
+            }
+            this.plunger.m *= 1.001;
+            heater.rate = 1.001 ** 0.5 ;
+            heater.warm();
+        }); 
+        heater.dispose();
+    }
+
+    //#endregion 
+    
 
     //#region Otto Cicle
 
