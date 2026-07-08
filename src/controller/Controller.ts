@@ -103,6 +103,13 @@ export default class Controller
 
         });
 
+        // Real or Ideal diagram view
+        document.getElementById("prettyBox")!.addEventListener("change", (e: Event) =>
+        {   
+            glo.pretty = (e.target as HTMLInputElement)!.checked;
+        });
+
+
 
         doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
             switch (e.key) {

@@ -28,14 +28,19 @@
     <section>
         Vis <input id="visRange" type="range" min="0", max="6" value="2" title="visibility percentage">
         <span id="visPercentage">10%</span>
+        <label>
+            <input id="prettyBox" type="checkbox" checked style="margin-left: 50px;"> 
+            Pretty
+        </label>
+       
     </section>
         <section> 
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
-title: ISOCHORMIC test
-plunger: m=3000, T=126
-scale:   P=6, T=11, S=0.16, X=2.1, V=3
--isohoric:   m=900
-+isohoric:   m=3000
+title: ADIABATIC test
+plunger: m=3000, T=100
+scale:   P=6, T=13.5, S=0.4, X=2.4
++adiabatic:  m=550
+-adiabatic:  m=3000 
 
          </textarea>
     </section>
@@ -74,7 +79,7 @@ scale:   P=6, T=18, S=0.6, X=2, V=2
 +isothermic:  m=1600
 -isothermic:  m=3000  
 
-title: ISOCHORMIC test
+title: ISOCHORIC test
 plunger: m=3000, T=126
 scale:   P=6, T=11, S=0.16, X=2.1, V=3
 -isohoric:   m=900

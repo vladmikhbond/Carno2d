@@ -79,15 +79,23 @@ export default class Process
 
     async adiabaticExtention(minMass: number) {
         await this.whileAsync(() => this.plunger.m > minMass, () => {
-            const k = this.plunger.velo < -0.2 ? 1.001 : 0.999;
-            this.plunger.m *= k;
+            // гасіння коливань зміною маси вантажу
+            if (this.plunger.velo < 0) {
+                this.plunger.m *= 1 + Math.min(0.001, (-this.plunger.velo) ** 0.5)
+            }
+
+            this.plunger.m *= 0.998;
         }); 
     }
 
     async adiabaticCompression(maxMass: number) {
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            const k = this.plunger.velo > 0.2 ? 1.001 : 0.999;
-            this.plunger.m /= k;
+            // гасіння коливань зміною маси вантажу
+            if (this.plunger.velo > 0) {
+                this.plunger.m *= 1 - Math.min(0.001, this.plunger.velo ** 0.5)
+            }
+
+            this.plunger.m *= 1.002;
         }); 
 
     }
@@ -108,9 +116,11 @@ export default class Process
             heater.warm();
              
             // replace real pressure metering with ideal one
-            let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
-            this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
-            this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+            if (glo.pretty) {
+                let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+            }
         }); 
         heater.dispose();
     }
@@ -126,9 +136,11 @@ export default class Process
             heater.warm();
 
             // replace real pressure  metering with ideal one
-            let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
-            this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
-            this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
+            if (glo.pretty) {
+                let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
+            }
         }); 
         heater.dispose();
     }      
@@ -150,9 +162,11 @@ export default class Process
             heater.warm();  
 
             // replace real pressure metering with ideal one
-            // let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
-            // this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
-            // this.plunger.meterings[this.plunger.meterings.length - 1].t = initT;            
+            if (glo.pretty) {
+                let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = initT;            
+            }
         }); 
         heater.dispose();
     }
@@ -169,9 +183,11 @@ export default class Process
             heater.warm(); 
 
             // replace real pressure metering with ideal one
-            // let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
-            // this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
-            // this.plunger.meterings[this.plunger.meterings.length - 1].t = initT; 
+            if (glo.pretty) {
+                let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = initT; 
+            }
         }); 
         heater.dispose();
     }  
@@ -199,7 +215,15 @@ export default class Process
             this.plunger.m *= 0.999;
             heater.rate = 0.999 ** 0.5 ;
             heater.warm();
-        }); ;
+
+            // replace real pressure metering with ideal one
+            if (glo.pretty) {
+                const last = this.plunger.meterings.length - 1;
+                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
+                this.plunger.meterings[last].p = pressure;
+                this.plunger.meterings[last].v = vol;
+            }
+        }); 
         heater.dispose();      
     }
 
@@ -222,6 +246,14 @@ export default class Process
             this.plunger.m *= 1.001;
             heater.rate = 1.001 ** 0.5 ;
             heater.warm();
+            
+            // replace real pressure metering with ideal one
+            if (glo.pretty) {
+                const last = this.plunger.meterings.length - 1;
+                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
+                this.plunger.meterings[last].p = pressure;
+                this.plunger.meterings[last].v = vol;
+            }
         }); 
         heater.dispose();
     }
