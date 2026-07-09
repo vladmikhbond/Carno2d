@@ -167,12 +167,12 @@ export class Plunger extends Line
       // сумарна теплота всіх нагрівачів
       let q = this.space!.givenHeat - this.space!.takenHeat; 
       
-      let de = (q - this.lastMetering.q) / this.t;
-      if (!de) 
-         de = 0;
-      let e = this.lastMetering.s + de;
+      let ds = (q - this.lastMetering.q) / this.t;
+      if (!ds) 
+         ds = 0;
+      let s = this.lastMetering.s + ds;
 
-      this.lastMetering = {n, p, v, t: this.t, u, q, s: e};
+      this.lastMetering = {n, p, v, t: this.t, u, q, s: s};
 
       this.meterings.push(this.lastMetering);
    }

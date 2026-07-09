@@ -41,9 +41,9 @@ export default class Process
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
                 try {
-                    if (this.procState == ProcessState.Run) {
-                        act();    
+                    if (this.procState == ProcessState.Run) {   
                         this.controller.step();
+                        act(); 
 
                         if (!condition()) {                            
                             clearInterval(timer);
@@ -103,6 +103,7 @@ export default class Process
  
     
     //#region isobaric 
+    
 
     async isobaricExtention(maxVolume: number) {
 
@@ -110,11 +111,22 @@ export default class Process
         this.space.addDevice(heater);
         
         let pressure = this.plunger.pressure;  // replace real
+        
+        let minVolume = this.space.plunger.volume;
 
         await this.whileAsync(() => this.plunger.volume < maxVolume, () => {
-            heater.rate = this.plunger.velo < -0.1 ? 1 : 1.0001;
+
+            let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
+            let eps = 0.001;
+            if (part < 0.1 || part > 0.9) 
+               eps /= 4;
+            else (part < 0.2 || part > 0.8)              
+               eps /= 2;
+
+            heater.rate = 1 + (this.plunger.velo < -0.1 ? eps/2 : eps);
+
             heater.warm();
-             
+
             // replace real pressure metering with ideal one
             if (glo.pretty) {
                 let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
@@ -131,8 +143,19 @@ export default class Process
         this.space.addDevice(heater);
 
         let pressure = this.plunger.pressure;  // replace real
+        let maxVolume = this.space.plunger.volume;
+
         await this.whileAsync(() => this.plunger.volume > minVolume, () => {
-            heater.rate = this.plunger.velo > 0.1 ? 1 : 0.9999;
+
+            let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
+            let eps = 0.001;
+            if (part < 0.1 || part > 0.9) {
+               eps /= 4;
+            } else (part < 0.2 || part > 0.8) {
+               eps /= 2;
+            }
+            heater.rate = 1 - (this.plunger.velo > 0.1 ? eps/2 : eps);
+
             heater.warm();
 
             // replace real pressure  metering with ideal one
@@ -213,8 +236,10 @@ export default class Process
                 }
             }
             this.plunger.m *= 0.999;
-            heater.rate = 0.999 ** 0.5 ;
+            heater.rate = 0.999 ;
             heater.warm();
+
+            
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -244,7 +269,8 @@ export default class Process
                 }
             }
             this.plunger.m *= 1.001;
-            heater.rate = 1.001 ** 0.5 ;
+
+            heater.rate = 1.001;
             heater.warm();
             
             // replace real pressure metering with ideal one
