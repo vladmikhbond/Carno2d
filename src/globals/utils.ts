@@ -51,3 +51,19 @@ function obj2str(obj: object): string
     }
     return str;
 }
+
+// Кусочно-линійна функція 
+export function lin(x: number, xs: number[], ys: number[]): number
+{
+    let i = 0;
+    for (; i < xs.length; i++) {
+        if (x < xs[i]) break; 
+    }
+    if (i == 0) return ys[0]
+    if (i == xs.length ) return ys[xs.length-1]
+    let x1 = xs[i-1], x2 = xs[i], y1 = ys[i-1], y2 = ys[i];
+   
+    return  y1 + (y2 - y1) * (x - x1) / (x2 - x1)
+}
+
+// console.log(lin(0.4, [0.2, 0.4, 0.8], [1.2, 1.4, 1.8,]))

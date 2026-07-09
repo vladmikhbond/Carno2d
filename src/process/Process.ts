@@ -5,6 +5,8 @@ import {Plunger} from '../model/Plunger.js';
 import View from '../view/View.js';
 import Controller from '../controller/Controller.js';
 import { glo } from '../globals/globals.js';
+import { lin } from '../globals/utils.js';
+
 
 
 export enum ProcessState {
@@ -118,10 +120,8 @@ export default class Process
 
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
             let eps = 0.001;
-            if (part < 0.1 || part > 0.9) 
-               eps /= 4;
-            else (part < 0.2 || part > 0.8)              
-               eps /= 2;
+            eps *= lin(part, [0,   0.2, 0.3, 0.5, 0.7, 0.8,  1 ], 
+                             [1/8, 1/4, 1/2,  1,  1/2, 1/4, 1/8]);
 
             heater.rate = 1 + (this.plunger.velo < -0.1 ? eps/2 : eps);
 
@@ -149,11 +149,8 @@ export default class Process
 
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
             let eps = 0.001;
-            if (part < 0.1 || part > 0.9) {
-               eps /= 4;
-            } else (part < 0.2 || part > 0.8) {
-               eps /= 2;
-            }
+            eps *= lin(part, [0,   0.2, 0.3, 0.5, 0.7, 0.8,  1 ], 
+                             [1/8, 1/4, 1/2,  1,  1/2, 1/4, 1/8]);
             heater.rate = 1 - (this.plunger.velo > 0.1 ? eps/2 : eps);
 
             heater.warm();
