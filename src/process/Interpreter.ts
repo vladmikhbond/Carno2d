@@ -61,12 +61,12 @@ export class Interpreter
                 case 'plunger':
                     this.createDefaultPlunger(params);
                     this.createProcess();
+                    await this.process!.calm(500);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
                     if (plunger) {
                         Object.assign(plunger.scales, params);
-                        await this.process!.calm(500);
                     }
                     break;
                 case '+adiabatic':

@@ -77,6 +77,26 @@ export default class Process
     }
 
 
+    // async calm(balanceTime = 100) {
+    //     let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+    //     this.space.addDevice(heater);
+    //     let stopStep = this.controller.time + balanceTime;
+    //     const vol = this.plunger.volume
+    //     await this.whileAsync(() => this.controller.time < stopStep, () => {
+    //         // гасіння коливань зміною маси вантажу
+    //         // this.plunger.m *= 1 - 0.0025 * Math.min(0.1, this.plunger.velo);
+
+    //         heater.rate = 1 + 0.0025 * Math.min(0.1, this.plunger.velo);                      
+    //         heater.warm();
+
+    //         this.controller.step();          
+    //     }); 
+    //     heater.dispose(); 
+    //     this.plunger.clearMeterings();
+    // }
+
+   
+
     //#region adiabatic 
 
     async adiabaticExtention(minMass: number) {
@@ -151,6 +171,7 @@ export default class Process
             let eps = 0.001;
             eps *= lin(part, [0,   0.2, 0.3, 0.5, 0.7, 0.8,  1 ], 
                              [1/8, 1/4, 1/2,  1,  1/2, 1/4, 1/8]);
+                             
             heater.rate = 1 - (this.plunger.velo > 0.1 ? eps/2 : eps);
 
             heater.warm();
@@ -347,9 +368,9 @@ export default class Process
         this.plunger.withFriction = false;
 
         // close bottom anime
-        await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
+        await this.whileAsync(() => line.x1 >= x1, () => { line.move(-10, 0) } );
 
-        await this.calm();
+        // await this.calm();
     }
 
     //#endregion Otto Cicle
