@@ -59,9 +59,10 @@ export class Interpreter
                     document.getElementById("info")!.innerHTML = restLine;
                     break;
                 case 'plunger':
-                    // this.createPlunger(params);
+                    this.createPlunger(params);
                     this.createProcess();
-                    await this.process?.createPlunger(params);
+                    if (this.process?.space.N)
+                        this.process?.calm(500);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
@@ -70,50 +71,49 @@ export class Interpreter
                     }
                     break;
                 case '+adiabatic':
-                    await this.process!.adiabaticExtention(params.m);
+                    await this.process?.adiabaticExtention(params.m);
                     break;
                 case '-adiabatic':
-                    await this.process!.adiabaticCompression(params.m);
+                    await this.process?.adiabaticCompression(params.m);
                     break;
 
                 case '+isobaric':
-                    await this.process!.isobaricExtention(params.v);
+                    await this.process?.isobaricExtention(params.v);
                     break;
                 case '-isobaric':
-                    await this.process!.isobaricCompression(params.v);
+                    await this.process?.isobaricCompression(params.v);
                     break;
 
                 case '+isothermic':
-                    await this.process!.isothermicExtention(params.m);
+                    await this.process?.isothermicExtention(params.m);
                     break;
                 case '-isothermic':
-                    await this.process!.isothermicCompression(params.m);
+                    await this.process?.isothermicCompression(params.m);
                     break;  
 
                 case '+isohoric':
-                    await this.process!.isohoricExtention(params.m);
+                    await this.process?.isohoricExtention(params.m);
                     break;
                 case '-isohoric':
-                    await this.process!.isohoricCompression(params.m);
+                    await this.process?.isohoricCompression(params.m);
                     break;
 
                 //#region Цикл Отто (бензиновий)
 
                 case 'intake':
-                    this.createProcess();
-                    await this.process!.intake(10000, params.v);  // n = 10 000
+                    await this.process?.intake(10000, params.v);  // n = 10 000
                     break;
                 case 'compression':
-                    await this.process!.compression(params.m, params.v);
+                    await this.process?.compression(params.m, params.v);
                     break;
                 case 'ignition':
-                    await this.process!.ignition(params.rate, params.t);
+                    await this.process?.ignition(params.rate, params.t);
                     break;
                 case 'expansion':
-                    await this.process!.expansion(params.m, params.v);
+                    await this.process?.expansion(params.m, params.v);
                     break;
                 case 'exhaust':
-                    await this.process!.exhaust(params.m, params.v);
+                    await this.process?.exhaust(params.m, params.v);
                     break;
                 //#endregion
 
@@ -130,6 +130,34 @@ export class Interpreter
         this.controller!.stop();
         this.process = new Process(this.controller);
         return this.process;
+    }
+
+    // Wait for the three params: t - temperature, m - massa, n - number of balls 
+    //
+    async createPlunger(params: any) {
+        this.space.clear();
+
+        // default values
+        let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
+            gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
+
+        t = params.t ?? t;
+        n = params.n ?? n;
+        m = params.m ?? m;
+
+        const y = n * glo.BOLTZ * t / (m * glo.g);
+        // add plunger
+        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
+        plun.m = m;
+        plun.move(0, -y + Plunger.GAP);
+        // add gass
+        if (n) {
+            this.space.addBomb(new Bomb(
+                n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
+            await this.process!.calm(500);
+        } else {
+             plun.move(0, -Plunger.GAP);
+        }
     }
 
 

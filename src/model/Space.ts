@@ -80,6 +80,7 @@ export default class Space
             this.addBall(ball);
         }
         this.bombs.push(b);
+        this.N += b.n;
     }
 
     balls() { 

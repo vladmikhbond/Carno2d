@@ -38,7 +38,6 @@ export default class Process
     async whileAsync(
         condition: () => boolean, 
         act = () => {},
-        msec = 10 
     ) {
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
@@ -58,7 +57,7 @@ export default class Process
                     clearInterval(timer);
                     rej(err);
                 }
-            }, msec);   // former globus.STEP_PERIOD
+            }, glo.msec);
         });
     }
 
@@ -75,34 +74,6 @@ export default class Process
         this.plunger.withFriction = false;
         this.plunger.clearMeterings();
     }
-
-    async createPlunger(params: any) {
-        this.space.clear();
-
-        // default values
-        let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
-            gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
-
-        t = params.t ?? t;
-        n = params.n ?? n;
-        m = params.m ?? m;
-
-        const y = n * glo.BOLTZ * t / (m * glo.g);
-        // add plunger
-        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
-        plun.m = m;
-        plun.move(0, -y + Plunger.GAP);
-        // add gass
-        if (n) {
-            this.space.addBomb(new Bomb(
-                n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
-            await this.calm(500);
-        } else {
-             plun.move(0, -Plunger.GAP);
-        }
-    }
-    
-
 
 
     //#region adiabatic 
