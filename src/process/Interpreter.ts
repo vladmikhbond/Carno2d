@@ -59,9 +59,9 @@ export class Interpreter
                     document.getElementById("info")!.innerHTML = restLine;
                     break;
                 case 'plunger':
-                    this.createDefaultPlunger(params);
+                    // this.createPlunger(params);
                     this.createProcess();
-                    await this.process!.calm(500);
+                    await this.process?.createPlunger(params);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
@@ -164,27 +164,30 @@ export class Interpreter
     }
 
 
-    private createDefaultPlunger(params: any) {
-        this.space.clear();
+    // private createPlunger(params: any) {
+    //     this.space.clear();
 
-        // default values
-        let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, gas_n = 10000, 
-            gas_m = 0.4, gas_r = 0.5, gas_c = 'red', gas_t = 100;
+    //     // default values
+    //     let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
+    //         gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
 
-        gas_t = params.T ?? gas_t;
-        gas_n = params.n ?? gas_n;
+    //     t = params.t ?? t;
+    //     n = params.n ?? n;
+    //     m = params.m ?? m;
 
-        m = params.m ?? m;
-
-        const y = gas_n * glo.BOLTZ * gas_t / (m * glo.g);
-        // add plunger
-        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
-        plun.m = m;
-        plun.move(0, -y + Plunger.GAP);
-        // add gass
-        this.space.addBomb(
-            new Bomb(gas_n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, gas_t, gas_r, gas_m, gas_c));        
-    }
+    //     const y = n * glo.BOLTZ * t / (m * glo.g);
+    //     // add plunger
+    //     let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
+    //     plun.m = m;
+    //     plun.move(0, -y + Plunger.GAP);
+    //     // add gass
+    //     if (n) {
+    //         this.space.addBomb(new Bomb(
+    //             n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));        
+    //     } else {
+    //          plun.move(0, -Plunger.GAP);
+    //     }
+    // }
     
 
 }

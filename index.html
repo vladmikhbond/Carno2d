@@ -37,7 +37,7 @@
         <section> 
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
 title:         Цикл Отто (бензиновий)
-load: otto_plunger
+plunger: m=100, n=0
 scale:         P=0.06, T=0.4, S=0.13, V=1.2, X=0.05
 intake:                v=90000
 compression: m=8500,   v=12000
@@ -62,17 +62,7 @@ exhaust:     m=1000,   v=8000
         <button id="loadSceneButton" class="scene-btn" title="Import scene">⬆</button>
     </div>
 
-<!-- =========================================================================== -->
-    <textarea id="repoArea" spellcheck="false"  rows="30" >
-com_plunger: '{"bombs":[{"n":10000,"x1":40,"y1":340,"x2":240,"y2":480,"vx":0,"vy":0,"t":126,"r":0.5,"m":0.4,"c":"red"}],"lines":[{"x1":40,"y1":480,"x2":240,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":40,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":240,"y2":20,"c":"blue"},{"x1":240,"y1":20,"x2":240,"y2":480,"c":"blue"}],"plungers":[{"x1":40,"y1":20,"x2":240,"y2":480,"v":28000,"m":3000}],"devices":[],"glo":{"g":0.1,"gBall":0,"cell":20,"viz":10,"quant":5,"metr":1}}',
 
-        
-otto_plunger: '{"bombs":[],"lines":[{"x1":40,"y1":480,"x2":240,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":40,"y2":480,"c":"blue"},{"x1":40,"y1":20,"x2":240,"y2":20,"c":"blue"},{"x1":240,"y1":20,"x2":240,"y2":480,"c":"blue"}],"plungers":[{"x1":40,"y1":20,"x2":240,"y2":480,"v":8000,"m":100}],"devices":[],"glo":{"g":0.1,"gBall":0,"cell":20,"viz":10,"quant":5,"metr":1}}',
-
-===============================================
-load: Norm
-run: 
-    </textarea>  
     <script type="module" src="main.js"></script>
 </main>
 </body>

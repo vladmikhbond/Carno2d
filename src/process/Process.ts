@@ -63,8 +63,8 @@ export default class Process
     }
 
     
-    async calm(balanceTime = 100) {
-        let stopStep = this.controller.time + balanceTime;
+    async calm(calmTime = 100) {
+        let stopStep = this.controller.time + calmTime;
         this.plunger.withFriction = true;
         await this.whileAsync(() => this.controller.time < stopStep, () => {
             this.controller.step();
@@ -76,26 +76,34 @@ export default class Process
         this.plunger.clearMeterings();
     }
 
+    async createPlunger(params: any) {
+        this.space.clear();
 
-    // async calm(balanceTime = 100) {
-    //     let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
-    //     this.space.addDevice(heater);
-    //     let stopStep = this.controller.time + balanceTime;
-    //     const vol = this.plunger.volume
-    //     await this.whileAsync(() => this.controller.time < stopStep, () => {
-    //         // гасіння коливань зміною маси вантажу
-    //         // this.plunger.m *= 1 - 0.0025 * Math.min(0.1, this.plunger.velo);
+        // default values
+        let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
+            gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
 
-    //         heater.rate = 1 + 0.0025 * Math.min(0.1, this.plunger.velo);                      
-    //         heater.warm();
+        t = params.t ?? t;
+        n = params.n ?? n;
+        m = params.m ?? m;
 
-    //         this.controller.step();          
-    //     }); 
-    //     heater.dispose(); 
-    //     this.plunger.clearMeterings();
-    // }
+        const y = n * glo.BOLTZ * t / (m * glo.g);
+        // add plunger
+        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
+        plun.m = m;
+        plun.move(0, -y + Plunger.GAP);
+        // add gass
+        if (n) {
+            this.space.addBomb(new Bomb(
+                n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
+            await this.calm(500);
+        } else {
+             plun.move(0, -Plunger.GAP);
+        }
+    }
+    
 
-   
+
 
     //#region adiabatic 
 
