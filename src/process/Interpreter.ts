@@ -121,7 +121,7 @@ export class Interpreter
                     alert(`Wrong command: ${command}`);
                     break;
             }
-            // підсвічування 
+            // маркування виконаних команд
             this.view.hilightAfter();
         }
     }
