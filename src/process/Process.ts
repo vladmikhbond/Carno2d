@@ -22,7 +22,7 @@ export default class Process
     controller: Controller;
     plunger: Plunger; 
     view: View;
-    procState = ProcessState.Pause;    // 0-pause,   1-run,   2-stop,
+    procState = ProcessState.Pause;    // 0-pause,   1-run,   2-abort,
 
     constructor(controller: Controller) 
     {    
@@ -126,7 +126,7 @@ export default class Process
 
             heater.warm();
 
-            // replace real pressure metering with ideal one
+            // replace real temperature metering with ideal one
             if (glo.pretty) {
                 let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
                 this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
@@ -155,7 +155,7 @@ export default class Process
 
             heater.warm();
 
-            // replace real pressure  metering with ideal one
+            // replace real temperature  metering with ideal one
             if (glo.pretty) {
                 let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
                 this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;

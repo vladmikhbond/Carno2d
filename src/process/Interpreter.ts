@@ -9,6 +9,7 @@ import Space from '../model/Space.js';
 import View from '../view/View.js';
 import {str2obj} from "../globals/utils.js"
 
+// Інтерпретатор команд
 
 export class Interpreter 
 {
@@ -56,7 +57,7 @@ export class Interpreter
                     break;
 
                 case 'title':
-                    document.getElementById("info")!.innerHTML = restLine;
+                    document.getElementById("title")!.innerHTML = restLine;
                     break;
                 case 'plunger':
                     this.createPlunger(params);

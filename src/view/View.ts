@@ -286,13 +286,15 @@ export default class View
         const ctx = this.ctx2;
 
         // background
-        ctx.fillStyle = '#0000000A';
-        ctx.fillRect(X, Y, W, H);
+        // ctx.fillStyle = '#0000000A';
+        // ctx.fillRect(X, Y, W, H);
 
         // scales        
         [plun.scales.P, plun.scales.T, plun.scales.S, plun.scales.V, plun.scales.X].forEach((v, i) => {
             ctx.fillStyle = ['red', 'black', 'green', 'gray', 'gray'][i];
-            ctx.fillText(`${'PTSVX'[i]} = ${v.toPrecision(3)}`, X + W - 50, Y + 10 * (i + 1));
+            let x = X + W - 50;
+            let y = Y + 10 * (i + 1);
+            ctx.fillText(`${'PTSVX'[i]} = ${v.toPrecision(3)}`, x, y);
         })
         
         let meterings = plun.meterings.slice(1);
@@ -322,10 +324,6 @@ export default class View
             return [p, t, s, v, x];    
         }
 
-        function drawMarker(ctx: CanvasRenderingContext2D, x: number, y: number) {
-            ctx.strokeRect(x - 2, y - 2, 5, 5);
-            ctx.stroke();
-        }
 
         function diagram(xIdx: number, yIdx: number, color: string) {
             ctx.strokeStyle = color;
@@ -337,7 +335,11 @@ export default class View
                 ctx.lineTo(ptsvx[xIdx], ptsvx[yIdx]);
             }
             ptsvx = getScaled(last);
-            drawMarker(ctx, ptsvx[xIdx], ptsvx[yIdx]);                
+            // draw marker
+            let x = ptsvx[xIdx], y = ptsvx[yIdx];
+            ctx.strokeRect(x - 2, y - 2, 5, 5);
+
+            ctx.stroke();
         }    
     }
 

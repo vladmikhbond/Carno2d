@@ -6,6 +6,8 @@ import {Plunger} from './Plunger.js';
 
 type StrikeData = {p1: Point, p2: Point, v: Point, prevLine: Line | null };
 
+// 
+
 export default class Ball {
     private static id = 0;
 
@@ -46,7 +48,7 @@ export default class Ball {
     step() {
         
         if (this.space == null)
-           throw new Error('Ball is out of a box.');
+           throw new Error('Ball is out of the space.');
 
     
         // зміна швидкості при пружному зіткненні з іншими кулями

@@ -8,6 +8,7 @@ export class BallCont {
 
     private arr: Ball[][][];  // [r][c][]
     private space: Space;
+    private straightPassage = true;   // Напрямок проходження (прямий або зворотний)
 
     constructor(space: Space) 
     {
@@ -37,12 +38,11 @@ export class BallCont {
         return this.arr[row][col];
     }
 
-    // Проходить по всім елементам, що в контейнері.
-    // Напрямок проходження (прямий або зворотний) залежить від мометну часу.
+    // Проходить по всім кулям, що в контейнері.
     //
     *values() {
         let arr = this.arr;
-        if (this.space.time % 2) {
+        if (this.straightPassage) {
             for(let r = 0; r < arr.length; r++) {
                 for(let c = 0; c < arr[0].length; c++) {
                     for(let i = 0; i < arr[r][c].length; i++) {
@@ -59,6 +59,7 @@ export class BallCont {
                 }
             }
         }
+        this.straightPassage = !this.straightPassage; 
     }
 
     
