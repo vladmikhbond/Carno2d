@@ -63,7 +63,7 @@ export class Interpreter
                     this.createPlunger(params);
                     this.createProcess();
                     if (this.process?.space.N)
-                        this.process?.calm(500);
+                        await this.process?.calm(500);
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;

@@ -284,6 +284,7 @@ export default class View
         let Y = plun.top
         
         const ctx = this.ctx2;
+        ctx.font = "normal 12px Arial";
 
         // background
         // ctx.fillStyle = '#0000000A';
@@ -292,8 +293,8 @@ export default class View
         // scales        
         [plun.scales.P, plun.scales.T, plun.scales.S, plun.scales.V, plun.scales.X].forEach((v, i) => {
             ctx.fillStyle = ['red', 'black', 'green', 'gray', 'gray'][i];
-            let x = X + W - 50;
-            let y = Y + 10 * (i + 1);
+            let x = X + W - 60;
+            let y = Y + 13 * (i + 1);
             ctx.fillText(`${'PTSVX'[i]} = ${v.toPrecision(3)}`, x, y);
         })
         
@@ -309,9 +310,10 @@ export default class View
            
         // captions
         ctx.fillStyle = 'black';
-        ctx.fillText(`Q+: ${this.space.givenHeat.toPrecision(4)}  Q-: ${this.space.takenHeat.toPrecision(4)} `, X, 10);
-        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toPrecision(3)}  T: ${last.t.toPrecision(4)}  S: ${last.s.toPrecision(4)}`+
-                     `  A: ${plun.u.toPrecision(4)}  Los: ${plun.loss.toPrecision(4)}`, X, Y - 5);                    
+        ctx.fillText(`Q+: ${this.space.givenHeat.toPrecision(4)}  Q-: ${this.space.takenHeat.toPrecision(4)}  ` +
+                     `A: ${plun.u.toPrecision(4)}  Los: ${plun.loss.toPrecision(4)}`, X, 14);
+        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toPrecision(3)}  T: ${last.t.toPrecision(4)}  S: ${last.s.toPrecision(4)}`, 
+                      X, 28);                    
 
         //------------inner functions -----------------
         function getScaled(metering: PlungerMetering) {
