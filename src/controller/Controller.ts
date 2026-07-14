@@ -1,11 +1,13 @@
 import {glo, doc} from '../globals/globals.js';
 import Space from '../model/Space.js';
 import View from '../view/View.js';
+import {ptsvFromCoords} from '../view/View.js';
 
 import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
 import { Interpreter} from '../process/Interpreter.js';
 import { ProcessState } from '../process/Process.js';
+
 
 
 export default class Controller 
@@ -149,7 +151,13 @@ export default class Controller
             doc.canvas.focus({focusVisible: true})
         });
 
+        doc.canvas.addEventListener("mousemove", (e: MouseEvent) => {
+            this.view.showVauesUnderMouse(this.space.plunger, e.offsetX, e.offsetY);
+        });
+
     } 
+
+
 
     addDataHandlers() 
     {
@@ -199,5 +207,5 @@ export default class Controller
         }, 1);
     }
 
-
 }
+

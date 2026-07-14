@@ -49,12 +49,12 @@ export class Interpreter
             let [command, restLine, params] = Interpreter.parse(line);
             this.view.hilightBefore(line);
             switch (command) {
-                case 'load':
-                    this.load(restLine.trim());
-                    break;
-                case 'run':
-                    await this.run(params);
-                    break;
+                // case 'load':
+                //     this.load(restLine.trim());
+                //     break;
+                // case 'run':
+                //     await this.run(params);
+                //     break;
 
                 case 'title':
                     document.getElementById("title")!.innerHTML = restLine;

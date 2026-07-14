@@ -15,7 +15,6 @@ export default class View
     ctx: CanvasRenderingContext2D;
     ctx2: CanvasRenderingContext2D;
 
-
     viz = 10           // малювати кожну viz-ту частку
 
     constructor(space: Space) {
@@ -153,11 +152,11 @@ export default class View
         this.ctx2.clearRect(0, 0, doc.canvas2.width, doc.canvas2.height);
 
         // all measurers  
-        for (const device of this.space.devices()) {
-            if (device instanceof Measurer) {
-                this.drawDeviceMeters(device);
-            }
-        }
+        // for (const device of this.space.devices()) {
+        //     if (device instanceof Measurer) {
+        //         this.drawDeviceMeters(device);
+        //     }
+        // }
         // the 1-st plunger if exists
         let plunger = this.space.plungers[0];
         if (plunger) {
@@ -278,13 +277,9 @@ export default class View
             return;
         }
 
-        let W = 300 // plun.x2 - plun.x1 ;
-        let H = plun.realBottom - plun.top; 
-        let X = doc.canvas2.width - W - 10;
-        let Y = plun.top
-        
         const ctx = this.ctx2;
         ctx.font = "normal 12px Arial";
+        const [X, Y, W, H] = xywh(plun);
 
         // background
         // ctx.fillStyle = '#0000000A';
@@ -295,14 +290,14 @@ export default class View
             ctx.fillStyle = ['red', 'black', 'green', 'gray', 'gray'][i];
             let x = X + W - 60;
             let y = Y + 13 * (i + 1);
-            ctx.fillText(`${'PTSVX'[i]} = ${v.toPrecision(3)}`, x, y);
+            ctx.fillText(`${'PTSVX'[i]} = ${v.toFixed(1)}`, x, y);
         })
         
         let meterings = plun.meterings.slice(1);
         let first = meterings[0];
         let last = meterings[meterings.length - 1];             
 
-        // PTSVX graphics 
+        // PTSVX diagrams 
         ctx.lineWidth = plun.scales.w;
         if (plun.scales.P > 0) diagram(3, 0, 'red');    // xy = VP
         if (plun.scales.T > 0) diagram(3, 1, 'black');  // xy = VT
@@ -310,9 +305,9 @@ export default class View
            
         // captions
         ctx.fillStyle = 'black';
-        ctx.fillText(`Q+: ${this.space.givenHeat.toPrecision(4)}  Q-: ${this.space.takenHeat.toPrecision(4)}  ` +
-                     `A: ${plun.u.toPrecision(4)}  Los: ${plun.loss.toPrecision(4)}`, X, 14);
-        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toPrecision(3)}  T: ${last.t.toPrecision(4)}  S: ${last.s.toPrecision(4)}`, 
+        ctx.fillText(`Q+: ${this.space.givenHeat.toFixed(1)}  Q-: ${this.space.takenHeat.toFixed(1)}  ` +
+                     `A: ${plun.u.toFixed(1)}  Los: ${plun.loss.toFixed(1)}`, X, 14);
+        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toFixed(1)}  T: ${last.t.toFixed(1)}  S: ${last.s.toFixed(1)}`, 
                       X, 28);                    
 
         //------------inner functions -----------------
@@ -345,9 +340,18 @@ export default class View
         }    
     }
 
+    showVauesUnderMouse(plun: Plunger, x: number, y: number) {
+        const [p, t, s, v] = ptsvFromCoords(plun, x, y);
+        const [X, Y, W, H] = xywh(plun);
+        const line = `V: ${v.toFixed(0)}  P: ${p.toFixed(1)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
+        const width = this.ctx2.measureText(line).width + 20;
+        this.ctx2.clearRect(X, 28, width, 14);
+        this.ctx2.fillText(line, X, 42);    
+    }
+
     //#endregion Canvas2
 
-//#region Gray Zone
+    //#region Gray Zone
 
     drawGrayRect(x1: number, y1: number, x2: number, y2: number,) {
         const ctx = this.ctx;
@@ -418,9 +422,32 @@ export default class View
         const area = <HTMLTextAreaElement>document.getElementById("processArea");
         area.value = area.value.replaceAll('►', '').replaceAll('√', '');
     }
-    
-
 
 //#endregion DOM
 
 }
+
+//#region auxilary funcs
+
+export function ptsvFromCoords(plun: Plunger, x: number, y: number ) 
+{
+    const [X, Y, W, H] = xywh(plun);
+
+    let v = (x - X) / plun.scales.V * H;
+    let p = (Y + H - y) / plun.scales.P / H * 10
+    let t = (Y + H - y) / plun.scales.T / H * 3000
+    let s = (Y + H/2 - y) / plun.scales.S / H * 300
+    let x_ = (x - X) / plun.scales.X * 300 * W;
+
+    return [p, t, s, v];
+}
+
+function xywh(plun:Plunger) {
+    let x = plun.x2 + 40;
+    let y = plun.top;
+    let w = doc.canvas2.width - plun.x2 - 40;
+    let h = plun.realBottom - plun.top; 
+    return [x, y, w, h];
+}
+
+//#endregion auxilary funcs
