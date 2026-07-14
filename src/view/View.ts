@@ -341,8 +341,8 @@ export default class View
     }
 
     showVauesUnderMouse(plun: Plunger, x: number, y: number) {
-        const [p, t, s, v] = ptsvFromCoords(plun, x, y);
-        const [X, Y, W, H] = xywh(plun);
+        const [p, t, s, v] = ptsvUnderMouse(plun, x, y);
+        const [X, _] = xywh(plun);
         const line = `V: ${v.toFixed(0)}  P: ${p.toFixed(1)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
         const width = this.ctx2.measureText(line).width + 20;
         this.ctx2.clearRect(X, 28, width, 14);
@@ -429,7 +429,7 @@ export default class View
 
 //#region auxilary funcs
 
-export function ptsvFromCoords(plun: Plunger, x: number, y: number ) 
+function ptsvUnderMouse(plun: Plunger, x: number, y: number ) 
 {
     const [X, Y, W, H] = xywh(plun);
 

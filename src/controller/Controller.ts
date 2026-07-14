@@ -1,7 +1,6 @@
 import {glo, doc} from '../globals/globals.js';
 import Space from '../model/Space.js';
 import View from '../view/View.js';
-import {ptsvFromCoords} from '../view/View.js';
 
 import { getSizeParams} from './params.js';
 import Repo from '../data/Repo.js';
