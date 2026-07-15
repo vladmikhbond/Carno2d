@@ -26,16 +26,21 @@
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
     <section>
-        Vis <input id="visRange" type="range" min="0", max="6" value="2" title="visibility percentage">
-        <span id="visPercentage">10%</span>
         <label>
-            <input id="prettyBox" type="checkbox" style="margin-left: 50px;"> 
-            Pretty
+            Vis <span id="visPercentage">10%</span>
+            <input id="visRange" type="range" min="0", max="6" value="2" title="visibility percentage">
         </label>
-        Spe <input id="speedRange" type="range" min="0", max="2" value="2" title="speed of time">
-
+        <label>          
+            Pretty
+            <input id="prettyBox" type="checkbox" > 
+        </label>
+        <label>
+            Speed 
+            <input id="speedRange" type="range" min="0", max="2" value="2" title="Speed of time">
+        </label>
     </section>
-        <section> 
+        
+    <section> 
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
 title:         Цикл Отто (бензиновий)
 plunger: m=100, n=0

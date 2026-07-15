@@ -23,7 +23,6 @@ button {
 
 input[type="checkbox"] {
     background-color: rgb(42, 111, 113);
-    
 }
 
 input[type="text"] {
@@ -35,6 +34,9 @@ input[type="range"] {
     width: 120px;
 }
 
+label {
+    margin-right: 30px;
+}
 select {
     width: 120px;
     color: white;
@@ -65,7 +67,7 @@ section {
 #processArea {
     width: var(--canvas-width);
     height: 200px;
-    font-size: small;
+    font-size: 15px;
 }
 /* <!------------------ canvases ----------------> */
 
