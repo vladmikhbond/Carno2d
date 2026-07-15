@@ -97,12 +97,23 @@ export default class Controller
         document.getElementById("visRange")!.addEventListener("change", (e: Event) =>
         {   
             const proc = [ 1, 2, 5, 10, 25, 50, 100];
-            let v: number = +(e.target as HTMLSelectElement).value;
-            this.view.viz = 100 / proc[v];
+            let value: number = +(e.target as HTMLSelectElement).value;
+            this.view.viz = 100 / proc[value];
             this.view.draw();
-            document.getElementById("visPercentage")!.innerHTML = proc[v]! + '%';
+            document.getElementById("visPercentage")!.innerHTML = proc[value]! + '%';
 
         });
+
+        // Change visibility of gas particles
+        document.getElementById("speedRange")!.addEventListener("change", (e: Event) =>
+        {   
+            let value: number = +(e.target as HTMLSelectElement).value;
+            glo.msec = [50, 25, 1][value];
+            
+
+
+        });
+
 
         // Real or Ideal diagram view
         document.getElementById("prettyBox")!.addEventListener("change", (e: Event) =>

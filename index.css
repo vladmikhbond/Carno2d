@@ -23,11 +23,16 @@ button {
 
 input[type="checkbox"] {
     background-color: rgb(42, 111, 113);
+    
 }
 
 input[type="text"] {
     width: 200px;
     padding: 6px;
+}
+
+input[type="range"] {
+    width: 120px;
 }
 
 select {
@@ -55,10 +60,6 @@ label {
 
 section {
     margin-bottom: 6px;
-}
-
-#visRange {
-    width: 120px;
 }
 
 #processArea {
