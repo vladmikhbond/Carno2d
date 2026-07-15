@@ -101,17 +101,13 @@ export default class Controller
             this.view.viz = 100 / proc[value];
             this.view.draw();
             document.getElementById("visPercentage")!.innerHTML = proc[value]! + '%';
-
         });
 
-        // Change visibility of gas particles
+        // Change model time speed
         document.getElementById("speedRange")!.addEventListener("change", (e: Event) =>
         {   
             let value: number = +(e.target as HTMLSelectElement).value;
-            glo.msec = [50, 25, 1][value];
-            
-
-
+            glo.msec = [40, 20, 1][value];
         });
 
 
@@ -120,7 +116,6 @@ export default class Controller
         {   
             glo.pretty = (e.target as HTMLInputElement)!.checked;
         });
-
 
 
         doc.canvas.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -186,7 +181,7 @@ export default class Controller
     }
  
      
-    step() {
+    step() {   
         this.time++;
         this.space.step();
         // виміри через кожні glo.metr кроків
@@ -195,7 +190,9 @@ export default class Controller
             this.space.measure();
             this.view.drawMeasure();
         }
-        this.view.draw();
+        if (this.time % 10 == 0) {
+            this.view.draw();
+        }
     }
 
 
