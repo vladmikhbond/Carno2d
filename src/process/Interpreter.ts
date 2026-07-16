@@ -4,15 +4,14 @@ import Controller from '../controller/Controller.js';
 import Bomb from '../model/Bomb.js';
 import {glo} from '../globals/globals.js';
 import { Plunger } from '../model/Plunger.js';
-import Repo from '../data/Repo.js';
 import Space from '../model/Space.js';
 import View from '../view/View.js';
 import {str2obj} from "../globals/utils.js"
 
 // local constants
 const processArea = <HTMLTextAreaElement>document.getElementById("processArea");
-const PAST = '▌';
-const PRESENT = '►';
+export const MARK_DONE = '▌';
+export const MARK_DOING = '►';
 
 // Інтерпретатор команд
 
@@ -39,11 +38,14 @@ export class Interpreter
     }
 
     async interpret(script: string) {
-        if (this.process) {
-            this.process.procState = ProcessState.Pause;
-        }
+        // if (this.process) {
+        //     this.process.procState = ProcessState.Pause;
+        // }
         
-        const lines = script.split('\n').map(l => l.trim());
+        let lines = script.split('\n').map(l => l.trim());
+        lines = lines.filter(s => s != "" && s[0] != MARK_DONE);
+        if (lines.length == 0 || lines[0][0] == MARK_DOING) 
+            return;
 
         for (let line of lines) {
             if (!line || line.startsWith("//"))
@@ -60,8 +62,9 @@ export class Interpreter
                 case 'plunger':
                     this.createPlunger(params);
                     this.newProcess();
-                    if (this.process?.space.N)
+                    if (this.process?.space.N) {
                         await this.process?.calm(500);
+                    }
                     break;
                 case 'scale':
                     const plunger = this.space.plunger;
@@ -125,8 +128,10 @@ export class Interpreter
         }
     }
 
-    private newProcess(): void {
-        this.controller!.stop();
+    newProcess(): void {
+        if (this.process) {
+            this.process.procState = ProcessState.Abort;
+        }
         this.process = new Process(this.controller);
     }
 
@@ -150,11 +155,9 @@ export class Interpreter
         plun.move(0, -y + Plunger.GAP);
         // add gass
         if (n) {
-            this.space.addBomb(new Bomb(
-                n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
-            await this.process!.calm(500);
+            this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
         } else {
-             plun.move(0, -Plunger.GAP);
+            plun.move(0, -Plunger.GAP);
         }
     }
 
@@ -163,16 +166,16 @@ export class Interpreter
     hilightBefore(line: string ) 
     {   
         let start = processArea.value.indexOf(line);
-        processArea.value = processArea.value.slice(0, start) + PRESENT +  processArea.value.slice(start);
+        processArea.value = processArea.value.slice(0, start) + MARK_DOING +  processArea.value.slice(start);
     }
 
     hilightAfter() 
     {   
-        processArea.value = processArea.value.replace(PRESENT, PAST);
+        processArea.value = processArea.value.replace(MARK_DOING, MARK_DONE);
     }
-    removeHilights() {
-       
-        processArea.value = processArea.value.replaceAll(PRESENT, '').replaceAll(PAST, '');
+    removeHilights() 
+    {       
+        processArea.value = processArea.value.replaceAll(MARK_DOING, '').replaceAll(MARK_DONE, '');
     }
 
 

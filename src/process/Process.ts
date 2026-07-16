@@ -22,7 +22,7 @@ export default class Process
     controller: Controller;
     plunger: Plunger; 
     view: View;
-    procState = ProcessState.Pause;    // 0-pause,   1-run,   2-abort,
+    procState = ProcessState.Run;    // 0-pause,   1-run,   2-abort,
 
     constructor(controller: Controller) 
     {    

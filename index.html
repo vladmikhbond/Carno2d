@@ -20,8 +20,9 @@
     <!------------------ top panel ---------------->
     <section>
         <input id="sizeParams" type="text" value="W=600; H=550">
-    
-        <button id="readyButton" class="command">Ready</button>
+
+        <button id="clearButton" class="command">C</button>
+        <button id="execButton" class="command">Exec</button>
         <button id="runButton" class="command" title="Play-Pause">Run</button>
         <button id="helpButton" class="command" onclick="window.open('help.html');">Help</button>
     </section>
@@ -42,14 +43,11 @@
         
     <section> 
         <textarea id="processArea" spellcheck="false" title="Вікно команд">
-title         Цикл Отто (бензиновий)
-plunger m=100, n=0
-scale         P=0.06, T=0.4, S=0.13, V=1.2, X=0.05
-intake                v=90000
-compression m=8500,   v=12000
-ignition    rate=1.5, t=2000
-expansion   m=16000,  v=88000
-exhaust     m=1000,   v=8000 
+title ISOBARIC test              
+plunger m=3000, t=100
+scale   P=4.5, T=9.2, S=0.2, X=1.3, V=2.5 
+isobaric+   v=50000 
+isobaric-   v=22800  
          </textarea>
     </section>
 

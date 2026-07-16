@@ -35,31 +35,28 @@ export default class Controller
 
     addProcessHandlers() 
     {
-        const readyButton = <HTMLButtonElement>document.getElementById('readyButton');
+        const clearButton = <HTMLButtonElement>document.getElementById('clearButton');
+        const execButton = <HTMLButtonElement>document.getElementById('execButton');
         const runButton = <HTMLButtonElement>document.getElementById('runButton');
         const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
 
-        readyButton.addEventListener('click', async (e) => {
-            this.stop();
-            setTimeout(async () => {
-                this.interpreter.removeHilights();
-                this.time = 0;  
-                await this.interpreter.interpret(processArea.value);
-            }, 100);
+        clearButton.addEventListener('click', async (e) => {
+            this.space.clear();
+            this.interpreter.removeHilights();
+            this.interpreter.newProcess();
+            this.interpreter.process!.procState = ProcessState.Pause; 
+            this.time = 0;
+            this.view.showTimeAndInfo(0);      
+        }); 
 
+        execButton.addEventListener('click', async (e) => {
+            await this.interpreter.interpret(processArea.value);
         }); 
 
         runButton.addEventListener('click', () => {
             if (!this.interpreter.process) 
                 return;
-            switch (this.interpreter.process.procState) {
-                case ProcessState.Pause:
-                    this.interpreter.process.procState = ProcessState.Run;
-                    break;
-                case ProcessState.Run: 
-                    this.interpreter.process.procState = ProcessState.Pause;
-                    break;
-            }
+            this.interpreter.process.procState = ProcessState.Run + ProcessState.Pause - this.interpreter.process.procState;
         });
        
     }
@@ -174,8 +171,6 @@ export default class Controller
 
         document.getElementById("loadSceneButton")!.addEventListener("click", () => {
             new Repo(this.space).load(areaEl.value);
-            this.stop();
-            this.time = 0;
             this.view.draw();
         });
     }
@@ -190,30 +185,31 @@ export default class Controller
             this.space.measure();
             this.view.drawMeasure();
         }
-        //////////////////////////////////////////////// одне малювання = 3.5 * модеювання
+        //////// одне малювання = 3.5 * модеювання
         // if (this.time % 10 == 0) {
             this.view.draw();
         // }
     }
 
 
-    stop() {
-        if (this.timer) {
-            clearInterval(this.timer);
-            this.timer = 0;
-        }
-        // draw
-        this.view.showTimeAndInfo(this.time);
-        this.space.measure();
-        this.view.drawMeasure();
-    }
+    // stop() {
+    //     if (this.timer) {
+    //         clearInterval(this.timer);
+    //         this.timer = 0;
+    //     }
+    //     // draw
+    //     this.view.showTimeAndInfo(this.time);
+    //     this.space.measure();
+    //     this.view.drawMeasure();
+    // }
 
-    run() {
-        if (this.timer) return;
-        this.timer = setInterval(() => { 
-            this.step();
-        }, 1);
-    }
+    // run() {
+    //     if (this.timer)
+    //         return;
+    //     this.timer = setInterval(() => { 
+    //         this.step();
+    //     }, 1);
+    // }
 
 }
 
