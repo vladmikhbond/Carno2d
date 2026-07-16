@@ -9,25 +9,29 @@ import Space from '../model/Space.js';
 import View from '../view/View.js';
 import {str2obj} from "../globals/utils.js"
 
+// local constants
+const processArea = <HTMLTextAreaElement>document.getElementById("processArea");
+const PAST = '▌';
+const PRESENT = '►';
+
 // Інтерпретатор команд
 
 export class Interpreter 
 {
-
-    space: Space
-    view: View
-    controller: Controller
+    space: Space;
+    view: View;
+    controller: Controller;
     process: Process | null = null;
 
     constructor(space: Space, view: View, controller: Controller) {
 
         this.space = space;
         this.view = view;
-        this.controller = controller
+        this.controller = controller;
     }
 
     static parse(line: string) {
-        let pos = line.indexOf(':');
+        let pos = line.indexOf(' ');
         let command = line.slice(0, pos).trim();
         let rest = line.slice(pos + 1).trim()
         let params = str2obj(rest);
@@ -47,21 +51,15 @@ export class Interpreter
              
             // елементи чергової команди
             let [command, restLine, params] = Interpreter.parse(line);
-            this.view.hilightBefore(line);
-            switch (command) {
-                // case 'load':
-                //     this.load(restLine.trim());
-                //     break;
-                // case 'run':
-                //     await this.run(params);
-                //     break;
-
+            this.hilightBefore(line);
+            switch (command) 
+            {
                 case 'title':
                     document.getElementById("title")!.innerHTML = restLine;
                     break;
                 case 'plunger':
                     this.createPlunger(params);
-                    this.createProcess();
+                    this.newProcess();
                     if (this.process?.space.N)
                         await this.process?.calm(500);
                     break;
@@ -71,31 +69,31 @@ export class Interpreter
                         Object.assign(plunger.scales, params);
                     }
                     break;
-                case '+adiabatic':
+                case 'adiabatic+':
                     await this.process?.adiabaticExtention(params.m);
                     break;
-                case '-adiabatic':
+                case 'adiabatic-':
                     await this.process?.adiabaticCompression(params.m);
                     break;
 
-                case '+isobaric':
+                case 'isobaric+':
                     await this.process?.isobaricExtention(params.v);
                     break;
-                case '-isobaric':
+                case 'isobaric-':
                     await this.process?.isobaricCompression(params.v);
                     break;
 
-                case '+isothermic':
+                case 'isothermic+':
                     await this.process?.isothermicExtention(params.m);
                     break;
-                case '-isothermic':
+                case 'isothermic-':
                     await this.process?.isothermicCompression(params.m);
                     break;  
 
-                case '+isohoric':
+                case 'isohoric+':
                     await this.process?.isohoricExtention(params.m);
                     break;
-                case '-isohoric':
+                case 'isohoric-':
                     await this.process?.isohoricCompression(params.m);
                     break;
 
@@ -123,17 +121,16 @@ export class Interpreter
                     break;
             }
             // маркування виконаних команд
-            this.view.hilightAfter();
+            this.hilightAfter();
         }
     }
 
-    private createProcess() {
+    private newProcess(): void {
         this.controller!.stop();
         this.process = new Process(this.controller);
-        return this.process;
     }
 
-    // Wait for the three params: t - temperature, m - massa, n - number of balls 
+    // params = {t: temperature, m: massa, n: number of balls }
     //
     async createPlunger(params: any) {
         this.space.clear();
@@ -163,60 +160,21 @@ export class Interpreter
 
 
 
-    private load(imgName: string) 
-    {
-        const area = <HTMLTextAreaElement>document.getElementById('repoArea');
-        let str = area.value;
-        let beg = str.indexOf(imgName + ':') + imgName.length + 1;
-        str = str.slice(beg).trim();
-        let end = str.indexOf('\n');
-        let imgStr = str.slice(1, end-2).trim();
-        new Repo(this.space).load(imgStr); 
-        
-        this.view.draw();
+    hilightBefore(line: string ) 
+    {   
+        let start = processArea.value.indexOf(line);
+        processArea.value = processArea.value.slice(0, start) + PRESENT +  processArea.value.slice(start);
     }
 
-
-    private async run(params: any) 
-    {
-        params.t ??= 100500;
-        try {      
-            this.createProcess();
-            let limit:number = this.controller.time + params.t;
-
-            await this.process!.whileAsync(
-                    () => this.controller.time < limit, 
-                    () => {this.space.warming()});
-        } catch(er) {  
-            console.error(er);
-        }        
+    hilightAfter() 
+    {   
+        processArea.value = processArea.value.replace(PRESENT, PAST);
+    }
+    removeHilights() {
+       
+        processArea.value = processArea.value.replaceAll(PRESENT, '').replaceAll(PAST, '');
     }
 
-
-    // private createPlunger(params: any) {
-    //     this.space.clear();
-
-    //     // default values
-    //     let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
-    //         gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
-
-    //     t = params.t ?? t;
-    //     n = params.n ?? n;
-    //     m = params.m ?? m;
-
-    //     const y = n * glo.BOLTZ * t / (m * glo.g);
-    //     // add plunger
-    //     let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
-    //     plun.m = m;
-    //     plun.move(0, -y + Plunger.GAP);
-    //     // add gass
-    //     if (n) {
-    //         this.space.addBomb(new Bomb(
-    //             n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));        
-    //     } else {
-    //          plun.move(0, -Plunger.GAP);
-    //     }
-    // }
-    
 
 }
+ 

@@ -42,7 +42,7 @@ export default class Controller
         readyButton.addEventListener('click', async (e) => {
             this.stop();
             setTimeout(async () => {
-                this.view.removeHilights();
+                this.interpreter.removeHilights();
                 this.time = 0;  
                 await this.interpreter.interpret(processArea.value);
             }, 100);
@@ -190,9 +190,10 @@ export default class Controller
             this.space.measure();
             this.view.drawMeasure();
         }
-        if (this.time % 10 == 0) {
+        //////////////////////////////////////////////// одне малювання = 3.5 * модеювання
+        // if (this.time % 10 == 0) {
             this.view.draw();
-        }
+        // }
     }
 
 

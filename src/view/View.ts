@@ -406,22 +406,22 @@ export default class View
         el.innerHTML = `T=${time} &nbsp;&nbsp; N=${this.space.N}, &nbsp;&nbsp; strikes=${strikes}%`;
     } 
 
-    hilightBefore(line: string ) 
-    {   
-        const area = <HTMLTextAreaElement>document.getElementById("processArea");
-        let start = area.value.indexOf(line);
-        area.value = area.value.slice(0, start) + '►' +  area.value.slice(start);
-    }
+    // hilightBefore(line: string ) 
+    // {   
+    //     const area = <HTMLTextAreaElement>document.getElementById("processArea");
+    //     let start = area.value.indexOf(line);
+    //     area.value = area.value.slice(0, start) + '►' +  area.value.slice(start);
+    // }
 
-    hilightAfter() 
-    {   
-        const area = <HTMLTextAreaElement>document.getElementById("processArea");
-        area.value = area.value.replace('►', '√');
-    }
-    removeHilights() {
-        const area = <HTMLTextAreaElement>document.getElementById("processArea");
-        area.value = area.value.replaceAll('►', '').replaceAll('√', '');
-    }
+    // hilightAfter() 
+    // {   
+    //     const area = <HTMLTextAreaElement>document.getElementById("processArea");
+    //     area.value = area.value.replace('►', '√');
+    // }
+    // removeHilights() {
+    //     const area = <HTMLTextAreaElement>document.getElementById("processArea");
+    //     area.value = area.value.replaceAll('►', '').replaceAll('√', '');
+    // }
 
 //#endregion DOM
 
