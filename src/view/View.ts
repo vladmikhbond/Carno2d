@@ -89,15 +89,15 @@ export default class View
         let {x, y, w, h} = plun.payloadRect();
             
         const ctx = this.ctx;
-        // background of payload area (subtle)
+        // body of kettlebell
         ctx.fillStyle = "#00000022";
 
         ctx.beginPath();
         ctx.fillRect(x, y, w, h);
         ctx.ellipse(x + w/2, y, w/2, h/4, 0, 0, 3.1416, true);
         ctx.fill();
-        
-        // ellipse
+
+        // the hole under handle
         ctx.globalCompositeOperation = "destination-out";
         ctx.fillStyle = "#000000FF";
         ctx.beginPath();
