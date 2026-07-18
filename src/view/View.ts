@@ -150,13 +150,6 @@ export default class View
 
     drawMeasure() {
         this.ctx2.clearRect(0, 0, doc.canvas2.width, doc.canvas2.height);
-
-        // all measurers  
-        // for (const device of this.space.devices()) {
-        //     if (device instanceof Measurer) {
-        //         this.drawDeviceMeters(device);
-        //     }
-        // }
         // the 1-st plunger if exists
         let plunger = this.space.plungers[0];
         if (plunger) {
@@ -280,10 +273,6 @@ export default class View
         const ctx = this.ctx2;
         ctx.font = "normal 12px Arial";
         const [X, Y, W, H] = xywh(plun);
-
-        // background
-        // ctx.fillStyle = '#0000000A';
-        // ctx.fillRect(X, Y, W, H);
 
         // scales        
         [plun.scales.P, plun.scales.T, plun.scales.S, plun.scales.V, plun.scales.X].forEach((v, i) => {
