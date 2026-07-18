@@ -58,7 +58,33 @@ export default class Controller
                 return;
             this.interpreter.process.procState = ProcessState.Run + ProcessState.Pause - this.interpreter.process.procState;
         });
-       
+
+        processArea.addEventListener("input", (event) => {
+            const lines = [
+'title',
+'plunger m=100, t=100, n=1000',
+'scale   p=1, t=1, s=1, v=1, x=1',
+'intake      v=',
+'compression m=,    v=',
+'ignition    rate=, t=',
+'expansion   m=,    v=',
+'exhaust     m=,    v=', 
+'isobaric   v=',
+'adiabatic  m=',
+'isothermic m=',
+'isohoric   m=',
+];
+            if (event.data?.length != 1)
+                return;          
+            const { value, selectionStart } = processArea;
+            const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+            const prefix = value.slice(lineStart, selectionStart);
+            const filtered = lines.filter(line => line.startsWith(prefix));
+            if (filtered.length == 1) {
+                processArea.value = processArea.value.slice(0, lineStart) + filtered[0] + processArea.value.slice(selectionStart)
+            }
+
+        });   
     }
 
     setModelSize() {
