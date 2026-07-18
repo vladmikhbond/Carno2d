@@ -5,7 +5,7 @@ import {glo} from '../globals/globals.js';
 
 // u -outer work, e - enthropy
 export type PlungerMetering = { n: number, p: number, v: number, t: number, u: number, q: number, s: number}; 
-export type PlungerScales = {V: number, P: number, T: number, S: number, X: number, w: number};
+export type PlungerScales = {v: number, p: number, t: number, s: number, x: number, w: number};
 
 export class Plunger extends Line 
 {
@@ -30,7 +30,7 @@ export class Plunger extends Line
    lastMetering: PlungerMetering;
    meterings: PlungerMetering[];
 
-   scales: PlungerScales = {V:1, P:1, T:1, S:1, X:1, w:1,};
+   scales: PlungerScales = {v:1, p:1, t:1, s:1, x:1, w:1};
    
    constructor(x1: number, y1: number, x2: number, y2: number, y: number, )
    {
@@ -194,25 +194,25 @@ export class Plunger extends Line
    scale(x: string) {
       const coef = 1.1;
       if (x == 'P') {
-         this.scales.P *= coef;
+         this.scales.p *= coef;
       } else if (x == 'p') {
-         this.scales.P /= coef;
+         this.scales.p /= coef;
       } else if (x == 'T') {
-         this.scales.T *= coef;
+         this.scales.t *= coef;
       } else if (x == 't') {
-         this.scales.T /= coef;
+         this.scales.t /= coef;
       } else if (x == 'V') {
-         this.scales.V *= coef;
+         this.scales.v *= coef;
       } else if (x == 'v') {
-         this.scales.V /= coef;
+         this.scales.v /= coef;
       } else if (x == 'S') {
-         this.scales.S *= coef;
+         this.scales.s *= coef;
       } else if (x == 's') {
-         this.scales.S /= coef;
+         this.scales.s /= coef;
       } else if (x == 'X') {
-         this.scales.X *= coef;
+         this.scales.x *= coef;
       } else if (x == 'x') {
-         this.scales.X /= coef;
+         this.scales.x /= coef;
       } 
    }
 }

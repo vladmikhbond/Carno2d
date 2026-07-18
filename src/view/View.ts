@@ -293,7 +293,7 @@ export default class View
         const [X, Y, W, H] = xywh(plun);
 
         // scales        
-        [plun.scales.P, plun.scales.T, plun.scales.S, plun.scales.V, plun.scales.X].forEach((v, i) => {
+        [plun.scales.p, plun.scales.t, plun.scales.s, plun.scales.v, plun.scales.x].forEach((v, i) => {
             ctx.fillStyle = ['red', 'black', 'green', 'gray', 'gray'][i];
             let x = X + W - 60;
             let y = Y + 13 * (i + 1);
@@ -306,9 +306,9 @@ export default class View
 
         // PTSVX diagrams 
         ctx.lineWidth = plun.scales.w;
-        if (plun.scales.P > 0) diagram(3, 0, 'red');    // xy = VP
-        if (plun.scales.T > 0) diagram(3, 1, 'black');  // xy = VT
-        if (plun.scales.S > 0) diagram(4, 2, 'green');  // xy = XS
+        if (plun.scales.p > 0) diagram(3, 0, 'red');    // VP
+        if (plun.scales.t > 0) diagram(3, 1, 'black');  // VT
+        if (plun.scales.s > 0) diagram(4, 2, 'green');  // XS
            
         // captions
         ctx.fillStyle = 'black';
@@ -319,11 +319,11 @@ export default class View
 
         //------------inner functions -----------------
         function getScaled(metering: PlungerMetering) {
-            let p = Y + H - (metering.p / 10 * H) * plun.scales.P;
-            let t = Y + H - (metering.t / 3000 * H) * plun.scales.T;
-            let s = Y + H/2 - (metering.s / 300 * H) * plun.scales.S;
-            let v = X + (metering.v / H) * plun.scales.V;
-            let x = X + (metering.t / 300 * W) * plun.scales.X;
+            let p = Y + H - (metering.p / 10 * H) * plun.scales.p;
+            let t = Y + H - (metering.t / 3000 * H) * plun.scales.t;
+            let s = Y + H/2 - (metering.s / 300 * H) * plun.scales.s;
+            let v = X + (metering.v / H) * plun.scales.v;
+            let x = X + (metering.t / 300 * W) * plun.scales.x;
             
             return [p, t, s, v, x];    
         }
@@ -423,11 +423,11 @@ function ptsvUnderMouse(plun: Plunger, x: number, y: number )
 {
     const [X, Y, W, H] = xywh(plun);
 
-    let v = (x - X) / plun.scales.V * H;
-    let p = (Y + H - y) / plun.scales.P / H * 10
-    let t = (Y + H - y) / plun.scales.T / H * 3000
-    let s = (Y + H/2 - y) / plun.scales.S / H * 300
-    let x_ = (x - X) / plun.scales.X * 300 * W;
+    let v = (x - X) / plun.scales.v * H;
+    let p = (Y + H - y) / plun.scales.p / H * 10
+    let t = (Y + H - y) / plun.scales.t / H * 3000
+    let s = (Y + H/2 - y) / plun.scales.s / H * 300
+    let x_ = (x - X) / plun.scales.x * 300 * W;
 
     return [p, t, s, v];
 }

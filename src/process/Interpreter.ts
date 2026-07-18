@@ -72,34 +72,19 @@ export class Interpreter
                         Object.assign(plunger.scales, params);
                     }
                     break;
-                case 'adiabatic+':
-                    await this.process?.adiabaticExtention(params.m);
+                case 'adiabatic':
+                    await this.process?.adiabatic(params.m);
                     break;
-                case 'adiabatic-':
-                    await this.process?.adiabaticCompression(params.m);
+                case 'isobaric':
+                    await this.process?.isobaric(params.v);
                     break;
-
-                case 'isobaric+':
-                    await this.process?.isobaricExtention(params.v);
+                case 'isohoric':
+                    await this.process?.isohoric(params.m);
                     break;
-                case 'isobaric-':
-                    await this.process?.isobaricCompression(params.v);
+                case 'isothermic':
+                    await this.process?.isothermic(params.m);
                     break;
-
-                case 'isothermic+':
-                    await this.process?.isothermicExtention(params.m);
-                    break;
-                case 'isothermic-':
-                    await this.process?.isothermicCompression(params.m);
-                    break;  
-
-                case 'isohoric+':
-                    await this.process?.isohoricExtention(params.m);
-                    break;
-                case 'isohoric-':
-                    await this.process?.isohoricCompression(params.m);
-                    break;
-
+                
                 //#region Цикл Отто (бензиновий)
 
                 case 'intake':
