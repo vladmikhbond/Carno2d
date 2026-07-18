@@ -59,12 +59,7 @@ export default class View
         let plun = line as Plunger;                 
         if (plun instanceof Plunger) 
         {
-            // payload on the plunger
-            let {x, y, w, h} = plun.payloadRect();
-            ctx.fillStyle = "#00000044";
-            ctx.fillRect(x, y, w, h);
-            ctx.fillStyle = "black";
-            ctx.fillText(`${plun.m.toFixed(0)} (${plun.pressure.toFixed(2)})`, x + 30, y + h - 10);    
+            this.drawPlungerPayload(plun);
 
             // top & bottom marks
             ctx.strokeStyle = plun.c; 
@@ -88,6 +83,29 @@ export default class View
         ctx.moveTo(line.x1, line.y1);
         ctx.lineTo(line.x2, line.y2);
         ctx.stroke();
+    }
+
+    drawPlungerPayload(plun: Plunger) {
+        let {x, y, w, h} = plun.payloadRect();
+            
+        const ctx = this.ctx;
+        // background of payload area (subtle)
+        ctx.fillStyle = "#00000022";
+
+        ctx.beginPath();
+        ctx.fillRect(x, y, w, h);
+        ctx.ellipse(x + w/2, y, w/2, h/4, 0, 0, 3.1416, true);
+        ctx.fill();
+        
+        // ellipse
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.fillStyle = "#000000FF";
+        ctx.beginPath();
+        ctx.ellipse(x + w/2, y, w/4, h/8, 0, 0, 2*3.1416);
+        ctx.fill();
+        ctx.globalCompositeOperation = "source-over";
+        ctx.fillStyle = "black";
+        ctx.fillText(plun.m.toFixed(0), x + w/2 - 10, y + h - 10);    
     }
 
     drawBall(ball: Ball) {
