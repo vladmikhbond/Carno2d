@@ -157,12 +157,10 @@ export default class View
         // device rectangle
         ctx.fillRect(device.x1, device.y1, 
             device.x2 - device.x1, device.y2 - device.y1);
-        // ctx.strokeRect(device.x1, device.y1, 
-        //     device.x2 - device.x1, device.y2 - device.y1);        
+;        
         // device text
         if (device instanceof Heater) {
-            ctx.fillStyle = ctx.strokeStyle;
-            ctx.fillText(`${device.avatar}:  R=${device.rate.toFixed(4)}`, device.x1, device.y1 - 5);   
+            ctx.fillStyle = ctx.strokeStyle;  
             ctx.fillText(`E=${device.erg.toFixed(0)}`, device.x1 + 80, device.y1 - 5);                          
         }  else if (device instanceof Measurer) {
             ctx.fillStyle = (device as Measurer).c;
