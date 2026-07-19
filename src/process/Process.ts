@@ -123,7 +123,7 @@ export default class Process
 
     private async isobaricExtention(maxVolume: number) {
 
-        let heater = new Heater(this.plunger.x1 - 5,  this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        let heater = new Heater(this.plunger.x1,  this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
         
         let pressure = this.plunger.pressure;  // replace real
@@ -153,7 +153,7 @@ export default class Process
     
     private async isobaricCompression(minVolume: number) {
 
-        let heater = new Heater(this.plunger.x1 - 5,  this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        let heater = new Heater(this.plunger.x1,  this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
 
         let pressure = this.plunger.pressure;  // replace real
@@ -194,7 +194,7 @@ export default class Process
 
     // нагрівання, маса збільшується
     private async isohoricExtention(maxMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
@@ -226,7 +226,7 @@ export default class Process
 
     // охолодження, маса зменшується
     private async isohoricCompression(mimMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         await this.whileAsync(() => this.plunger.m > mimMass, () => {
@@ -271,7 +271,7 @@ export default class Process
     }
 
     private async isothermicExtention(minMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red");
+        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
 
         let initT = this.plunger.measureTemperature();
@@ -293,7 +293,7 @@ export default class Process
     }
     
     private async isothermicCompression(maxMass: number) {
-        let heater = new Heater(this.plunger.x1 - 5, this.plunger.top, this.plunger.x2 + 5, this.plunger.realBottom + 5, 1, "red")
+        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red")
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
