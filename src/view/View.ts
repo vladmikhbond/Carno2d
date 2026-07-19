@@ -155,9 +155,8 @@ export default class View
             }   
         }  
         // device rectangle
-        ctx.fillRect(device.x1, device.y1, 
-            device.x2 - device.x1, device.y2 - device.y1);
-;        
+        ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
+        
         // device text
         if (device instanceof Heater) {
             ctx.fillStyle = ctx.strokeStyle;  

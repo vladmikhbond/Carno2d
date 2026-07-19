@@ -1,11 +1,11 @@
 {
-  "name": "Gas2d",
+  "name": "gas2d",
   "version": "0.0.1",
   "description": "TypeScript application",
   "main": "main.js",
   "scripts": {
     "build": "node scripts/build.js",
-    "start": "node scripts/build.js && npx live-server dist --port=5503"
+    "start": "node scripts/hlp.js && node scripts/build.js && npx live-server dist --port=5503"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +17,19 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
+    "marked": "^18.0.6",
     "three": "^0.184.0"
-  }
+  },
+  "directories": {
+    "doc": "docs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vladmikhbond/Carno2d.git"
+  },
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/vladmikhbond/Carno2d/issues"
+  },
+  "homepage": "https://github.com/vladmikhbond/Carno2d#readme"
 }

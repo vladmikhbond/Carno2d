@@ -116,3 +116,14 @@ section {
     /* width: var(--canvas-width); */
     display: none;
 }
+
+/*  -------------------- for hlp.html ------------------- */
+
+h1, h2 {
+    color:dodgerblue
+}
+p {
+    padding: 10px;
+    font-size: large;
+    background-color:aliceblue
+}
