@@ -37,7 +37,8 @@ export default class View
         // balls - малює не всі частки
         for (const ball of space.balls()) {    
             if (ball.id % this.viz == 0) {
-                this.drawBall(ball);
+                this.ctx.fillStyle = ball.c;
+                this.ctx.fillRect(ball.x - 1, ball.y - 1, 2, 2);
             }
         }
 
@@ -154,7 +155,6 @@ export default class View
             }   
         }  
         // device rectangle
-        // ctx.lineWidth = device == this.space.selectedDevice ? 2 : 1;
         ctx.fillRect(device.x1, device.y1, 
             device.x2 - device.x1, device.y2 - device.y1);
         // ctx.strokeRect(device.x1, device.y1, 
