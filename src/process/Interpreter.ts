@@ -135,7 +135,7 @@ export class Interpreter
 
         const y = n * glo.BOLTZ * t / (m * glo.g);
         // add plunger
-        let plun = this.space.addPlunger(x1, y1, x2, y2, "blue");
+        let plun = this.space.addPlunger(x1, y1, x2, y2, "green");
         plun.m = m;
         plun.move(0, -y + Plunger.GAP);
         // add gass

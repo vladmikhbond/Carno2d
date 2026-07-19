@@ -76,12 +76,20 @@ export default class View
         // line & plunger
         ctx.lineCap = "round";
         ctx.strokeStyle = line.c; 
-        ctx.lineWidth = line == this.space.selectedLine ? 3 : 2;
+        ctx.lineWidth = 2; //line == this.space.selectedLine ? 3 : 2;
 
 
         ctx.beginPath();
         ctx.moveTo(line.x1, line.y1);
         ctx.lineTo(line.x2, line.y2);
+        // the line is plunger
+        if (line == this.space.selectedLine) {
+            ctx.moveTo(line.x1, line.y1 - 6);
+            ctx.lineTo(line.x2, line.y2 - 6);
+            ctx.moveTo(line.x1, line.y1 - 3);
+            ctx.lineTo(line.x2, line.y2 - 3);
+        }
+
         ctx.stroke();
     }
 
@@ -105,7 +113,7 @@ export default class View
         ctx.fill();
         ctx.globalCompositeOperation = "source-over";
         ctx.fillStyle = "black";
-        ctx.fillText(plun.m.toFixed(0), x + w/2 - 10, y + h - 10);    
+        ctx.fillText(plun.m.toFixed(0), x + w/2 - 10, y + h - 16);    
     }
 
     drawBall(ball: Ball) {
