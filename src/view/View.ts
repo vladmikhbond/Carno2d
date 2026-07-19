@@ -147,18 +147,18 @@ export default class View
         } else {
             if ((device as Heater).rate > 1) {
                 ctx.strokeStyle = 'orange';
-                ctx.fillStyle = '#FFA50011'
+                ctx.fillStyle = '#ff880016'
             } else {
                 ctx.strokeStyle = 'blue';
-                ctx.fillStyle = '#0000FF11';
+                ctx.fillStyle = '#0000ff16';
             }   
         }  
         // device rectangle
-        ctx.lineWidth = device == this.space.selectedDevice ? 2 : 1;
+        // ctx.lineWidth = device == this.space.selectedDevice ? 2 : 1;
         ctx.fillRect(device.x1, device.y1, 
             device.x2 - device.x1, device.y2 - device.y1);
-        ctx.strokeRect(device.x1, device.y1, 
-            device.x2 - device.x1, device.y2 - device.y1);        
+        // ctx.strokeRect(device.x1, device.y1, 
+        //     device.x2 - device.x1, device.y2 - device.y1);        
         // device text
         if (device instanceof Heater) {
             ctx.fillStyle = ctx.strokeStyle;
