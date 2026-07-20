@@ -5,7 +5,7 @@
   "main": "main.js",
   "scripts": {
     "build": "node scripts/build.js",
-    "start": "node scripts/hlp.js && node scripts/build.js && npx live-server dist --port=5503"
+    "start": "node scripts/help_maker.js && node scripts/build.js && npx live-server dist --port=5503"
   },
   "keywords": [],
   "author": "",

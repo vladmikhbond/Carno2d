@@ -7,7 +7,10 @@ import Repo from '../data/Repo.js';
 import { Interpreter} from '../process/Interpreter.js';
 import { ProcessState } from '../process/Process.js';
 
-
+const clearButton = <HTMLButtonElement>document.getElementById('clearButton');
+const execButton = <HTMLButtonElement>document.getElementById('execButton');
+const runButton = <HTMLButtonElement>document.getElementById('runButton');
+const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
 
 export default class Controller 
 {
@@ -35,10 +38,7 @@ export default class Controller
 
     addProcessHandlers() 
     {
-        const clearButton = <HTMLButtonElement>document.getElementById('clearButton');
-        const execButton = <HTMLButtonElement>document.getElementById('execButton');
-        const runButton = <HTMLButtonElement>document.getElementById('runButton');
-        const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
+
 
         clearButton.addEventListener('click', async (e) => {
             this.space.clear();
@@ -180,24 +180,32 @@ export default class Controller
         });
 
         doc.canvas.addEventListener("mousemove", (e: MouseEvent) => {
-            this.view.showVauesUnderMouse(this.space.plunger, e.offsetX, e.offsetY);
+            if (this.space.plunger) {
+                this.view.showVauesUnderMouse(this.space.plunger, e.offsetX, e.offsetY);
+            }
         });
 
     } 
 
 
-
     addDataHandlers() 
     {
-        const areaEl = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
+        const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
+        const bottomArea = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
+
+        const keys = Object.keys(localStorage);
+        bottomArea.value = keys.join('\n');
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
-            areaEl.value = new Repo(this.space).save();
+            const key = bottomArea.value.trim();
+            const val = processArea.value;
+            localStorage.setItem(key, val);
         });
 
         document.getElementById("loadSceneButton")!.addEventListener("click", () => {
-            new Repo(this.space).load(areaEl.value);
-            this.view.draw();
+            const key = bottomArea.value.trim();
+            const val = localStorage.getItem(key);
+            processArea.value = val ? val : "no script";
         });
     }
  
@@ -211,31 +219,8 @@ export default class Controller
             this.space.measure();
             this.view.drawMeasure();
         }
-        //////// одне малювання = 3.5 * модеювання
-        // if (this.time % 10 == 0) {
-            this.view.draw();
-        // }
+        this.view.draw();
     }
-
-
-    // stop() {
-    //     if (this.timer) {
-    //         clearInterval(this.timer);
-    //         this.timer = 0;
-    //     }
-    //     // draw
-    //     this.view.showTimeAndInfo(this.time);
-    //     this.space.measure();
-    //     this.view.drawMeasure();
-    // }
-
-    // run() {
-    //     if (this.timer)
-    //         return;
-    //     this.timer = setInterval(() => { 
-    //         this.step();
-    //     }, 1);
-    // }
 
 }
 

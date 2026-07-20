@@ -32,16 +32,13 @@ export class Interpreter
     static parse(line: string) {
         let pos = line.indexOf(' ');
         let command = line.slice(0, pos).trim();
-        let rest = line.slice(pos + 1).trim()
+        let rest = line.slice(pos + 1).trim();
         let params = str2obj(rest);
         return [command, rest, params]
     }
 
-    async interpret(script: string) {
-        // if (this.process) {
-        //     this.process.procState = ProcessState.Pause;
-        // }
-        
+    async interpret(script: string) 
+    {    
         let lines = script.split('\n').map(l => l.trim());
         lines = lines.filter(s => s != "" && s[0] != MARK_DONE);
         if (lines.length == 0 || lines[0][0] == MARK_DOING) 

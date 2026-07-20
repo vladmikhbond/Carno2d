@@ -125,5 +125,6 @@ h1, h2 {
 p {
     padding: 10px;
     font-size: large;
-    background-color:aliceblue
+    background-color:aliceblue;
+    margin: 1px;
 }
