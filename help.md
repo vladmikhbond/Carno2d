@@ -104,7 +104,7 @@ isothermic  m=1600
 isothermic  m=3000  
 
 title         Цикл Отто (бензиновий)
-load otto_plunger
+plunger m=100, n=0
 scale         p=0.06, t=0.4, s=0.13, v=1.2, x=0.05
 intake      v=90000
 compression m=8500,   v=12000

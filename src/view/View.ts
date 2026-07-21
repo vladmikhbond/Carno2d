@@ -84,7 +84,7 @@ export default class View
         ctx.moveTo(line.x1, line.y1);
         ctx.lineTo(line.x2, line.y2);
         // the line is plunger
-        if (line == this.space.selectedLine) {
+        if (line instanceof Plunger) {
             ctx.moveTo(line.x1, line.y1 - 6);
             ctx.lineTo(line.x2, line.y2 - 6);
             ctx.moveTo(line.x1, line.y1 - 3);

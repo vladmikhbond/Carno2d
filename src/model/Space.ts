@@ -124,15 +124,19 @@ export default class Space
 
     get plunger() { return this.plungers[0]}
 
-    addRect(x1: number, y1: number, x2: number, y2: number, color: string) {
-        this.addLine(new Line(x1, y2, x2, y2, color));  // right
-        this.addLine(new Line(x1, y1, x1, y2, color));  // left
-        // this.addLine(new Line(x1, y1, x2, y1, color));  // top
-        this.addLine(new Line(x2, y1, x2, y2, color));  // bottom
-    }
+    // addRect(x1: number, y1: number, x2: number, y2: number, color: string) {
+    //     this.addLine(new Line(x1, y2, x2, y2, color));  // right
+    //     this.addLine(new Line(x1, y1, x1, y2, color));  // left
+    //     this.addLine(new Line(x1, y1, x2, y1, color));  // top
+    //     this.addLine(new Line(x2, y1, x2, y2, color));  // bottom
+    // }
 
-    addPlunger(x1: number, y1: number, x2: number, y2: number, color: string) {
-        this.addRect(x1, y1, x2, y2, color);
+    addEmptyPlunger(x1: number, y1: number, x2: number, y2: number, color: string) {
+        this.addLine(new Line(x1, y1, x1, y2, color));  // left
+        this.addLine(new Line(x2, y1, x2, y2, color));  // right
+        this.addLine(new Line(x1, y2, x2, y2, color));  // bottom
+
+
         let plunger = new Plunger(x1, y1, x2, y2, y2 - Plunger.GAP);
         this.addLine(plunger); 
         return plunger;
