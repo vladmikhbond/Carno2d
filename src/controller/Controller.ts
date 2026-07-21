@@ -213,6 +213,7 @@ export default class Controller
     step() {   
         this.time++;
         this.space.step();
+        this.view.draw();
         // виміри через кожні glo.metr кроків
         if (this.time % glo.metr == 0) {
             this.view.showTimeAndInfo(this.time);

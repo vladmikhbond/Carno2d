@@ -85,13 +85,13 @@ scale   p=6, t=13.5, s=0.4, x=2.4
 adiabatic  m=550
 adiabatic  m=3000  
 
-title isohoric
+title isobaric
 plunger m=3000, t=100
 scale   p=4.5, t=9.2, s=0.2, x=1.3, v=2.5 
 isobaric   v=50000
 isobaric   v=22800
 
-title isobaric
+title isohoric
 plunger m=3000, t=126
 scale   p=6, t=11, s=0.16, x=2.1, v=3
 isohoric   m=900
@@ -105,7 +105,7 @@ isothermic  m=3000
 
 title         Цикл Отто (бензиновий)
 plunger m=100, n=0
-scale         p=0.06, t=0.4, s=0.13, v=1.2, x=0.05
+scale         p=0.1, t=0.8, s=0.1, v=1.2, x=0.1
 intake      v=90000
 compression m=8500,   v=12000
 ignition    rate=1.5, t=2000

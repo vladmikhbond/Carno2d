@@ -77,8 +77,7 @@ export default class View
         // line & plunger
         ctx.lineCap = "round";
         ctx.strokeStyle = line.c; 
-        ctx.lineWidth = 2; //line == this.space.selectedLine ? 3 : 2;
-
+        ctx.lineWidth = 2;
 
         ctx.beginPath();
         ctx.moveTo(line.x1, line.y1);
@@ -90,7 +89,6 @@ export default class View
             ctx.moveTo(line.x1, line.y1 - 3);
             ctx.lineTo(line.x2, line.y2 - 3);
         }
-
         ctx.stroke();
     }
 
@@ -155,6 +153,7 @@ export default class View
             }   
         }  
         // device rectangle
+        
         ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
         
         // device text

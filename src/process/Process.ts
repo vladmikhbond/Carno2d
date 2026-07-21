@@ -42,9 +42,10 @@ export default class Process
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
                 try {
-                    if (this.procState == ProcessState.Run) {   
+                    if (this.procState == ProcessState.Run) {  
+                                                act();  
                         this.controller.step();
-                        act(); 
+                        // act(); 
 
                         if (!condition()) {                            
                             clearInterval(timer);
@@ -65,7 +66,10 @@ export default class Process
     async calm(calmTime = 100) {
         let stopStep = this.controller.time + calmTime;
         this.plunger.withFriction = true;
-        await this.whileAsync(() => this.controller.time < stopStep, () => {
+        await this.whileAsync(
+        () => 
+            this.controller.time < stopStep, 
+        () => {
             this.controller.step();
             this.controller.step();
             this.controller.step();
@@ -87,7 +91,10 @@ export default class Process
     }
 
     private async adiabaticExtention(minMass: number) {
-        await this.whileAsync(() => this.plunger.m > minMass, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.m > minMass, 
+        () => {
             // гасіння коливань зміною маси вантажу
             if (this.plunger.velo < 0) {
                 this.plunger.m *= 1 + Math.min(0.001, (-this.plunger.velo) ** 0.5)
@@ -97,12 +104,14 @@ export default class Process
     }
 
     private async adiabaticCompression(maxMass: number) {
-        await this.whileAsync(() => this.plunger.m < maxMass, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.m < maxMass, 
+        () => {
             // гасіння коливань зміною маси вантажу
             if (this.plunger.velo > 0) {
                 this.plunger.m *= 1 - Math.min(0.001, this.plunger.velo ** 0.5)
             }
-
             this.plunger.m *= 1.002;
         }); 
 
@@ -120,26 +129,32 @@ export default class Process
         }
     }
 
-
+    // Газ розширюється до певного об'єму за рахунок повільного нагрівання
+    // Гасіння коливань за рахунок зменшення нагрівання
     private async isobaricExtention(maxVolume: number) {
 
         let heater = new Heater(this.plunger.x1,  this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
         
-        let pressure = this.plunger.pressure;  // replace real
+        let pressure = this.plunger.pressure;  // to replace real
         
         let minVolume = this.space.plunger.volume;
 
-        await this.whileAsync(() => this.plunger.volume < maxVolume, () => {
-
+        await this.whileAsync(
+        () => 
+            this.plunger.volume < maxVolume, 
+        () => {
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
             let eps = 0.001;
-            eps *= lin(part, [0,   0.2, 0.3, 0.5, 0.7, 0.8,  1 ], 
-                             [1/8, 1/4, 1/2,  1,  1/2, 1/4, 1/8]);
+            eps *= lin(part, [0,   0.2, 0.8,  1 ], 
+                             [1/10,  1,  1,   1/10]);
 
-            heater.rate = 1 + (this.plunger.velo < -0.1 ? eps/2 : eps);
+
+
+            heater.rate = 1 + (this.plunger.velo < -0.1 ? 0 : eps);
 
             heater.warm();
+            
 
             // replace real temperature metering with ideal one
             if (glo.pretty) {
@@ -159,15 +174,15 @@ export default class Process
         let pressure = this.plunger.pressure;  // replace real
         let maxVolume = this.space.plunger.volume;
 
-        await this.whileAsync(() => this.plunger.volume > minVolume, () => {
-
+        await this.whileAsync(
+        () => 
+            this.plunger.volume > minVolume, 
+        () => {
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
             let eps = 0.001;
-            eps *= lin(part, [0,   0.2, 0.3, 0.5, 0.7, 0.8,  1 ], 
-                             [1/8, 1/4, 1/2,  1,  1/2, 1/4, 1/8]);
-                             
-            heater.rate = 1 - (this.plunger.velo > 0.1 ? eps/2 : eps);
-
+            eps *= lin(part, [0,   0.2, 0.8,  1 ], 
+                             [1/10,  1,  1,   1/10]);                             
+            heater.rate = 1 - (this.plunger.velo > 0.1 ? 0 : eps);
             heater.warm();
 
             // replace real temperature  metering with ideal one
@@ -192,20 +207,24 @@ export default class Process
         }
     }
 
-    // нагрівання, маса збільшується
+    // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
+    // Гасіння коливань за рахунок зменшення навантаження.
     private async isohoricExtention(maxMass: number) {
         let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
         const vol = this.plunger.volume
-        await this.whileAsync(() => this.plunger.m < maxMass, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.m < maxMass, 
+        () => {
             // гасіння коливань зміною маси вантажу
             if (this.plunger.volume > vol) {
                 if (this.plunger.velo < 0) {
-                    this.plunger.m *= 1 + Math.min(0.002, (-this.plunger.velo) ** 0.5)
+                    this.plunger.m *= 1 + Math.min(0.002, Math.sqrt(-this.plunger.velo))
                 }
             } else if (this.plunger.volume < vol) {
                 if (this.plunger.velo > 0) {
-                    this.plunger.m *= 1 - Math.min(0.002, this.plunger.velo ** 0.5)
+                    this.plunger.m *= 1 - Math.min(0.002, Math.sqrt(this.plunger.velo))
                 }
             }
             this.plunger.m *= 1.001;
@@ -233,18 +252,17 @@ export default class Process
             // гасіння коливань зміною маси вантажу
             if (this.plunger.volume > vol) {
                 if (this.plunger.velo < 0) {
-                    this.plunger.m *= 1 + Math.min(0.002, (-this.plunger.velo) ** 0.5)
+                    this.plunger.m *= 1 + Math.min(0.002, Math.sqrt(-this.plunger.velo))
                 }
             } else if (this.plunger.volume < vol) {
                 if (this.plunger.velo > 0) {
-                    this.plunger.m *= 1 - Math.min(0.002, this.plunger.velo ** 0.5)
+                    this.plunger.m *= 1 - Math.min(0.002, Math.sqrt(this.plunger.velo))
                 }
-            }
+            } 
             this.plunger.m *= 0.999;
+            
             heater.rate = 0.999 ;
             heater.warm();
-
-            
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -270,16 +288,21 @@ export default class Process
         }
     }
 
+    // Навантаження повільно зменшується до заданого значення, одночасно газ підігрівається.
+    // Гасіння коливань за рахунок зменшення навантаження і за рахунок підігріву.
     private async isothermicExtention(minMass: number) {
         let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
         this.space.addDevice(heater);
 
         let initT = this.plunger.measureTemperature();
-        await this.whileAsync(() => this.plunger.m > minMass, () => {
-            const k = this.plunger.velo > 0.1 ? 1 : 0.9995;
+        await this.whileAsync(
+        () => 
+            this.plunger.m > minMass, 
+        () => {
+            const k = 1 - this.plunger.velo > 0.1 ? 0 : 0.0005;
             this.plunger.m *= k;
             let currT = this.plunger.measureTemperature();  
-            heater.rate = (initT - currT) * 0.001 + 1;
+            heater.rate = 1 + (initT - currT) * 0.001;
             heater.warm();  
 
             // replace real pressure metering with ideal one
@@ -379,7 +402,7 @@ export default class Process
         this.plunger.withFriction = false;
 
         // close bottom anime
-        await this.whileAsync(() => line.x1 >= x1, () => { line.move(-10, 0) } );
+        await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
 
         // await this.calm();
     }
