@@ -100,12 +100,12 @@ section {
    width: var(--canvas-width);
 } 
 
-.scene-textarea {
+#savedSceneText {
     display: inline; 
     height: var(--element-height);
     width: calc(var(--canvas-width) - 154px);
-    font-size: x-small;
 }
+
 .scene-btn {
     vertical-align: top; 
     background-color: lightblue;

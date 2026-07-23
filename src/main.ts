@@ -9,6 +9,3 @@ export const controller = new Controller(space, view);
 
 view.draw();
 
-console.log(location.origin);
-console.log(localStorage.length);
-console.log(Object.keys(localStorage));

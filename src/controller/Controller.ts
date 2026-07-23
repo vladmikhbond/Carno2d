@@ -194,7 +194,7 @@ export default class Controller
         const bottomArea = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
 
         const keys = Object.keys(localStorage);
-        bottomArea.value = keys.join('\n');
+        bottomArea.value = keys.join(' | ');
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
             const key = bottomArea.value.trim();
