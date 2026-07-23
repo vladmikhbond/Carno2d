@@ -137,7 +137,8 @@ export default class Process
         let initP = this.plunger.pressure;  // to replace real
         
         let minVolume = this.space.plunger.volume;
-
+        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
+        this.space.addDevice(heater);
         await this.whileAsync(
         () => 
             this.plunger.volume < maxVolume, 
@@ -145,10 +146,9 @@ export default class Process
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
             const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
                                            [1/8,  1,  1,   1/8] );
-            const y = plan.realBottom - (plan.realBottom - plan.y1) / 2; 
-            const heater = new Heater(plan.x1, y, plan.x2, plan.realBottom, 1 + eps, "red");
-            this.space.clearDevices();
-            this.space.addDevice(heater);
+
+            heater.rate = 1 + eps;
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
             heater.warm();
 
             // replace real temperature metering with ideal one
@@ -158,13 +158,16 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
             }
         }); 
-        // heater.dispose();
+        heater.dispose();
     }
     
     private async isobaricCompression(minVolume: number) {
         const plan = this.plunger;
         let initP = this.plunger.pressure;  
         let maxVolume = this.space.plunger.volume;
+
+        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
+        this.space.addDevice(heater);
 
         await this.whileAsync(
         () => 
@@ -173,10 +176,9 @@ export default class Process
             let part = (maxVolume - this.plunger.volume) / (maxVolume - minVolume);
             const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
                                            [1/8,  1,  1,   1/8] );
-            const y = plan.realBottom - (plan.realBottom - plan.y1) / 2;   
-            const heater = new Heater(plan.x1, y, plan.x2, plan.realBottom, 1 - eps, "red");
-            this.space.clearDevices();
-            this.space.addDevice(heater);
+
+            heater.rate = 1 - eps;
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
             heater.warm();
 
             // replace real temperature  metering with ideal one
@@ -186,7 +188,7 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
             }
         }); 
-        // heater.dispose();
+        heater.dispose();
     }      
     //#endregion
 
