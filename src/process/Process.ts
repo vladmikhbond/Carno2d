@@ -210,61 +210,30 @@ export default class Process
         }
     }
 
-    // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
-    // Гасіння коливань за рахунок зменшення навантаження.
-    private async isohoricExtention(maxMass: number) {
-        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
-        this.space.addDevice(heater);
-        const vol = this.plunger.volume
-        await this.whileAsync(
-        () => 
-            this.plunger.m < maxMass, 
-        () => {
-            // гасіння коливань зміною маси вантажу
-            if (this.plunger.volume > vol) {
-                if (this.plunger.velo < 0) {
-                    this.plunger.m *= 1 + Math.min(0.002, Math.sqrt(-this.plunger.velo))
-                }
-            } else if (this.plunger.volume < vol) {
-                if (this.plunger.velo > 0) {
-                    this.plunger.m *= 1 - Math.min(0.002, Math.sqrt(this.plunger.velo))
-                }
-            }
-            this.plunger.m *= 1.001;
-
-            heater.rate = 1.001;
-            heater.warm();
-            
-            // replace real pressure metering with ideal one
-            if (glo.pretty) {
-                const last = this.plunger.meterings.length - 1;
-                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
-                this.plunger.meterings[last].p = pressure;
-                this.plunger.meterings[last].v = vol;
-            }
-        }); 
-        heater.dispose();
-    }
-
     // охолодження, маса зменшується
     private async isohoricCompression(mimMass: number) {
-        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
+        const plan = this.plunger;
+        const heater = new Heater(
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            this.plunger.x2, 
+            this.plunger.realBottom,
+            1, "red");
+
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         await this.whileAsync(() => this.plunger.m > mimMass, () => {
-            // гасіння коливань зміною маси вантажу
-            if (this.plunger.volume > vol) {
-                if (this.plunger.velo < 0) {
-                    this.plunger.m *= 1 + Math.min(0.002, Math.sqrt(-this.plunger.velo))
-                }
-            } else if (this.plunger.volume < vol) {
-                if (this.plunger.velo > 0) {
-                    this.plunger.m *= 1 - Math.min(0.002, Math.sqrt(this.plunger.velo))
-                }
-            } 
-            this.plunger.m *= 0.999;
+ 
+            this.plunger.m *= 1 - 0.001;
             
-            heater.rate = 0.999 ;
+
+            let eps = 0.001;
+            if (this.plunger.volume < vol) {
+                heater.rate = 1 - eps / 2;
+            } else if (this.plunger.volume > vol) {
+                heater.rate = 1 - eps;
+            }
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2; 
             heater.warm();
 
             // replace real pressure metering with ideal one
@@ -278,6 +247,48 @@ export default class Process
         heater.dispose();      
     }
 
+
+
+    // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
+    // Гасіння коливань за рахунок зменшення охолодження.
+    private async isohoricExtention(maxMass: number) {
+        const plan = this.plunger;
+        const heater = new Heater(
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            this.plunger.x2, 
+            this.plunger.realBottom,
+            1, "red");
+
+        this.space.addDevice(heater);
+        const vol = this.plunger.volume
+        await this.whileAsync(
+        () => 
+            this.plunger.m < maxMass, 
+        () => {
+
+            this.plunger.m *= 1 + 0.001;
+
+            let eps = 0.001;
+            if (this.plunger.volume < vol) {
+                heater.rate = 1 + eps;
+            } else if (this.plunger.volume > vol) {
+                heater.rate = 1 + eps / 2;
+            }
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2; 
+            
+            heater.warm();
+            
+            // replace real pressure metering with ideal one
+            if (glo.pretty) {
+                const last = this.plunger.meterings.length - 1;
+                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
+                this.plunger.meterings[last].p = pressure;
+                this.plunger.meterings[last].v = vol;
+            }
+        }); 
+        heater.dispose();
+    }
     //#endregion 
 
 
