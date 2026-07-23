@@ -130,13 +130,11 @@ export default class Process
     }
 
     // Газ розширюється до певного об'єму за рахунок повільного нагрівання
-    // Гасіння коливань за рахунок зменшення нагрівання
-    private async isobaricExtention(maxVolume: number) {
 
-        let heater = new Heater(this.plunger.x1,  this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
-        this.space.addDevice(heater);
+    private async isobaricExtention(maxVolume: number) {
+        const plan = this.plunger;
         
-        let pressure = this.plunger.pressure;  // to replace real
+        let initP = this.plunger.pressure;  // to replace real
         
         let minVolume = this.space.plunger.volume;
 
@@ -145,54 +143,50 @@ export default class Process
             this.plunger.volume < maxVolume, 
         () => {
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
-            let eps = 0.001;
-            eps *= lin(part, [0,   0.2, 0.8,  1 ], 
-                             [1/10,  1,  1,   1/10]);
-
-
-
-            heater.rate = 1 + (this.plunger.velo < -0.1 ? 0 : eps);
-
+            const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
+                                           [1/8,  1,  1,   1/8] );
+            const y = plan.realBottom - (plan.realBottom - plan.y1) / 2; 
+            const heater = new Heater(plan.x1, y, plan.x2, plan.realBottom, 1 + eps, "red");
+            this.space.clearDevices();
+            this.space.addDevice(heater);
             heater.warm();
-            
 
             // replace real temperature metering with ideal one
             if (glo.pretty) {
-                let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                let temperature =  this.plunger.volume * initP / glo.BOLTZ / this.space.N;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = initP;
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
             }
         }); 
-        heater.dispose();
+        // heater.dispose();
     }
     
     private async isobaricCompression(minVolume: number) {
-
-        let heater = new Heater(this.plunger.x1,  this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
-        this.space.addDevice(heater);
-
-        let pressure = this.plunger.pressure;  // replace real
+        const plan = this.plunger;
+        let initP = this.plunger.pressure;  
         let maxVolume = this.space.plunger.volume;
 
         await this.whileAsync(
         () => 
             this.plunger.volume > minVolume, 
         () => {
-            let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
-            let eps = 0.001;
-            eps *= lin(part, [0,   0.2, 0.8,  1 ], 
-                             [1/10,  1,  1,   1/10]);                             
-            heater.rate = 1 - (this.plunger.velo > 0.1 ? 0 : eps);
+            let part = (maxVolume - this.plunger.volume) / (maxVolume - minVolume);
+            const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
+                                           [1/8,  1,  1,   1/8] );
+            const y = plan.realBottom - (plan.realBottom - plan.y1) / 2;   
+            const heater = new Heater(plan.x1, y, plan.x2, plan.realBottom, 1 - eps, "red");
+            this.space.clearDevices();
+            this.space.addDevice(heater);
             heater.warm();
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
-                let temperature =  this.plunger.volume * pressure / glo.BOLTZ / this.space.N;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = pressure;
+                let temperature =  this.plunger.volume * initP / glo.BOLTZ / this.space.N;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = initP;
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
             }
         }); 
-        heater.dispose();
+        // heater.dispose();
     }      
     //#endregion
 
@@ -323,7 +317,7 @@ export default class Process
             const k = this.plunger.velo < -0.1 ? 1 : 0.9995;
             this.plunger.m /= k;
             let currT = this.plunger.measureTemperature(); 
-            heater.rate = (initT - currT) * 0.001 + 1;             
+            heater.rate = 1 + (initT - currT) * 0.001;             
             heater.warm(); 
 
             // replace real pressure metering with ideal one
