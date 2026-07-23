@@ -293,8 +293,8 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
-            const k = 1 - this.plunger.velo > 0.1 ? 0 : 0.0005;
-            this.plunger.m *= k;
+            let eps = this.plunger.velo > 0.1 ? 0 : 0.0005;
+            this.plunger.m *= 1 - eps;
             let currT = this.plunger.measureTemperature();  
             heater.rate = 1 + (initT - currT) * 0.001;
             heater.warm();  
