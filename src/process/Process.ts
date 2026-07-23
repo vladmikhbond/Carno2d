@@ -144,11 +144,15 @@ export default class Process
             this.plunger.volume < maxVolume, 
         () => {
             let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
-            const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
+            const eps = 0.002 * lin(part, [0,   0.2, 0.8,  1 ], 
                                            [1/8,  1,  1,   1/8] );
 
             heater.rate = 1 + eps;
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
+            heater.y2 = plan.realBottom - 20;
+            heater.x1 = plan.x1 + 20;
+            heater.x2 = plan.x2 - 20; 
+            
             heater.warm();
 
             // replace real temperature metering with ideal one
@@ -174,11 +178,14 @@ export default class Process
             this.plunger.volume > minVolume, 
         () => {
             let part = (maxVolume - this.plunger.volume) / (maxVolume - minVolume);
-            const eps = 0.001 * lin(part, [0,   0.2, 0.8,  1 ], 
+            const eps = 0.002 * lin(part, [0,   0.2, 0.8,  1 ], 
                                            [1/8,  1,  1,   1/8] );
 
             heater.rate = 1 - eps;
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
+            heater.y2 = plan.realBottom - 20;
+            heater.x1 = plan.x1 + 20;
+            heater.x2 = plan.x2 - 20;
             heater.warm();
 
             // replace real temperature  metering with ideal one
@@ -287,7 +294,13 @@ export default class Process
     // Навантаження повільно зменшується до заданого значення, одночасно газ підігрівається.
     // Гасіння коливань за рахунок зменшення навантаження і за рахунок підігріву.
     private async isothermicExtention(minMass: number) {
-        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red");
+        const plan = this.plunger;
+        const heater = new Heater(
+            plan.x1 + 20, 
+            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            this.plunger.x2 - 20, 
+            this.plunger.realBottom - 20,
+            1, "red");
         this.space.addDevice(heater);
 
         let initT = this.plunger.measureTemperature();
@@ -295,10 +308,11 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
-            let eps = this.plunger.velo > 0.1 ? 0 : 0.0005;
+            let eps = this.plunger.velo < -0.1 ? 0 : 0.001;
             this.plunger.m *= 1 - eps;
             let currT = this.plunger.measureTemperature();  
             heater.rate = 1 + (initT - currT) * 0.001;
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2 
             heater.warm();  
 
             // replace real pressure metering with ideal one
@@ -312,14 +326,21 @@ export default class Process
     }
     
     private async isothermicCompression(maxMass: number) {
-        let heater = new Heater(this.plunger.x1, this.plunger.top, this.plunger.x2, this.plunger.realBottom, 1, "red")
+        const plan = this.plunger;
+        const heater = new Heater(
+            plan.x1 + 20, 
+            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            this.plunger.x2 - 20, 
+            this.plunger.realBottom - 20,
+            1, "red");
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            const k = this.plunger.velo < -0.1 ? 1 : 0.9995;
-            this.plunger.m /= k;
+            let eps = this.plunger.velo > 0.1 ? 0 : 0.001;
+            this.plunger.m *= 1 + eps;
             let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) * 0.001;             
+            heater.rate = 1 + (initT - currT) * 0.001; 
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2           
             heater.warm(); 
 
             // replace real pressure metering with ideal one
