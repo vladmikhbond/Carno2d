@@ -228,10 +228,10 @@ export default class Process
             
 
             let eps = 0.001;
-            if (this.plunger.volume < vol) {
-                heater.rate = 1 - eps / 2;
-            } else if (this.plunger.volume > vol) {
+            if (this.plunger.volume > vol) {
                 heater.rate = 1 - eps;
+            } else if (this.plunger.volume < vol) {
+                heater.rate = 1 - eps / 2;
             }
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2; 
             heater.warm();
