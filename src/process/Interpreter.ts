@@ -60,7 +60,7 @@ export class Interpreter
                     this.createPlunger(params);
                     this.newProcess();
                     if (this.process?.space.N) {
-                        await this.process?.calm(1000);
+                        // await this.process?.calm(1000);
                         this.space.plunger.clearMeterings();
                     }
                     break;
@@ -71,7 +71,7 @@ export class Interpreter
                     }
                     break;
                 case 'calm':
-                    await this.process?.calm(params.t);
+                    await this.calm(params.t);
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m);
@@ -142,20 +142,27 @@ export class Interpreter
         // add gass
         if (n) {
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
-            // for (let i = 0; i < 1000; i++) {
-            //     this.space.step();
-            //     let T = plun.measureTemperature();
-            //     let p = plun.pressure
-            //     let v = plun.volume
-            //     let x = p * v - this.space.N * glo.BOLTZ * T
-            //     console.log(plun.y1);
-            // }
+            this.calm(200);
         } else {
             plun.move(0, -Plunger.GAP);
         }
     }
 
-
+    calm(steps: number) {
+        const plun = this.space.plunger;
+        let mas: number[] = [];
+        for (let i = 0; i < steps; i++) {
+            this.space.step();
+            mas.push(plun.y1);
+        }
+        let zero = (Math.min(...mas) + Math.max(...mas)) / 2;
+        let sign0 = Math.sign(plun.y1 - zero);
+        do {
+            this.space.step();
+        } while(Math.sign(plun.y1 - zero) == sign0)    
+        plun.loss += plun.m * plun.velo * plun.velo / 2;  
+        plun.velo = 0;  
+    }
 
     hilightBefore(line: string ) 
     {   

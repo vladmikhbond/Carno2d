@@ -60,42 +60,6 @@ export default class Process
         });
     }
 
-    
-    async calm_with_friction(calmTime = 100) {
-        let stopStep = this.controller.time + calmTime;
-        this.plunger.withFriction = true;
-        await this.whileAsync(
-        () => 
-            this.controller.time < stopStep, 
-        () => {
-            for (let t = 0; t < 10; t++)
-                this.controller.step();
-        }); 
-        this.plunger.withFriction = false;
-    }
-
-    async calm(calmTime: number) {
-        let stopStep = this.controller.time + calmTime;
-        const plan = this.plunger;
-        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
-        this.space.addDevice(heater);
-        // вимикає вимірювання
-        if (calmTime <= 500) 
-            glo.metr = calmTime;
-        await this.whileAsync(
-        () => 
-            this.controller.time < stopStep, 
-        () => {
-            const eps_v = 1e-4;
-            heater.rate = 1 + eps_v * plan.velo**3
-            heater.warm();
-        }); 
-        heater.dispose();
-        glo.metr = 1;
-    }
-
-
-
     //#region adiabatic 
 
     async adiabatic(mass: number) {
