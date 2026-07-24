@@ -30,7 +30,7 @@ export class Plunger extends Line
    lastMetering: PlungerMetering;
    meterings: PlungerMetering[];
 
-   scales: PlungerScales = {v:1, p:1, t:1, s:1, x:1, w:1};
+   scales: PlungerScales = {v:1, p:6, t:21, s:1, x:1, w:1};  // default values
    
    constructor(x1: number, y1: number, x2: number, y2: number, y: number, )
    {

@@ -71,12 +71,12 @@ export default class Space
             let y = b.y1 + Math.random() * (b.y2 - b.y1);
             let ball;
             // velocity
-            if (b.t) {
+            // if (b.t) {
                 let alpha = Math.random() * 2 * Math.PI;
                 ball = new Ball(x, y, v * Math.cos(alpha), v * Math.sin(alpha), b.r, b.m, b.c);
-            } else {
-                ball = new Ball(x, y, b.vx, b.vy, b.r, b.m, b.c);
-            }
+            // } else {
+            //     ball = new Ball(x, y, b.vx, b.vy, b.r, b.m, b.c);
+            // }
             this.addBall(ball);
         }
         this.bombs.push(b);

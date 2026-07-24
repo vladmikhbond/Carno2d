@@ -60,7 +60,8 @@ export class Interpreter
                     this.createPlunger(params);
                     this.newProcess();
                     if (this.process?.space.N) {
-                        await this.process?.calm(500);
+                        await this.process?.calm(1000);
+                        this.space.plunger.clearMeterings();
                     }
                     break;
                 case 'scale':
@@ -68,6 +69,9 @@ export class Interpreter
                     if (plunger) {
                         Object.assign(plunger.scales, params);
                     }
+                    break;
+                case 'calm':
+                    await this.process?.calm(params.t);
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m);
@@ -137,7 +141,15 @@ export class Interpreter
         plun.move(0, -y + Plunger.GAP);
         // add gass
         if (n) {
-            this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c)); 
+            this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
+            // for (let i = 0; i < 1000; i++) {
+            //     this.space.step();
+            //     let T = plun.measureTemperature();
+            //     let p = plun.pressure
+            //     let v = plun.volume
+            //     let x = p * v - this.space.N * glo.BOLTZ * T
+            //     console.log(plun.y1);
+            // }
         } else {
             plun.move(0, -Plunger.GAP);
         }

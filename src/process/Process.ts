@@ -37,16 +37,14 @@ export default class Process
 
     async whileAsync(
         condition: () => boolean, 
-        act = () => {},
+        action = () => {},
     ) {
         return new Promise((res, rej) => {
             let timer = setInterval(() => {
                 try {
                     if (this.procState == ProcessState.Run) {  
-                                                act();  
+                        action();  
                         this.controller.step();
-                        // act(); 
-
                         if (!condition()) {                            
                             clearInterval(timer);
                             res(this.controller.timer);
@@ -63,21 +61,39 @@ export default class Process
     }
 
     
-    async calm(calmTime = 100) {
+    async calm_with_friction(calmTime = 100) {
         let stopStep = this.controller.time + calmTime;
         this.plunger.withFriction = true;
         await this.whileAsync(
         () => 
             this.controller.time < stopStep, 
         () => {
-            this.controller.step();
-            this.controller.step();
-            this.controller.step();
-            this.controller.step();          
+            for (let t = 0; t < 10; t++)
+                this.controller.step();
         }); 
         this.plunger.withFriction = false;
-        this.plunger.clearMeterings();
     }
+
+    async calm(calmTime: number) {
+        let stopStep = this.controller.time + calmTime;
+        const plan = this.plunger;
+        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
+        this.space.addDevice(heater);
+        // вимикає вимірювання
+        if (calmTime <= 500) 
+            glo.metr = calmTime;
+        await this.whileAsync(
+        () => 
+            this.controller.time < stopStep, 
+        () => {
+            const eps_v = 1e-4;
+            heater.rate = 1 + eps_v * plan.velo**3
+            heater.warm();
+        }); 
+        heater.dispose();
+        glo.metr = 1;
+    }
+
 
 
     //#region adiabatic 
@@ -143,16 +159,19 @@ export default class Process
         () => 
             this.plunger.volume < maxVolume, 
         () => {
-            let part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
-            const eps = 0.002 * lin(part, [0,   0.2, 0.8,  1 ], 
-                                           [1/8,  1,  1,   1/8] );
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1)/2
+            let eps_v = 0.001;
 
-            heater.rate = 1 + eps;
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
-            heater.y2 = plan.realBottom - 20;
-            heater.x1 = plan.x1 + 20;
-            heater.x2 = plan.x2 - 20; 
-            
+            if (plan.velo < -0.05) {
+                heater.rate = 1 + eps_v * 1/3;
+            } else if (plan.velo < -0.025) {
+                heater.rate = 1 + eps_v;
+            } else {
+                heater.rate = 1 + eps_v * 4/3;
+            }
+            const part = (this.plunger.volume - minVolume) / (maxVolume - minVolume);
+            eps_v *= lin(part, [0,   0.1, 0.9,  1 ], 
+                               [1/8,  1,  1,   1/8] );            
             heater.warm();
 
             // replace real temperature metering with ideal one
@@ -177,15 +196,19 @@ export default class Process
         () => 
             this.plunger.volume > minVolume, 
         () => {
-            let part = (maxVolume - this.plunger.volume) / (maxVolume - minVolume);
-            const eps = 0.002 * lin(part, [0,   0.2, 0.8,  1 ], 
-                                           [1/8,  1,  1,   1/8] );
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1)/2
+            let eps_v = 0.001;
 
-            heater.rate = 1 - eps;
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2
-            heater.y2 = plan.realBottom - 20;
-            heater.x1 = plan.x1 + 20;
-            heater.x2 = plan.x2 - 20;
+            if (plan.velo > 0.05) {
+                heater.rate = 1 - eps_v * 1/3;
+            } else if (plan.velo > 0.025) {
+                heater.rate = 1 - eps_v;
+            } else {
+                heater.rate = 1 - eps_v * 4/3;
+            }
+            const part = (maxVolume - this.plunger.volume) / (maxVolume - minVolume);
+            eps_v *= lin(part, [0,   0.1, 0.9,  1 ], 
+                               [1/8,  1,  1,   1/8] );
             heater.warm();
 
             // replace real temperature  metering with ideal one
@@ -215,7 +238,7 @@ export default class Process
         const plan = this.plunger;
         const heater = new Heater(
             plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
@@ -223,17 +246,16 @@ export default class Process
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         await this.whileAsync(() => this.plunger.m > mimMass, () => {
- 
-            this.plunger.m *= 1 - 0.001;
+            const eps_m = 0.001;
+            this.plunger.m *= 1 - eps_m;
             
-
-            let eps = 0.001;
+            const eps_v = eps_m / 2;
             if (this.plunger.volume > vol) {
-                heater.rate = 1 - eps;
+                heater.rate = 1 - eps_v ;
             } else if (this.plunger.volume < vol) {
-                heater.rate = 1 - eps / 2;
+                heater.rate = 1 - eps_v * 5/6;
             }
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2; 
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
             heater.warm();
 
             // replace real pressure metering with ideal one
@@ -255,7 +277,7 @@ export default class Process
         const plan = this.plunger;
         const heater = new Heater(
             plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
@@ -266,16 +288,17 @@ export default class Process
         () => 
             this.plunger.m < maxMass, 
         () => {
+            const eps_m = 0.001;
+            this.plunger.m *= 1 + eps_m;
 
-            this.plunger.m *= 1 + 0.001;
-
-            let eps = 0.001;
+            const eps_v = eps_m / 2;
+    
             if (this.plunger.volume < vol) {
-                heater.rate = 1 + eps;
+                heater.rate = 1 + eps_v;
             } else if (this.plunger.volume > vol) {
-                heater.rate = 1 + eps / 2;
+                heater.rate = 1 + eps_v * 5/6;
             }
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2; 
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
             
             heater.warm();
             

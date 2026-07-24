@@ -50,13 +50,14 @@ export default class Controller
         }); 
 
         execButton.addEventListener('click', async (e) => {
+            doc.canvas.focus();
             await this.interpreter.interpret(processArea.value);
         }); 
 
         runButton.addEventListener('click', () => {
             if (!this.interpreter.process) 
                 return;
-            this.interpreter.process.procState = ProcessState.Run + ProcessState.Pause - this.interpreter.process.procState;
+            this.interpreter.process.procState = 1 - this.interpreter.process.procState;
         });
 
         processArea.addEventListener("input", (event) => {
@@ -150,13 +151,6 @@ export default class Controller
                         this.view.drawMeasure();
                     }
                     break;
-                case '0':
-                    // очистити журнал вимірювань
-                    if (this.space.plunger) {
-                        this.space.plunger.clearMeterings();
-                        this.view.drawMeasure();
-                    }
-                    break;
                 case '1': 
                     this.interpreter.process!.procState = ProcessState.Run;
                     setTimeout(() => {
@@ -165,6 +159,13 @@ export default class Controller
                         this.view.showTimeAndInfo(this.time);                 
                     }, 10); 
                     break;                    
+                case '0':
+                    // очистити журнал вимірювань
+                    if (this.space.plunger) {
+                        this.space.plunger.clearMeterings();
+                        this.view.drawMeasure();
+                    }
+                    break;
                 case 'f':
                     // зафіксувати-розфіксувати поршень
                     if (this.space.plunger) {
