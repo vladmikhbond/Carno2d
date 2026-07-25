@@ -127,11 +127,12 @@ export default class Process
         () => {
             heater.y1 =  plan.y1;
             
+            // let dv = (wanted * 200) / 2 * Math.sqrt(2 * initP / (this.plunger.volume * 10000 * 0.4));
+            // let v = Math.sqrt(2 * initP * this.plunger.volume / (10000 * 0.4));       // sqrt(2PV/mn)
+            // let eps_v = dv / v; 
+            const eps_v = (wanted * 100) / this.plunger.volume;  // wanted_velo * width / 2 * this.plunger.volume ;
 
-            let dv = (wanted * 200) / 2 * Math.sqrt(2 * initP / (this.plunger.volume * 10000 * 0.4));
-            let v = Math.sqrt(2 * initP * this.plunger.volume / (10000 * 0.4));       // sqrt(2PV/mn)
-            let eps_v = dv / v; 
-            let k = lin(plan.velo / wanted, [ 0,   2 ], 
+            let k = lin(plan.velo / wanted, [ 0.5,   1.5 ], 
                                             [4/3, 1/3] );            
             heater.rate = 1 - k * eps_v;
             heater.warm();
@@ -164,12 +165,10 @@ export default class Process
             this.plunger.volume > minVolume, 
         () => {
             heater.y1 =  plan.y1;
-            let dv = (wanted * 200) / 2 * Math.sqrt(2 * initP / (this.plunger.volume * 10000 * 0.4));
-            let v = Math.sqrt(2 * initP * this.plunger.volume / (10000 * 0.4));       // sqrt(2PV/mn)
-            let eps_v = dv / v;
-            let k = lin(plan.velo / wanted, [ 0,   2 ], 
+            const eps_v = (wanted * 100) / this.plunger.volume;
+            let k = lin(plan.velo / wanted, [ 0.5, 1.5 ], 
                                             [4/3, 1/3] );        
-            heater.rate = 1 - eps_v;
+            heater.rate = 1 - k * eps_v;
             heater.warm();
             
             S += plan.velo; N++;
