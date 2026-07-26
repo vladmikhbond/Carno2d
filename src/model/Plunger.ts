@@ -109,6 +109,9 @@ export class Plunger extends Line
       this.move(0, this.velo);
    }
    
+
+
+
    move(dx:number, dy: number) 
    {  
       // зсув куль з-під поршня
@@ -215,4 +218,20 @@ export class Plunger extends Line
          this.scales.x /= coef;
       } 
    }
+
+   calm(step_count: number) {
+      let mas: number[] = [];
+      while(step_count--) {
+         this.space!.step();
+         mas.push(this.y1);
+      }
+      let zero = (Math.min(...mas) + Math.max(...mas)) / 2;
+      let sign0 = Math.sign(this.y1 - zero);
+      do {
+         this.space!.step();
+      } while(Math.sign(this.y1 - zero) == sign0)    
+      this.loss += this.m * this.velo * this.velo / 2;  
+      this.velo = 0;  
+   }
+
 }

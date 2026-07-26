@@ -169,7 +169,7 @@ export default class View
     showWord(word: string) {
         const ctx = this.ctx;
         ctx.save();
-        ctx.fillStyle = "black";
+        ctx.fillStyle = "gray";
         ctx.font = "bold 40px sans-serif";
         ctx.fillText(word, 100, 100);
         ctx.restore();

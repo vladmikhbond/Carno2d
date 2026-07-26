@@ -39,7 +39,6 @@ export default class Controller
     addProcessHandlers() 
     {
 
-
         clearButton.addEventListener('click', async (e) => {
             this.space.clear();
             this.interpreter.removeHilights();
@@ -49,9 +48,12 @@ export default class Controller
             this.view.showTimeAndInfo(0);      
         }); 
 
-        execButton.addEventListener('click', async (e) => {
-            doc.canvas.focus();
+        execButton.addEventListener('click', () => {
+        this.view.showWord("Wait");
+        doc.canvas.focus();
+        setTimeout( async () => {
             await this.interpreter.interpret(processArea.value);
+        }, 0);
         }); 
 
         runButton.addEventListener('click', () => {

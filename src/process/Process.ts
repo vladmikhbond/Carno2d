@@ -112,26 +112,26 @@ export default class Process
     // Газ розширюється до певного об'єму за рахунок повільного нагрівання
     // Гасіння коливань за рахунок втручання в швидкість поршня
     private async isobaricExtention(maxVolume: number) {
-        const plan = this.plunger;
+        const plun = this.plunger;
         const wanted = -0.1;
         let initP = this.plunger.pressure;
         
-        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
+        const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
         await this.whileAsync(
         () => 
             this.plunger.volume < maxVolume, 
         () => {
-            heater.y1 =  plan.y1;
+            heater.y1 =  plun.y1;
 
             // let eps = dv / v = wanted_velo * width / 2 * this.plunger.volume ;
             const eps = ((2)) * wanted * 100 / this.plunger.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
             // Втручання
-            let q = (plan.velo**2 - wanted**2) * (plan.m / 2);
+            let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
             let eps_e = q/(10000 * 0.4)
-            plan.velo = wanted;
+            plun.velo = wanted;
             heater.rate = 1 - eps_e;
             heater.warm();            
 
@@ -148,23 +148,23 @@ export default class Process
     private async isobaricCompression(minVolume: number) {
         const wanted = 0.1;
 
-        const plan = this.plunger;
+        const plun = this.plunger;
         let initP = this.plunger.pressure;  
-        const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
+        const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
 
         await this.whileAsync(
         () => 
             this.plunger.volume > minVolume, 
         () => {
-            heater.y1 =  plan.y1;
+            heater.y1 =  plun.y1;
             const eps = 2 * wanted * 100 / this.plunger.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
             // Втручання
-            let q = (plan.velo**2 - wanted**2) * (plan.m / 2);
+            let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
             let eps_e = q/(10000 * 0.4)
-            plan.velo = wanted;
+            plun.velo = wanted;
             heater.rate = 1 + eps_e;
             heater.warm();            
 
