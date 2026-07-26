@@ -8,7 +8,6 @@ import { glo } from '../globals/globals.js';
 import { lin } from '../globals/utils.js';
 
 
-
 export enum ProcessState {
     Pause = 0,
     Run = 1,
@@ -111,13 +110,11 @@ export default class Process
     }
 
     // Газ розширюється до певного об'єму за рахунок повільного нагрівання
-    // Гасіння коливань за рахунок ступеню нагріву.
+    // Гасіння коливань за рахунок втручання в швидкість поршня
     private async isobaricExtention(maxVolume: number) {
         const plan = this.plunger;
-        let S = 0, N = 0;
         const wanted = -0.1;
-        
-        let initP = this.plunger.pressure;  // to replace real
+        let initP = this.plunger.pressure;
         
         const heater = new Heater(plan.x1, plan.y1, plan.x2, plan.realBottom, 1, "red");
         this.space.addDevice(heater);
@@ -126,18 +123,17 @@ export default class Process
             this.plunger.volume < maxVolume, 
         () => {
             heater.y1 =  plan.y1;
-            
-            // let dv = (wanted * 200) / 2 * Math.sqrt(2 * initP / (this.plunger.volume * 10000 * 0.4));
-            // let v = Math.sqrt(2 * initP * this.plunger.volume / (10000 * 0.4));       // sqrt(2PV/mn)
-            // let eps_v = dv / v; 
-            const eps_v = (wanted * 100) / this.plunger.volume;  // wanted_velo * width / 2 * this.plunger.volume ;
 
-            let k = lin(plan.velo / wanted, [ 0.5,   1.5 ], 
-                                            [4/3, 1/3] );            
-            heater.rate = 1 - k * eps_v;
-            heater.warm();
-            
-            S += plan.velo; N++;
+            // let eps = dv / v = wanted_velo * width / 2 * this.plunger.volume ;
+            const eps = ((2)) * wanted * 100 / this.plunger.volume;
+            heater.rate = 1 - eps;
+            heater.warm(); 
+            // Втручання
+            let q = (plan.velo**2 - wanted**2) * (plan.m / 2);
+            let eps_e = q/(10000 * 0.4)
+            plan.velo = wanted;
+            heater.rate = 1 - eps_e;
+            heater.warm();            
 
             // replace real temperature metering with ideal one
             if (glo.pretty) {
@@ -147,12 +143,9 @@ export default class Process
             }
         }); 
         heater.dispose();
-        
-        console.log(S/N);
     }
     
     private async isobaricCompression(minVolume: number) {
-        let S = 0, N = 0;
         const wanted = 0.1;
 
         const plan = this.plunger;
@@ -165,14 +158,15 @@ export default class Process
             this.plunger.volume > minVolume, 
         () => {
             heater.y1 =  plan.y1;
-            const eps_v = (wanted * 100) / this.plunger.volume;
-            let k = lin(plan.velo / wanted, [ 0.5, 1.5 ], 
-                                            [4/3, 1/3] );        
-            heater.rate = 1 - k * eps_v;
-            heater.warm();
-            
-            S += plan.velo; N++;
-
+            const eps = 2 * wanted * 100 / this.plunger.volume;
+            heater.rate = 1 - eps;
+            heater.warm(); 
+            // Втручання
+            let q = (plan.velo**2 - wanted**2) * (plan.m / 2);
+            let eps_e = q/(10000 * 0.4)
+            plan.velo = wanted;
+            heater.rate = 1 + eps_e;
+            heater.warm();            
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
@@ -182,8 +176,6 @@ export default class Process
             }
         }); 
         heater.dispose();
-
-        console.log(S/N);
     }      
     //#endregion
 
@@ -419,8 +411,6 @@ export default class Process
 
         // close bottom anime
         await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
-
-        // await this.calm();
     }
 
     //#endregion Otto Cicle

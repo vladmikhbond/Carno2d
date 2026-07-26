@@ -166,6 +166,15 @@ export default class View
         }    
     }
 
+    showWord(word: string) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.fillStyle = "black";
+        ctx.font = "bold 40px sans-serif";
+        ctx.fillText(word, 100, 100);
+        ctx.restore();
+    }
+
 //#endregion Canvas1    
  
 //#region Canvas2
@@ -359,7 +368,6 @@ export default class View
         this.ctx2.clearRect(X, 28, width, 14);
         this.ctx2.fillText(line, X, 42);    
     }
-
     //#endregion Canvas2
 
     //#region Gray Zone

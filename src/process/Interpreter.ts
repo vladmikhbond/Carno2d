@@ -59,8 +59,7 @@ export class Interpreter
                 case 'plunger':
                     this.createPlunger(params);
                     this.newProcess();
-                    if (this.process?.space.N) {
-                        // await this.process?.calm(1000);
+                    if (this.process?.space.N) {                        
                         this.space.plunger.clearMeterings();
                     }
                     break;
@@ -71,6 +70,7 @@ export class Interpreter
                     }
                     break;
                 case 'calm':
+                    await this.view.draw();
                     await this.calm(params.t);
                     break;
                 case 'adiabatic':
@@ -142,26 +142,49 @@ export class Interpreter
         // add gass
         if (n) {
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
-            this.calm(200);
+            await this.calm(200);
         } else {
             plun.move(0, -Plunger.GAP);
         }
     }
 
-    calm(steps: number) {
+    private waitFrame(): Promise<void> {
+        return new Promise(resolve => requestAnimationFrame(() => resolve()));
+    }
+
+    async calm(steps: number) {
         const plun = this.space.plunger;
         let mas: number[] = [];
+
+        this.view.draw();
+        this.view.showWord('WAIT');
+        await this.waitFrame();
+
         for (let i = 0; i < steps; i++) {
             this.space.step();
             mas.push(plun.y1);
+
+            if (i % 20 === 0) {
+                this.view.draw();
+                this.view.showWord('WAIT');
+                await this.waitFrame();
+            }
         }
+
         let zero = (Math.min(...mas) + Math.max(...mas)) / 2;
         let sign0 = Math.sign(plun.y1 - zero);
         do {
             this.space.step();
-        } while(Math.sign(plun.y1 - zero) == sign0)    
-        plun.loss += plun.m * plun.velo * plun.velo / 2;  
-        plun.velo = 0;  
+            if (Math.abs(plun.y1 - zero) < 1e-3) {
+                this.view.draw();
+                this.view.showWord('WAIT');
+                await this.waitFrame();
+            }
+        } while (Math.sign(plun.y1 - zero) == sign0)
+
+        plun.loss += plun.m * plun.velo * plun.velo / 2;
+        plun.velo = 0;
+        this.view.draw();
     }
 
     hilightBefore(line: string ) 
