@@ -61,9 +61,19 @@ export class Plunger extends Line
    // }
 
    payloadRect(): {x: number, y: number, w: number, h: number} {
-      let w = this.x2 - this.x1;
-      w = w > 120 ? 100 : w - 20;
-      let h = 5 * this.m / w;
+      const wMax = this.x2 - this.x1 - 10;
+      let m = 4 * this.m;
+      if (m < 1000) m = 1000
+
+      let w = Math.sqrt(m/1.5);
+      if (w > wMax) w = wMax;
+      if (w < 40) w = 40;
+      let h = m / w
+      
+
+      // let w = this.x2 - this.x1;
+      // w = w > 120 ? 100 : w - 20;
+      // let h = 5 * this.m / w;
       let x = (this.x1 + this.x2 - w) / 2;
       let y = this.y1 - h;
       return {x, y, w, h};
