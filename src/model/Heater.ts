@@ -14,19 +14,20 @@ export class Heater extends Device
    get avatar() {return "H"}
 
    warm() {
-      const k = this.rate;
+      const rate = this.rate;
 
       for (let ball of this.space!.balls()) 
       {
          if (this.c && ball.c != this.c)
             continue;
-         if (this.isInside(ball.x, ball.y)) {                        
-            // зміна енергії
-            ball.vx *= k;
-            ball.vy *= k; 
-            let ball_e = (ball.vx**2 + ball.vy**2) * ball.m / 2;
+         if (this.isInside(ball.x, ball.y)) {
+            const oldEnergy = (ball.vx**2 + ball.vy**2) * ball.m / 2;
+
+            ball.vx *= rate;
+            ball.vy *= rate;
+
             // облік тепла
-            let dE = (k**2 - 1) * ball_e;
+            const dE = (rate**2 - 1) * oldEnergy;
             this.erg += dE;
             this.space!.heatAccounting(dE);
          }          

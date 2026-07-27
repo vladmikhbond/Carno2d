@@ -1,4 +1,4 @@
-import { Heater} from '../model/Heaters.js';
+import { Heater} from '../model/Heater.js';
 import Bomb from '../model/Bomb.js';
 import Space from '../model/Space.js';
 import {Plunger} from '../model/Plunger.js';
@@ -127,13 +127,14 @@ export default class Process
             const eps = ((2)) * wanted * 100 / this.plunger.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
+
             // Втручання
             let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
-            let eps_e = q/(10000 * 0.4)
+            let eps_e = q / (this.space.N  * 0.4);
             plun.velo = wanted;
             heater.rate = 1 - eps_e;
-            heater.warm();            
-
+            heater.warm();
+        
             // replace real temperature metering with ideal one
             if (glo.pretty) {
                 let temperature =  this.plunger.volume * initP / glo.BOLTZ / this.space.N;
@@ -160,9 +161,10 @@ export default class Process
             const eps = 2 * wanted * 100 / this.plunger.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
+
             // Втручання
             let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
-            let eps_e = q/(10000 * 0.4)
+            let eps_e = q / (this.space.N  * 0.4);
             plun.velo = wanted;
             heater.rate = 1 + eps_e;
             heater.warm();            

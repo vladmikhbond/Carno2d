@@ -3,7 +3,7 @@ import Space from '../model/Space.js';
 import Line from '../model/Line.js';
 import {Plunger} from '../model/Plunger.js';
 import { Measurer} from '../model/Measurer.js';
-import { Heater} from '../model/Heaters.js';
+import { Heater} from '../model/Heater.js';
 import Bomb from '../model/Bomb.js';
 
 // types for serialization only

@@ -5,7 +5,7 @@ import Device from './Device.js';
 import {Plunger} from './Plunger.js';
 import { WallCont, BallCont, DevCont } from './SpaceConts.js';
 import Bomb from './Bomb.js';
-import { Heater } from './Heaters.js';
+import { Heater } from './Heater.js';
 
 // export enum TimeMode {Stop, Play};
 export enum CreateMode {Info, Gas, Wall, Devs};

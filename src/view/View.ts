@@ -4,7 +4,7 @@ import Ball from '../model/Ball.js';
 import Line from '../model/Line.js';
 import Device from '../model/Device.js';
 import {Measurer} from '../model/Measurer.js';
-import {Heater} from '../model/Heaters.js';
+import {Heater} from '../model/Heater.js';
 import {Plunger, PlungerMetering} from '../model/Plunger.js';
 
 export default class View 
