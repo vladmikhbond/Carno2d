@@ -7,8 +7,6 @@ import {Measurer} from '../model/Measurer.js';
 import {Heater} from '../model/Heaters.js';
 import {Plunger, PlungerMetering} from '../model/Plunger.js';
 
-
-
 export default class View 
 {
     space: Space;
@@ -19,8 +17,8 @@ export default class View
 
     constructor(space: Space) {
         this.space = space;
-        this.ctx = (<HTMLCanvasElement>doc.canvas!).getContext("2d")!;             
-        this.ctx2 = (<HTMLCanvasElement>doc.canvas2!).getContext("2d")!;             
+        this.ctx = (doc.canvas).getContext("2d")!;             
+        this.ctx2 = (doc.canvas2).getContext("2d")!;             
     }
 
 //#region Canvas1  
@@ -49,9 +47,10 @@ export default class View
 
         // devices
         for (const dev of space.devices()) {
-            this.drawDevice(dev);  
-        }
-        
+            if (dev instanceof Heater) {
+               this.drawHeater(dev);  
+            }
+        }  
     }
 
     drawLine(line: Line) {
@@ -136,43 +135,39 @@ export default class View
         ctx.stroke();
     } 
 
-    drawDevice(device: Device) 
+    drawHeater(device: Heater) 
     {
         const ctx = this.ctx;
-        // device color
-        if (device instanceof Measurer || device instanceof Heater && device.rate == 1 ) {
-            ctx.strokeStyle = 'gray';
-            ctx.fillStyle = '#00000011';
+        // color
+        if (device.rate > 1) {
+            ctx.strokeStyle = '#ff0000';
+            ctx.fillStyle = '#ff000016'
         } else {
-            if ((device as Heater).rate > 1) {
-                ctx.strokeStyle = 'orange';
-                ctx.fillStyle = '#ff880016'
-            } else {
-                ctx.strokeStyle = 'blue';
-                ctx.fillStyle = '#0000ff16';
-            }   
-        }  
+            ctx.strokeStyle = '#0000ff';
+            ctx.fillStyle = '#0000ff16';
+        }           
+
+        // rectangle       
+        ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
+
+        // device text
+        ctx.fillStyle = ctx.strokeStyle;  
+        ctx.fillText(`E = ${device.erg.toFixed(0)}`, device.x1 + 80, device.y2 + 20);                          
+    }
+
+    drawMeasurer(device: Measurer) 
+    {
+        const ctx = this.ctx;
+        // device color        
+        ctx.strokeStyle = 'gray';
+        ctx.fillStyle = '#00000011';
+          
         // device rectangle
-        
         ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
         
         // device text
-        if (device instanceof Heater) {
-            ctx.fillStyle = ctx.strokeStyle;  
-            ctx.fillText(`E=${device.erg.toFixed(0)}`, device.x1 + 80, device.y1 - 5);                          
-        }  else if (device instanceof Measurer) {
-            ctx.fillStyle = (device as Measurer).c;
-            ctx.fillText((device as Measurer).c , device.x1, device.y1 - 5);   
-        }    
-    }
-
-    showWord(word: string) {
-        const ctx = this.ctx;
-        ctx.save();
-        ctx.fillStyle = "gray";
-        ctx.font = "bold 40px sans-serif";
-        ctx.fillText(word, 100, 100);
-        ctx.restore();
+        ctx.fillStyle = (device as Measurer).c;
+        ctx.fillText((device as Measurer).c , device.x1, device.y1 - 5);     
     }
 
 //#endregion Canvas1    
@@ -370,7 +365,17 @@ export default class View
     }
     //#endregion Canvas2
 
-    //#region Gray Zone
+//#region Gray Zone
+
+
+    showWord(word: string) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.fillStyle = "gray";
+        ctx.font = "bold 40px sans-serif";
+        ctx.fillText(word, doc.canvas.width/2, doc.canvas.height/2);
+        ctx.restore();
+    }
 
     drawGrayRect(x1: number, y1: number, x2: number, y2: number,) {
         const ctx = this.ctx;
