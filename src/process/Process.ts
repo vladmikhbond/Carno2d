@@ -35,23 +35,30 @@ export default class Process
     }
 
     async whileAsync(
-        condition: () => boolean, 
-        action = () => {},
+        condition: () => boolean,
+        action: () => void = () => {},
     ) {
-        return new Promise((res, rej) => {
+        return new Promise<number>((res, rej) => {
             let timer = setInterval(() => {
                 try {
-                    if (this.procState == ProcessState.Run) {  
-                        action();  
-                        this.controller.step();
+                    if (this.procState == ProcessState.Abort) {
+                        clearInterval(timer);
+                        rej(new Error('stop process'));
+                        return;
+                    }
 
-                        if (!condition()) {                            
-                            clearInterval(timer);
-                            res(this.controller.timer);
-                        }                 
-                    } else if (this.procState == ProcessState.Abort) {
-                        throw Error('stop process');
-                    }              
+                    if (this.procState != ProcessState.Run) {
+                        return;
+                    }
+
+                    if (!condition()) {
+                        clearInterval(timer);
+                        res(this.controller.timer);
+                        return;
+                    }
+
+                    action();
+                    this.controller.step();
                 } catch (err) {
                     clearInterval(timer);
                     rej(err);
