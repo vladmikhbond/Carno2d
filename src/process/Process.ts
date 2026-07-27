@@ -82,11 +82,7 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
-            // гасіння коливань зміною маси вантажу
-            if (this.plunger.velo < 0) {
-                this.plunger.m *= 1 + Math.min(0.001, (-this.plunger.velo) ** 0.5)
-            }
-            this.plunger.m *= 0.998;
+            this.plunger.m *= 0.999;
         }); 
     }
 
@@ -95,11 +91,7 @@ export default class Process
         () => 
             this.plunger.m < maxMass, 
         () => {
-            // гасіння коливань зміною маси вантажу
-            if (this.plunger.velo > 0) {
-                this.plunger.m *= 1 - Math.min(0.001, this.plunger.velo ** 0.5)
-            }
-            this.plunger.m *= 1.002;
+            this.plunger.m /= 0.999;
         }); 
 
     }

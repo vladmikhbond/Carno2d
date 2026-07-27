@@ -55,35 +55,23 @@ export class Plunger extends Line
    set volume(vol: number){
       this.y1 = this.realBottom + vol / (this.x2 - this.x1);
    }
-   
-   // get realBottom(): number {
-   //    return this.bottom + Plunger.GAP;
-   // }
+
 
    payloadRect(): {x: number, y: number, w: number, h: number} {
-      const wMax = this.x2 - this.x1 - 10;
       let m = 4 * this.m;
-      if (m < 1000) m = 1000
-
+      if (m < 1000) m = 1000;
+      
+      const wMax = this.x2 - this.x1 - 10;
       let w = Math.sqrt(m/1.5);
       if (w > wMax) w = wMax;
       if (w < 40) w = 40;
       let h = m / w
-      
 
-      // let w = this.x2 - this.x1;
-      // w = w > 120 ? 100 : w - 20;
-      // let h = 5 * this.m / w;
       let x = (this.x1 + this.x2 - w) / 2;
       let y = this.y1 - h;
       return {x, y, w, h};
    }
    
-
-   // 
-   // a = globus.g  + this.impulse / dt / (this.m + Plunger.M0)            WHERE this.impulse / dt = f (сила)
-   // dv = a * dt
-   //
    moveByForces() {
       // гравітація діє лише на навантаження, а інерція поршня залежить від його загальної маси
       // let dv = (globus.g * this.m + this.impulse) / (this.m + Plunger.M0); 
@@ -119,9 +107,7 @@ export class Plunger extends Line
       this.move(0, this.velo);
    }
    
-
-
-
+   
    move(dx:number, dy: number) 
    {  
       // зсув куль з-під поршня
