@@ -53,7 +53,7 @@ export default class Process
 
                     if (!condition()) {
                         clearInterval(timer);
-                        res(this.controller.timer);
+                        res(0);
                         return;
                     }
 
@@ -65,6 +65,25 @@ export default class Process
                 }
             }, glo.msec);
         });
+    }
+
+    calm(steps: number) {
+        // here show word "WAIT" on canvas 
+        this.view.showWord("Wait")
+        
+        const plun = this.space.plunger;
+        let arr: number[] = [];
+        for (let i = 0; i < steps; i++) {
+            this.space.step();
+            arr.push(plun.y1);
+        }
+        let zero = (Math.min(...arr) + Math.max(...arr)) / 2;
+        let sign0 = Math.sign(plun.y1 - zero);
+        do {
+            this.space.step();
+        } while(Math.sign(plun.y1 - zero) == sign0)    
+        plun.loss += plun.m * plun.velo * plun.velo / 2;  
+        plun.velo = 0;  
     }
 
     //#region adiabatic 

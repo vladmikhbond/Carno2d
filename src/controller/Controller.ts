@@ -49,12 +49,8 @@ export default class Controller
         }); 
 
         execButton.addEventListener('click', () => {
-            this.view.showWord("Wait");
             doc.canvas.focus();
-
-            setTimeout( () => {
-                this.interpreter.interpret(processArea.value);
-            }, 1);
+            this.interpreter.interpret(processArea.value);
         }); 
 
         runButton.addEventListener('click', () => {

@@ -70,7 +70,7 @@ export class Interpreter
                     }
                     break;
                 case 'calm':
-                    this.space.plunger.calm(params.t);
+                    this.process?.calm(params.t);
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m);
@@ -141,15 +141,17 @@ export class Interpreter
         // add gass
         if (n) {
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
-            plun.calm(200);
+            this.process?.calm(200);
         } else {
             plun.move(0, -Plunger.GAP);
         }
     }
 
-    // private waitFrame(): Promise<void> {
-    //     return new Promise(resolve => requestAnimationFrame(() => resolve()));
-    // }
+    private waitFrame(): Promise<void> {
+        return new Promise(
+            res => requestAnimationFrame(() => res())
+        );
+    }
 
     hilightBefore(line: string ) 
     {   
