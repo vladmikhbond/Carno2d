@@ -88,7 +88,7 @@ section {
 }
 
 #canvas {
-    z-index: 2;
+    z-index: 2; /* цей зверху */
 }
 #canvas2 {
     z-index: 1;

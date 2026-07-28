@@ -7,5 +7,5 @@ const space = new Space(...getSizeParams()!);
 const view = new View(space);
 export const controller = new Controller(space, view);
 
-view.draw();
+
 

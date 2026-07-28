@@ -68,7 +68,7 @@ export class Plunger extends Line
       let h = m / w
 
       let x = (this.x1 + this.x2 - w) / 2;
-      let y = this.y1 - h;
+      let y = this.y1 - h - 6;
       return {x, y, w, h};
    }
    

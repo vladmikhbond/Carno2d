@@ -2,7 +2,6 @@ import {glo, doc} from '../globals/globals.js';
 import Space from '../model/Space.js';
 import Ball from '../model/Ball.js';
 import Line from '../model/Line.js';
-import Device from '../model/Device.js';
 import {Measurer} from '../model/Measurer.js';
 import {Heater} from '../model/Heater.js';
 import {Plunger, PlungerMetering} from '../model/Plunger.js';
@@ -28,10 +27,6 @@ export default class View
         const space = this.space;
         ctx.clearRect(0, 0, doc.canvas.width, doc.canvas.height);
         
-        // grid
-        this.drawGrayGrid();
-
-
         // balls - малює не всі частки
         for (const ball of space.balls()) {    
             if (ball.id % this.viz == 0) {
@@ -90,29 +85,31 @@ export default class View
         }
         ctx.stroke();
     }
-
     drawPlungerPayload(plun: Plunger) {
         let {x, y, w, h} = plun.payloadRect();
             
         const ctx = this.ctx;
         // body of kettlebell
-        ctx.fillStyle = "#00000022";
+        ctx.fillStyle = "#000A";
 
         ctx.beginPath();
         ctx.fillRect(x, y, w, h);
         ctx.ellipse(x + w/2, y, w/2, h/4, 0, 0, 3.1416, true);
         ctx.fill();
 
-        // the hole under handle
-        ctx.globalCompositeOperation = "destination-out";
-        ctx.fillStyle = "#000000FF";
+        // transparent hole under handle
+        ctx.save();
         ctx.beginPath();
         ctx.ellipse(x + w/2, y, w/4, h/8, 0, 0, 2*3.1416);
-        ctx.fill();
-        ctx.globalCompositeOperation = "source-over";
-        ctx.fillStyle = "black";
+        ctx.clip();
+        ctx.clearRect(x + w/2 - w/4, y - h/8, w/2, h/4);
+        ctx.restore();
+
+        // text
+        ctx.fillStyle = "white";
         ctx.fillText(plun.m.toFixed(0), x + w/2 - 10, y + h - 16);    
     }
+
 
     drawBall(ball: Ball) {
         const x = ball.x, y = ball.y;
@@ -155,27 +152,31 @@ export default class View
         ctx.fillText(`E = ${device.erg.toFixed(0)}`, device.x1 + 80, device.y2 + 20);                          
     }
 
-    drawMeasurer(device: Measurer) 
-    {
-        const ctx = this.ctx;
-        // device color        
-        ctx.strokeStyle = 'gray';
-        ctx.fillStyle = '#00000011';
+    // drawMeasurer(device: Measurer) 
+    // {
+    //     const ctx = this.ctx;
+    //     // device color        
+    //     ctx.strokeStyle = 'gray';
+    //     ctx.fillStyle = '#00000011';
           
-        // device rectangle
-        ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
+    //     // device rectangle
+    //     ctx.fillRect(device.x1, device.y1, device.x2 - device.x1, device.y2 - device.y1);
         
-        // device text
-        ctx.fillStyle = (device as Measurer).c;
-        ctx.fillText((device as Measurer).c , device.x1, device.y1 - 5);     
-    }
+    //     // device text
+    //     ctx.fillStyle = (device as Measurer).c;
+    //     ctx.fillText((device as Measurer).c , device.x1, device.y1 - 5);     
+    // }
 
 //#endregion Canvas1    
  
 //#region Canvas2
 
-    drawMeasure() {
-        this.ctx2.clearRect(0, 0, doc.canvas2.width, doc.canvas2.height);
+    draw2() {
+        const ctx = this.ctx2;
+        ctx.clearRect(0, 0, doc.canvas2.width, doc.canvas2.height);
+        // grid
+        this.drawGrayGrid2();
+
         // the 1-st plunger if exists
         let plunger = this.space.plungers[0];
         if (plunger) {
@@ -183,120 +184,141 @@ export default class View
         }   
     }
 
-    drawDeviceMeters(device: Measurer) 
-    {
-        if (device.meterings.length == 0) 
-            return;
-        const HISTORY_DEEP = 24;
-        let meterings = device.meterings.slice(-HISTORY_DEEP-1, device.meterings.length);
-        
-        // low left corner and height of the display area
-        let X = doc.canvas2.width - 55;
-        let Y = device.y2 + device.shift;
-        let H = 100; 
-
-        let Kx = 10;
-        
+        drawGrayGrid2() {
         const ctx = this.ctx2;
+        ctx.strokeStyle = 'gray'; 
+        ctx.lineWidth = 0.1;
+        let step = this.space.cell;
 
-        // background
-        ctx.fillStyle = '#00000011';
-        let x0 = X - HISTORY_DEEP * Kx, 
-            y0 = Y - H, 
-            w = HISTORY_DEEP * Kx;
-
-        ctx.fillRect(x0, y0, w, H)
-
-        // draw histogram ----------------------
-        
-        let histogram = device.histogram;
-        ctx.strokeStyle = 'lightgray';
         ctx.beginPath();
-        for(let i = 0; i < histogram.length; i++) {
-            ctx.moveTo(x0 + i*3, Y);
-            ctx.lineTo(x0 + i*3, Y - histogram[i]);
+        // Горизонтальні лінії
+        for (let y = step; y < this.space.height; y += step) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(this.space.width, y);
         }
-        ctx.stroke();
+        // Вертикальні лінії
+        for (let x = step; x < this.space.width; x += step) {
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, this.space.height);
+        } 
+        ctx.stroke();   
+    }
 
-        // draw P & T graphs ------------------------
-
-        const TOP_LIMIT = 100, LOW_LIMIT = 25;
-        const forScale = meterings.slice(-5);
+    // drawDeviceMeters(device: Measurer) 
+    // {
+    //     if (device.meterings.length == 0) 
+    //         return;
+    //     const HISTORY_DEEP = 24;
+    //     let meterings = device.meterings.slice(-HISTORY_DEEP-1, device.meterings.length);
         
-        // scale T
-        let Kt = 1;
-        let maxT = Math.max(...forScale.map(m => m.t));
-        while (maxT * Kt > TOP_LIMIT) Kt /= 2;
-        while (maxT * Kt > 0 && maxT * Kt < LOW_LIMIT) Kt *= 2;
+    //     // low left corner and height of the display area
+    //     let X = doc.canvas2.width - 55;
+    //     let Y = device.y2 + device.shift;
+    //     let H = 100; 
 
-        // scale P
-        let Kp = 1;
-        let maxP = Math.max(...forScale.map(m => m.p));
-        while (maxP * Kp > TOP_LIMIT) Kp /= 2;
-        while (maxP * Kp > 0 && maxP * Kp < LOW_LIMIT) Kp *= 2;
+    //     let Kx = 10;
         
-        // function for drawing one graph
-        const drawMeters = (prop: string, Ky: number, values: number[]) => {
-            if (!values || values.length == 0)
-                return;
+    //     const ctx = this.ctx2;
 
-            ctx.fillStyle = ctx.strokeStyle = prop == 't' ? 'blue' : 'brown';    
-            ctx.lineWidth = device == this.space.selectedDevice ? 2 : 1;
-            ctx.beginPath();
-            let x = X + (1 - values.length) * Kx;
-            let y = Y - Ky * values[0];  
-            ctx.moveTo(x, y);
-            for (let i = 1; i < values.length; i++) 
-            {
-                x = X + (i - values.length + 1) * Kx;
-                y = Y - Ky * values[i];
-                ctx.lineTo(x, y);
-            }
-            ctx.closePath;
-            ctx.stroke();
-        }
+    //     // background
+    //     ctx.fillStyle = '#00000011';
+    //     let x0 = X - HISTORY_DEEP * Kx, 
+    //         y0 = Y - H, 
+    //         w = HISTORY_DEEP * Kx;
 
-        drawMeters('t', Kt, meterings.map(m => m.t));
-        drawMeters('p', Kp, meterings.map(m => m.p));
+    //     ctx.fillRect(x0, y0, w, H)
+
+    //     // draw histogram ----------------------
+        
+    //     let histogram = device.histogram;
+    //     ctx.strokeStyle = 'lightgray';
+    //     ctx.beginPath();
+    //     for(let i = 0; i < histogram.length; i++) {
+    //         ctx.moveTo(x0 + i*3, Y);
+    //         ctx.lineTo(x0 + i*3, Y - histogram[i]);
+    //     }
+    //     ctx.stroke();
+
+    //     // draw P & T graphs ------------------------
+
+    //     const TOP_LIMIT = 100, LOW_LIMIT = 25;
+    //     const forScale = meterings.slice(-5);
+        
+    //     // scale T
+    //     let Kt = 1;
+    //     let maxT = Math.max(...forScale.map(m => m.t));
+    //     while (maxT * Kt > TOP_LIMIT) Kt /= 2;
+    //     while (maxT * Kt > 0 && maxT * Kt < LOW_LIMIT) Kt *= 2;
+
+    //     // scale P
+    //     let Kp = 1;
+    //     let maxP = Math.max(...forScale.map(m => m.p));
+    //     while (maxP * Kp > TOP_LIMIT) Kp /= 2;
+    //     while (maxP * Kp > 0 && maxP * Kp < LOW_LIMIT) Kp *= 2;
+        
+    //     // function for drawing one graph
+    //     const drawMeters = (prop: string, Ky: number, values: number[]) => {
+    //         if (!values || values.length == 0)
+    //             return;
+
+    //         ctx.fillStyle = ctx.strokeStyle = prop == 't' ? 'blue' : 'brown';    
+    //         ctx.lineWidth = device == this.space.selectedDevice ? 2 : 1;
+    //         ctx.beginPath();
+    //         let x = X + (1 - values.length) * Kx;
+    //         let y = Y - Ky * values[0];  
+    //         ctx.moveTo(x, y);
+    //         for (let i = 1; i < values.length; i++) 
+    //         {
+    //             x = X + (i - values.length + 1) * Kx;
+    //             y = Y - Ky * values[i];
+    //             ctx.lineTo(x, y);
+    //         }
+    //         ctx.closePath;
+    //         ctx.stroke();
+    //     }
+
+    //     drawMeters('t', Kt, meterings.map(m => m.t));
+    //     drawMeters('p', Kp, meterings.map(m => m.p));
          
        
-        // ------------  text values of averige T & P  ----------------
-        const avg = device.avg();
-        if (!avg.n) {
-            return;
-        }
-        const GAP_Y = 15, GAP_X = 5;
+    //     // ------------  text values of averige T & P  ----------------
+    //     const avg = device.avg();
+    //     if (!avg.n) {
+    //         return;
+    //     }
+    //     const GAP_Y = 15, GAP_X = 5;
         
-        let yT = Y - Kt * avg.t;
-        let yP = Y - Kp * avg.p;        
-        if (Math.abs(avg.t * Kt - avg.p * Kp) < GAP_Y) {
-            if (avg.t * Kt >= avg.p * Kp) {
-                yP = yT + GAP_Y; 
-            } else {
-                yT = yP + GAP_Y; 
-            }
-        }
+    //     let yT = Y - Kt * avg.t;
+    //     let yP = Y - Kp * avg.p;        
+    //     if (Math.abs(avg.t * Kt - avg.p * Kp) < GAP_Y) {
+    //         if (avg.t * Kt >= avg.p * Kp) {
+    //             yP = yT + GAP_Y; 
+    //         } else {
+    //             yT = yP + GAP_Y; 
+    //         }
+    //     }
 
-        ctx.fillStyle = 'blue';
-        if (avg.t) 
-            ctx.fillText(`T=${avg.t.toFixed(2)}`, X + GAP_X, yT);
-        ctx.fillStyle = 'brown';
-        if (avg.p) 
-            ctx.fillText(`P=${avg.p.toFixed(3)}`, X + GAP_X, yP);   
-        ctx.fillStyle = 'black';  
-        let ballNumber = avg.n.toFixed(0);
-        ctx.fillText(`n=${ballNumber} , mfp=${avg.mfp.toFixed(0)}`, x0 + 5, y0 + 10);
+    //     ctx.fillStyle = 'blue';
+    //     if (avg.t) 
+    //         ctx.fillText(`T=${avg.t.toFixed(2)}`, X + GAP_X, yT);
+    //     ctx.fillStyle = 'brown';
+    //     if (avg.p) 
+    //         ctx.fillText(`P=${avg.p.toFixed(3)}`, X + GAP_X, yP);   
+    //     ctx.fillStyle = 'black';  
+    //     let ballNumber = avg.n.toFixed(0);
+    //     ctx.fillText(`n=${ballNumber} , mfp=${avg.mfp.toFixed(0)}`, x0 + 5, y0 + 10);
 
-    }
+    // }
 
 
     drawPlungerMeters(plun: Plunger) {
-
+        
         if (plun.meterings.length < 2) {
             return;
         }
 
         const ctx = this.ctx2;
+       
         ctx.font = "normal 12px Arial";
         const [X, Y, W, H] = xywh(plun);
 
@@ -363,7 +385,7 @@ export default class View
         this.ctx2.clearRect(X, 28, width, 14);
         this.ctx2.fillText(line, X, 42);    
     }
-    //#endregion Canvas2
+//#endregion Canvas2
 
 //#region Gray Zone
 
@@ -377,48 +399,29 @@ export default class View
         ctx.restore();
     }
 
-    drawGrayRect(x1: number, y1: number, x2: number, y2: number,) {
-        const ctx = this.ctx;
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = ctx.fillStyle = 'gray'; 
-        ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
-        //
-        let w = (x2 - x1).toFixed(2);
-        let h = (y2 - y1).toFixed(2);
-        let text = x2 - x1 < glo.quant && y2 - y1 < glo.quant ? '██' :  `${w} x ${h}`;
-        ctx.fillText(text, x2, y2);
-    }
+    // drawGrayRect(x1: number, y1: number, x2: number, y2: number,) {
+    //     const ctx = this.ctx;
+    //     ctx.lineWidth = 1;
+    //     ctx.strokeStyle = ctx.fillStyle = 'gray'; 
+    //     ctx.strokeRect(x1, y1, x2 - x1, y2 - y1);
+    //     //
+    //     let w = (x2 - x1).toFixed(2);
+    //     let h = (y2 - y1).toFixed(2);
+    //     let text = x2 - x1 < glo.quant && y2 - y1 < glo.quant ? '██' :  `${w} x ${h}`;
+    //     ctx.fillText(text, x2, y2);
+    // }
 
-    drawGrayLine(x1: number, y1: number, x2: number, y2: number,) {
-        const ctx = this.ctx;
-        ctx.strokeStyle = 'gray'; 
-        ctx.lineWidth = 1;
+    // drawGrayLine(x1: number, y1: number, x2: number, y2: number,) {
+    //     const ctx = this.ctx;
+    //     ctx.strokeStyle = 'gray'; 
+    //     ctx.lineWidth = 1;
         
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-    }
+    //     ctx.beginPath();
+    //     ctx.moveTo(x1, y1);
+    //     ctx.lineTo(x2, y2);
+    //     ctx.stroke();
+    // }
 
-    drawGrayGrid() {
-        const ctx = this.ctx;
-        ctx.strokeStyle = 'gray'; 
-        ctx.lineWidth = 0.1;
-        let step = this.space.cell;
-
-        ctx.beginPath();
-        // Горизонтальні лінії
-        for (let y = step; y < this.space.height; y += step) {
-            ctx.moveTo(0, y);
-            ctx.lineTo(this.space.width, y);
-        }
-        // Вертикальні лінії
-        for (let x = step; x < this.space.width; x += step) {
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, this.space.height);
-        } 
-        ctx.stroke();   
-    }
 
 //#endregion Gray Zone
 

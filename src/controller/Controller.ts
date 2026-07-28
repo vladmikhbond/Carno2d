@@ -34,6 +34,8 @@ export default class Controller
         this.addProcessHandlers();
 
         this.setModelSize();
+        view.draw();
+        view.draw2();
     }
 
     addProcessHandlers() 
@@ -45,7 +47,8 @@ export default class Controller
             this.interpreter.newProcess();
             this.interpreter.process!.procState = ProcessState.Pause; 
             this.time = 0;
-            this.view.showTimeAndInfo(0);      
+            this.view.showTimeAndInfo(0); 
+            this.view.draw();   
         }); 
 
         execButton.addEventListener('click', () => {
@@ -148,7 +151,7 @@ export default class Controller
                     // маштабування тиску на PV і TV-діаграмі
                     if (this.space.plunger) {
                         this.space.plunger.scale(e.key);
-                        this.view.drawMeasure();
+                        this.view.draw2();
                     }
                     break;
                 case '1': 
@@ -163,7 +166,7 @@ export default class Controller
                     // очистити журнал вимірювань
                     if (this.space.plunger) {
                         this.space.plunger.clearMeterings();
-                        this.view.drawMeasure();
+                        this.view.draw2();
                     }
                     break;
                 case 'f':
@@ -219,7 +222,7 @@ export default class Controller
         if (this.time % glo.metr == 0) {
             this.view.showTimeAndInfo(this.time);
             this.space.measure();
-            this.view.drawMeasure();
+            this.view.draw2();
         }
         this.view.draw();
     }

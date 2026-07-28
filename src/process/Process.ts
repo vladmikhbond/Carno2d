@@ -5,7 +5,6 @@ import {Plunger} from '../model/Plunger.js';
 import View from '../view/View.js';
 import Controller from '../controller/Controller.js';
 import { glo } from '../globals/globals.js';
-import { lin } from '../globals/utils.js';
 
 
 export enum ProcessState {
@@ -31,7 +30,7 @@ export default class Process
         this.plunger = this.space.plunger; 
         // draw
         this.view.draw();  
-        this.view.drawMeasure(); 
+        this.view.draw2(); 
     }
 
     async whileAsync(
@@ -325,10 +324,10 @@ export default class Process
     private async isothermicExtention(minMass: number) {
         const plan = this.plunger;
         const heater = new Heater(
-            plan.x1 + 20, 
-            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
-            this.plunger.x2 - 20, 
-            this.plunger.realBottom - 20,
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
+            this.plunger.x2, 
+            this.plunger.realBottom,
             1, "red");
         this.space.addDevice(heater);
 
@@ -337,11 +336,11 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
-            let eps = this.plunger.velo < -0.1 ? 0 : 0.001;
-            this.plunger.m *= 1 - eps;
+            this.plunger.m /= 1.0005;
+
             let currT = this.plunger.measureTemperature();  
-            heater.rate = 1 + (initT - currT) * 0.001;
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2 
+            heater.rate = 1 + (initT - currT) * 0.0005;
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) 
             heater.warm();  
 
             // replace real pressure metering with ideal one
@@ -357,19 +356,19 @@ export default class Process
     private async isothermicCompression(maxMass: number) {
         const plan = this.plunger;
         const heater = new Heater(
-            plan.x1 + 20, 
-            plan.realBottom - (plan.realBottom - plan.y1) / 2, 
-            this.plunger.x2 - 20, 
-            this.plunger.realBottom - 20,
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
+            this.plunger.x2, 
+            this.plunger.realBottom,
             1, "red");
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            let eps = this.plunger.velo > 0.1 ? 0 : 0.001;
-            this.plunger.m *= 1 + eps;
+            this.plunger.m *= 1.0005;
+
             let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) * 0.001; 
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) / 2           
+            heater.rate = 1 + (initT - currT) * 0.0005; 
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1)           
             heater.warm(); 
 
             // replace real pressure metering with ideal one

@@ -147,11 +147,11 @@ export class Interpreter
         }
     }
 
-    private waitFrame(): Promise<void> {
-        return new Promise(
-            res => requestAnimationFrame(() => res())
-        );
-    }
+    // private waitFrame(): Promise<void> {
+    //     return new Promise(
+    //         res => requestAnimationFrame(() => res())
+    //     );
+    // }
 
     hilightBefore(line: string ) 
     {   
@@ -163,11 +163,10 @@ export class Interpreter
     {   
         processArea.value = processArea.value.replace(MARK_DOING, MARK_DONE);
     }
+    
     removeHilights() 
     {       
         processArea.value = processArea.value.replaceAll(MARK_DOING, '').replaceAll(MARK_DONE, '');
     }
 
-
 }
- 
