@@ -85,7 +85,11 @@ export default class Controller
             const prefix = value.slice(lineStart, selectionStart);
             const filtered = lines.filter(line => line.startsWith(prefix));
             if (filtered.length == 1) {
-                processArea.value = processArea.value.slice(0, lineStart) + filtered[0] + processArea.value.slice(selectionStart)
+                let a = processArea.value.slice(0, lineStart);
+                let b = filtered[0];
+                let c = processArea.value.slice(selectionStart);
+                processArea.value = a + b + c;
+                processArea.selectionEnd = processArea.selectionStart = a.length + b.length; 
             }
 
         });   

@@ -106,7 +106,7 @@ export class Interpreter
                 //#endregion
 
                 default:
-                    alert(`Wrong command: ${command}`);
+                    alert(`Wrong command: ${line}`);
                     break;
             }
             // маркування виконаних команд
