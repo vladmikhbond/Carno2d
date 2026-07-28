@@ -59,7 +59,8 @@ export class Interpreter
                 case 'plunger':
                     await this.createPlunger(params);
                     this.newProcess();
-                    if (this.process?.space.N) {                        
+                    if (this.process?.space.N) { 
+                        await this.process?.calm(200);                       
                         this.space.plunger.clearMeterings();
                     }
                     break;
@@ -70,7 +71,7 @@ export class Interpreter
                     }
                     break;
                 case 'calm':
-                    this.process?.calm(params.t);
+                    await this.process?.calm(params.t);
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m);
@@ -141,7 +142,6 @@ export class Interpreter
         // add gass
         if (n) {
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
-            this.process?.calm(200);
         } else {
             plun.move(0, -Plunger.GAP);
         }

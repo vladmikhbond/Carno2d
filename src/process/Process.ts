@@ -37,6 +37,7 @@ export default class Process
     async whileAsync(
         condition: () => boolean,
         action: () => void = () => {},
+        stepAfterAction: boolean = true,
     ) {
         return new Promise<number>((res, rej) => {
             let timer = setInterval(() => {
@@ -53,12 +54,14 @@ export default class Process
 
                     if (!condition()) {
                         clearInterval(timer);
-                        res(0);
+                        res(this.controller.timer);
                         return;
                     }
 
                     action();
-                    this.controller.step();
+                    if (stepAfterAction) {
+                        this.controller.step();
+                    }
                 } catch (err) {
                     clearInterval(timer);
                     rej(err);
@@ -67,24 +70,39 @@ export default class Process
         });
     }
 
-    calm(steps: number) {
-        // here show word "WAIT" on canvas 
-        this.view.showWord("Wait")
-        
-        const plun = this.space.plunger;
-        let arr: number[] = [];
-        for (let i = 0; i < steps; i++) {
-            this.space.step();
-            arr.push(plun.y1);
+    async calm(stepCount: number) {
+        const plun = this.plunger;
+        this.view.showWord("Wait");
+
+        const arr: number[] = [];
+        let remaining = stepCount;
+
+        await this.whileAsync(
+            () => remaining > 0,
+            () => {
+                this.space.step();
+                arr.push(plun.y1);
+                remaining--;
+            },
+            false,
+        );
+
+        if (arr.length > 0) {
+            const zero = (Math.min(...arr) + Math.max(...arr)) / 2;
+            const sign0 = Math.sign(plun.y1 - zero);
+            await this.whileAsync(
+                () => Math.sign(plun.y1 - zero) == sign0,
+                () => {
+                    this.space.step();
+                },
+                false,
+            );
         }
-        let zero = (Math.min(...arr) + Math.max(...arr)) / 2;
-        let sign0 = Math.sign(plun.y1 - zero);
-        do {
-            this.space.step();
-        } while(Math.sign(plun.y1 - zero) == sign0)    
-        plun.loss += plun.m * plun.velo * plun.velo / 2;  
-        plun.velo = 0;  
+
+        plun.loss += plun.m * plun.velo * plun.velo / 2;
+        plun.velo = 0;
     }
+
 
     //#region adiabatic 
 
