@@ -57,7 +57,7 @@ export class Plunger extends Line
    }
 
 
-   payloadRect(): {x: number, y: number, w: number, h: number} {
+   getPayloadRect(): {x: number, y: number, w: number, h: number} {
       let m = 4 * this.m;
       if (m < 1000) m = 1000;
       
@@ -73,13 +73,10 @@ export class Plunger extends Line
    }
    
    moveByForces() {
-      // гравітація діє лише на навантаження, а інерція поршня залежить від його загальної маси
-      // let dv = (globus.g * this.m + this.impulse) / (this.m + Plunger.M0); 
+      // гравітація діє на навантаження
+      // let dv = (globus.g * this.m + this.impulse) / this.m
       
-      // гравітація діє на поршень і його навантаження
       let dv = glo.g + this.impulse / this.m;
-
-
       this.velo += dv; 
 
       // обмеження швидкості поршня - втрата енергії
@@ -160,19 +157,20 @@ export class Plunger extends Line
       // t температура - середня кінетична енергія куль
       // p тиск - сумарна кінетична енергія куль в одиниці об'єму
       let p = sumE / v;
-      this.t = sumE / n / glo.BOLTZ;
+      let t = sumE / n / glo.BOLTZ;
       let u = this.u;
 
       // сумарна теплота всіх нагрівачів
       let q = this.space!.givenHeat - this.space!.takenHeat; 
       
-      let ds = (q - this.lastMetering.q) / this.t;
+      // ентропія  ds = dq / t
+      let ds = (q - this.lastMetering.q) / t;
       if (!ds) 
          ds = 0;
       let s = this.lastMetering.s + ds;
 
-      this.lastMetering = {n, p, v, t: this.t, u, q, s: s};
-
+      this.t = t;
+      this.lastMetering = {n, p, v, t, u, q, s};
       this.meterings.push(this.lastMetering);
    }
 

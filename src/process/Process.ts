@@ -178,7 +178,7 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
             }
         }); 
-        heater.dispose();
+        this.space.removeDevice(heater);
     }
     
     private async isobaricCompression(minVolume: number) {
@@ -212,7 +212,7 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
             }
         }); 
-        heater.dispose();
+        this.space.removeDevice(heater);
     }      
     //#endregion
 
@@ -260,8 +260,7 @@ export default class Process
                 this.plunger.meterings[last].v = vol;
             }
         }); 
-        heater.dispose();      
-    }
+        this.space.removeDevice(heater);    }
 
 
 
@@ -304,8 +303,9 @@ export default class Process
                 this.plunger.meterings[last].v = vol;
             }
         }); 
-        heater.dispose();
+        this.space.removeDevice(heater);
     }
+
     //#endregion 
 
 
@@ -322,10 +322,10 @@ export default class Process
     // Навантаження повільно зменшується до заданого значення, одночасно газ підігрівається.
     // Гасіння коливань за рахунок зменшення навантаження і за рахунок підігріву.
     private async isothermicExtention(minMass: number) {
-        const plan = this.plunger;
+        const plun = this.plunger;
         const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
+            plun.x1, 
+            plun.realBottom - (plun.realBottom - plun.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
@@ -340,7 +340,7 @@ export default class Process
 
             let currT = this.plunger.measureTemperature();  
             heater.rate = 1 + (initT - currT) * 0.0005;
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1) 
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1) 
             heater.warm();  
 
             // replace real pressure metering with ideal one
@@ -350,14 +350,14 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = initT;            
             }
         }); 
-        heater.dispose();
+        this.space.removeDevice(heater);
     }
     
     private async isothermicCompression(maxMass: number) {
-        const plan = this.plunger;
+        const plun = this.plunger;
         const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
+            plun.x1, 
+            plun.realBottom - (plun.realBottom - plun.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
@@ -368,7 +368,7 @@ export default class Process
 
             let currT = this.plunger.measureTemperature(); 
             heater.rate = 1 + (initT - currT) * 0.0005; 
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1)           
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1);      
             heater.warm(); 
 
             // replace real pressure metering with ideal one
@@ -378,7 +378,7 @@ export default class Process
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = initT; 
             }
         }); 
-        heater.dispose();
+        this.space.removeDevice(heater);
     }  
       
     //#endregion
@@ -415,7 +415,7 @@ export default class Process
         await this.whileAsync(() => this.plunger.t < maxTemperature, () => {
             heater.warm();
         });
-        this.space.removeSelectedDevice();
+        this.space.removeDevice(heater);
     }
 
     // mas | vol  

@@ -7,7 +7,6 @@ import { WallCont, BallCont, DevCont } from './SpaceConts.js';
 import Bomb from './Bomb.js';
 import { Heater } from './Heater.js';
 
-// export enum TimeMode {Stop, Play};
 export enum CreateMode {Info, Gas, Wall, Devs};
 
 export default class Space 
@@ -15,11 +14,11 @@ export default class Space
     width: number;
     height: number;
 
-    N = 0              // поточна кількість куль
+    N = 0;             // поточна кількість куль
 
-    cell = 20          // сторона комірки
-    givenHeat = 0;      // тепло, віддане усіма нагрівачами
-    takenHeat = 0;      // тепло, забране усіма охолоджувачами 
+    cell = 20;         // сторона комірки
+    givenHeat = 0;     // тепло, віддане усіма нагрівачами
+    takenHeat = 0;     // тепло, забране усіма охолоджувачами 
     // підраховує тепло при нагріванні 
     heatAccounting (dE: number) {if (dE > 0) this.givenHeat += dE; else this.takenHeat -= dE;}
 
@@ -28,8 +27,8 @@ export default class Space
     private dcont!: DevCont;
     
     selectedLine: Line | null = null;
-    selectedBall: Ball | null = null;
-    selectedDevice: Device | null = null;
+    // selectedBall: Ball | null = null;
+    // selectedDevice: Device | null = null;
 
     bombs: Bomb[] = [];
 
@@ -89,13 +88,12 @@ export default class Space
 
     population(point: {x: number, y: number}) { return this.bcont.population(point) }
 
-    selectBall(x: number, y: number) { this.bcont.select(x, y) }
+    // selectBall(x: number, y: number) { this.bcont.select(x, y) }
 
-    removeSelectedBall() { this.bcont.removeSelected() }
+    // removeSelectedBall() { this.bcont.removeSelected() }
 
     clearBalls() { 
-        this.bcont.clear();
-        this.selectedBall = null;  
+        this.bcont.clear(); 
         this.bombs.length = 0;
     }
 
@@ -109,7 +107,7 @@ export default class Space
         this.selectedLine = line;
     }
     
-    removeSelectedLine() { this.wcont.removeSelected() }
+    // removeSelectedLine() { this.wcont.removeSelected() }
 
     selectLine(x: number, y: number) { this.wcont.select(x, y) }
     
@@ -141,18 +139,16 @@ export default class Space
 
     addDevice(device: Device) { 
         this.dcont.add(device);
-        this.selectedDevice = device;
     }
         
-    removeSelectedDevice() { 
-        this.dcont.removeSelected(); 
+    removeDevice(device: Device) { 
+        this.dcont.remove(device); 
     }
 
-    selectDevice(x: number, y: number) { this.dcont.select(x, y) }
+    // selectDevice(x: number, y: number) { this.dcont.select(x, y) }
 
     clearDevices() { 
         this.dcont.clear(); 
-        this.selectedDevice = null; 
     }
 
     devices() { 

@@ -38,12 +38,12 @@ export default class Ball {
         return dist(this, {x, y}) <= 3;        
     }
   
-    move(dx:number, dy: number) {
-        this.x += dx;
-        this.y += dy;
-    }
+    // move(dx:number, dy: number) {
+    //     this.x += dx;
+    //     this.y += dy;
+    // }
 
-    justify() { }    // virtual
+    // justify() { }    // virtual
 
     step() {
         

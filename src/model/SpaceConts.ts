@@ -67,36 +67,32 @@ export class BallCont {
         this.population(ball).push(ball);
     }
 
-    select(x: number, y: number) {
-        this.space.selectedBall = null;
-        let selBolls = [];    
-        for (let ball of this.values()) {
-            if (ball.isInside(x, y)) {
-                selBolls.push(ball);
-            }
-        }
-        selBolls.sort((a, b) => a.r - b.r);
-        if (selBolls.length > 0) {
-           this.space.selectedBall = selBolls[0];
-        }
-    }
+    // select(x: number, y: number) {
+    //     let selBolls = [];    
+    //     for (let ball of this.values()) {
+    //         if (ball.isInside(x, y)) {
+    //             selBolls.push(ball);
+    //         }
+    //     }
+    //     selBolls.sort((a, b) => a.r - b.r);
+    //     if (selBolls.length > 0) {
+    //        this.space.selectedBall = selBolls[0];
+    //     }
+    // }
 
-    removeSelected() {
-        if (this.space.selectedBall == null) {
-            return;
-        }
-        let arr = this.arr;
-        for(let r = 0; r < arr.length; r++) {
-            for(let c = 0; c < arr[0].length; c++) {
-                let i = arr[r][c].indexOf(this.space.selectedBall!);
-                if (i > -1) {
-                    arr[r][c].splice(i, 1);
-                    this.space.selectedBall = null;
-                    return;
-                }              
-            }
-        }
-    }
+    // removeSelected() {
+    //     let arr = this.arr;
+    //     for(let r = 0; r < arr.length; r++) {
+    //         for(let c = 0; c < arr[0].length; c++) {
+    //             let i = arr[r][c].indexOf(this.space.selectedBall!);
+    //             if (i > -1) {
+    //                 arr[r][c].splice(i, 1);
+    //                 this.space.selectedBall = null;
+    //                 return;
+    //             }              
+    //         }
+    //     }
+    // }
 
     clear() {
         for(let r = 0; r < this.arr.length; r++) {
@@ -144,16 +140,16 @@ export class WallCont
         this.space.selectedLine = null;
     }
 
-    removeSelected() {
-        if (this.space.selectedLine == null) {
-            return;
-        }
-        let i = this.arr.indexOf(this.space.selectedLine);
-        if (i > -1) {
-            this.arr.splice(i, 1);
-            this.space.selectedLine = null;
-        }
-    }
+    // removeSelected() {
+    //     if (this.space.selectedLine == null) {
+    //         return;
+    //     }
+    //     let i = this.arr.indexOf(this.space.selectedLine);
+    //     if (i > -1) {
+    //         this.arr.splice(i, 1);
+    //         this.space.selectedLine = null;
+    //     }
+    // }
 
     clear() {
         this.arr = [];
@@ -184,29 +180,36 @@ export class DevCont
         this.devices.push(device);
     }
 
-    select(x: number, y: number) {
-        if (this.devices.length == 0) {
-           return;
-        }
-        let devices = this.devices.filter(d => d.isInside(x, y));
-        this.space.selectedDevice = devices.length > 0 ? devices[0] : null;
-    }
-
-    removeSelected() {
-        if (this.space.selectedDevice == null) {
-            return;
-        }
-
-        let i = this.devices.indexOf(this.space.selectedDevice);
-        if (i > -1) {
-            this.devices.splice(i, 1);
-            this.space.selectedDevice = null;
+    remove(device: Device) 
+    {      
+        const idx = this.devices.indexOf(device);
+        if (idx != -1) {
+            this.devices.splice(idx, 1);
         }
     }
+
+    // select(x: number, y: number) {
+    //     if (this.devices.length == 0) {
+    //        return;
+    //     }
+    //     let devices = this.devices.filter(d => d.isInside(x, y));
+    //     this.space.selectedDevice = devices.length > 0 ? devices[0] : null;
+    // }
+
+    // removeSelected() {
+    //     if (this.space.selectedDevice == null) {
+    //         return;
+    //     }
+
+    //     let i = this.devices.indexOf(this.space.selectedDevice);
+    //     if (i > -1) {
+    //         this.devices.splice(i, 1);
+    //         this.space.selectedDevice = null;
+    //     }
+    // }
 
     clear() {
         this.devices = [];
-        this.space.selectedDevice = null;
     }
 
 }

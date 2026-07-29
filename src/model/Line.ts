@@ -48,12 +48,12 @@ export default class Line {
         this.y2 += dy;
     }
 
-    justify() {
-        this.x1 = quanty(this.x1);
-        this.x2 = quanty(this.x2);
-        this.y1 = quanty(this.y1);
-        this.y2 = quanty(this.y2);        
-    }
+    // justify() {
+    //     this.x1 = quanty(this.x1);
+    //     this.x2 = quanty(this.x2);
+    //     this.y1 = quanty(this.y1);
+    //     this.y2 = quanty(this.y2);        
+    // }
     
     // virtuals for Plunger
     clearMeterings() {}

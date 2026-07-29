@@ -2,7 +2,6 @@ import {glo, doc} from '../globals/globals.js';
 import Space from '../model/Space.js';
 import Ball from '../model/Ball.js';
 import Line from '../model/Line.js';
-import {Measurer} from '../model/Measurer.js';
 import {Heater} from '../model/Heater.js';
 import {Plunger, PlungerMetering} from '../model/Plunger.js';
 
@@ -86,7 +85,7 @@ export default class View
         ctx.stroke();
     }
     drawPlungerPayload(plun: Plunger) {
-        let {x, y, w, h} = plun.payloadRect();
+        let {x, y, w, h} = plun.getPayloadRect();
             
         const ctx = this.ctx;
         // body of kettlebell
@@ -125,7 +124,7 @@ export default class View
         ctx.strokeStyle = ball.c;
         ctx.arc(x, y, ball.r, 0, Math.PI * 2);
         if (ball.r > 5) {
-            ctx.lineWidth = ball == this.space.selectedBall ? 2 : 1;
+            ctx.lineWidth = 1;
             ctx.moveTo(x, y);
             ctx.lineTo(x + ball.vx, y + ball.vy);
         }
