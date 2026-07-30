@@ -128,14 +128,17 @@ export default class Process
             if (!glo.pretty) {
                 let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
                 diag_p += (this.plunger.meterings[this.plunger.meterings.length - 1].p - this.plunger.pressure)**2;
-                
+                diag_t += (this.plunger.meterings[this.plunger.meterings.length - 1].t - temperature)**2;
+                diag_i++;
                 this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
-            }
-        }); 
+            }            
+        });
+        console.log("EXT: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
     }
 
     private async adiabaticCompression(maxMass: number) {
+        let diag_p = 0, diag_t = 0, diag_i = 0;
         await this.whileAsync(
         () => 
             this.plunger.m < maxMass, 
@@ -148,11 +151,14 @@ export default class Process
             // replace ideal metering pressure with real one
             if (!glo.pretty) {
                 let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
+                diag_p += (this.plunger.meterings[this.plunger.meterings.length - 1].p - this.plunger.pressure)**2;
+                diag_t += (this.plunger.meterings[this.plunger.meterings.length - 1].t - temperature)**2;
+                diag_i++;
                 this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
                 this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
             }
         }); 
-
+        console.log("CMP: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
     }
     //#endregion
  
