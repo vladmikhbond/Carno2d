@@ -114,11 +114,24 @@ export default class Process
     }
 
     private async adiabaticExtention(minMass: number) {
+        let diag_p = 0, diag_t = 0, diag_i = 0; 
         await this.whileAsync(
         () => 
             this.plunger.m > minMass, 
         () => {
-            this.plunger.m *= 0.999;
+            let eps_m = 0.0005;
+            // if (this.plunger.m - minMass < minMass / 5)
+            //     eps_m = 0.0001;
+            this.plunger.m *= 1 - eps_m;
+            
+            // replace ideal metering pressure with real one
+            if (!glo.pretty) {
+                let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
+                diag_p += (this.plunger.meterings[this.plunger.meterings.length - 1].p - this.plunger.pressure)**2;
+                
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+            }
         }); 
     }
 
@@ -127,7 +140,17 @@ export default class Process
         () => 
             this.plunger.m < maxMass, 
         () => {
-            this.plunger.m /= 0.999;
+            let eps_m = 0.0005;
+            // if (maxMass - this.plunger.m < maxMass / 5)
+            //     eps_m = 0.0001;
+            this.plunger.m *= 1 + eps_m;;
+
+            // replace ideal metering pressure with real one
+            if (!glo.pretty) {
+                let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
+                this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
+                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+            }
         }); 
 
     }

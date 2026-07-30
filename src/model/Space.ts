@@ -196,7 +196,7 @@ export default class Space
 
 
     measure() {
-        this.devices().forEach(d => d.measure());
+        // this.devices().forEach(d => d.measure());
         this.plungers.forEach(p => p.measure());
     }
 

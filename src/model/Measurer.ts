@@ -4,7 +4,7 @@ import {glo} from '../globals/globals.js';
 
 type Metering = { n: number, t: number, p: number, mfp: number};   // mfp - mean free path
 
-//
+// Вимірювач (наразі не застосовується)
 export class Measurer extends Device
 {
    static HIST_COLUMNS = 100;

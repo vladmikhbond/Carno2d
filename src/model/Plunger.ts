@@ -43,7 +43,8 @@ export class Plunger extends Line
       this.lastMetering = {n: 0, p: 0, v: this.volume, t: 0, u: 0, q: 0, s:0};
       this.meterings = [this.lastMetering];
    }
-
+    
+   // фактично маса, а не енергія до об'єму
    get pressure(): number {
       return this.m * glo.g / (this.x2 - this.x1);
    }
@@ -152,12 +153,12 @@ export class Plunger extends Line
    //
    measure()
    {  
-      let [sumE, n] = this.sumEnergyUnderPlunger();
-      let v = (this.x2 - this.x1) * (this.realBottom - this.y1);
+      const [sumE, n] = this.sumEnergyUnderPlunger();
+      const v = (this.x2 - this.x1) * (this.realBottom - this.y1);
       // t температура - середня кінетична енергія куль
       // p тиск - сумарна кінетична енергія куль в одиниці об'єму
       let p = sumE / v;
-      let t = sumE / n / glo.BOLTZ;
+      let t = sumE / (n * glo.BOLTZ);
       let u = this.u;
 
       // сумарна теплота всіх нагрівачів
