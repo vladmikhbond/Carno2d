@@ -59,7 +59,7 @@ export class Interpreter
                 case 'plunger':
                     await this.createPlunger(params);
                     this.newProcess();
-                    if (this.process?.space.N) { 
+                    if (this.process!.space.N > 1000) { 
                         await this.process?.calm(200);                       
                         this.space.plunger.clearMeterings();
                     }
@@ -74,10 +74,10 @@ export class Interpreter
                     await this.process?.calm(params.t);
                     break;
                 case 'adiabatic':
-                    await this.process?.adiabatic(params.m);
+                    await this.process?.adiabatic(params.m, params.eps);
                     break;
                 case 'isobaric':
-                    await this.process?.isobaric(params.v);
+                    await this.process?.isobaric(params.v, params.eps);
                     break;
                 case 'isohoric':
                     await this.process?.isohoric(params.m);
@@ -128,7 +128,7 @@ export class Interpreter
 
         // default values
         let x1 = 40, y1 = 20, x2 = 240, y2 = 480, m = 100, n = 10000, t = 100,
-            gas_m = 0.4, gas_r = 0.5, gas_c = 'red';
+            gas_m = Plunger.BALL_M, gas_r = 0.5, gas_c = 'red';
 
         t = params.t ?? t;
         n = params.n ?? n;
@@ -141,6 +141,7 @@ export class Interpreter
         plun.move(0, -y + Plunger.GAP);
         // add gass
         if (n) {
+            this.space.clearBalls();
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
         } else {
             plun.move(0, -Plunger.GAP);

@@ -85,14 +85,16 @@ export default class Process
             },
             false,
         );
-
+        
         if (arr.length > 0) {
+            remaining = stepCount;
             const zero = (Math.min(...arr) + Math.max(...arr)) / 2;
             const sign0 = Math.sign(plun.y1 - zero);
             await this.whileAsync(
-                () => Math.sign(plun.y1 - zero) == sign0,
+                () => Math.sign(plun.y1 - zero) == sign0 && remaining > 0,
                 () => {
                     this.space.step();
+                    remaining--;
                 },
                 false,
             );
@@ -105,57 +107,61 @@ export default class Process
 
     //#region adiabatic 
 
-    async adiabatic(mass: number) {
+    async adiabatic(mass: number, eps=0.001) {
         if (this.plunger.m > mass) {
-            await this.adiabaticExtention(mass);
+            await this.adiabaticExtention(mass, eps);
         } else if (this.plunger.m < mass) {
-            await this.adiabaticCompression(mass);
+            await this.adiabaticCompression(mass, eps);
         }
     }
 
-    private async adiabaticExtention(minMass: number) {
+    private async adiabaticExtention(minMass: number, eps: number) {
+        const plun = this.plunger;
         let diag_p = 0, diag_t = 0, diag_i = 0; 
+        let wanted_velo = -eps * 100;
         await this.whileAsync(
         () => 
-            this.plunger.m > minMass, 
+            plun.m > minMass, 
         () => {
-            let eps_m = 0.0005;
-            // if (this.plunger.m - minMass < minMass / 5)
-            //     eps_m = 0.0001;
-            this.plunger.m *= 1 - eps_m;
-            
-            // replace ideal metering pressure with real one
+            // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+
+            const eps_m = -wanted_velo * plun.width / plun.volume;
+            console.log(eps_m);
+            plun.m *= 1 - eps_m;
+            // replace ideal pressure with real one
             if (!glo.pretty) {
-                let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
-                diag_p += (this.plunger.meterings[this.plunger.meterings.length - 1].p - this.plunger.pressure)**2;
-                diag_t += (this.plunger.meterings[this.plunger.meterings.length - 1].t - temperature)**2;
+                let temperature = plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
+                diag_p += (plun.meterings[plun.meterings.length - 1].p - plun.pressure)**2;
+                diag_t += (plun.meterings[plun.meterings.length - 1].t - temperature)**2;
                 diag_i++;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
-                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+                plun.meterings[plun.meterings.length - 1].p = plun.pressure;
+                plun.meterings[plun.meterings.length - 1].t = temperature;
             }            
         });
         console.log("EXT: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
     }
 
-    private async adiabaticCompression(maxMass: number) {
+    private async adiabaticCompression(maxMass: number, eps: number) {
         let diag_p = 0, diag_t = 0, diag_i = 0;
+        const plun = this.plunger;
+        let wanted_velo = eps * 100;
         await this.whileAsync(
         () => 
-            this.plunger.m < maxMass, 
+            plun.m < maxMass, 
         () => {
-            let eps_m = 0.0005;
-            // if (maxMass - this.plunger.m < maxMass / 5)
-            //     eps_m = 0.0001;
-            this.plunger.m *= 1 + eps_m;;
 
-            // replace ideal metering pressure with real one
+            const eps_m = wanted_velo * plun.width / plun.volume;
+            console.log(eps_m);
+            plun.m *= 1 + eps_m;
+
+            // replace ideal pressure with real one
             if (!glo.pretty) {
-                let temperature =  this.plunger.volume * this.plunger.pressure / glo.BOLTZ / this.space.N;
-                diag_p += (this.plunger.meterings[this.plunger.meterings.length - 1].p - this.plunger.pressure)**2;
-                diag_t += (this.plunger.meterings[this.plunger.meterings.length - 1].t - temperature)**2;
+                let temperature =  plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
+                diag_p += (plun.meterings[plun.meterings.length - 1].p - plun.pressure)**2;
+                diag_t += (plun.meterings[plun.meterings.length - 1].t - temperature)**2;
                 diag_i++;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = this.plunger.pressure;
-                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+                plun.meterings[plun.meterings.length - 1].p = plun.pressure;
+                plun.meterings[plun.meterings.length - 1].t = temperature;
             }
         }); 
         console.log("CMP: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
@@ -165,80 +171,80 @@ export default class Process
     
     //#region isobaric 
 
-    async isobaric(vol: number) {
+    async isobaric(vol: number, eps=0.001) {
         if (this.plunger.volume < vol) {
-            await this.isobaricExtention(vol);
+            await this.isobaricExtention(vol, eps);
         } else if (this.plunger.volume > vol) {
-            await this.isobaricCompression(vol);
+            await this.isobaricCompression(vol, eps);
         }
     }
 
     // Газ розширюється до певного об'єму за рахунок повільного нагрівання
     // Гасіння коливань за рахунок втручання в швидкість поршня
-    private async isobaricExtention(maxVolume: number) {
+    private async isobaricExtention(maxVolume: number, eps: number) {
         const plun = this.plunger;
-        const wanted = -0.1;
-        let initP = this.plunger.pressure;
+        const wanted_velo = -eps * 100;
+        let initP = plun.pressure;
         
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
         await this.whileAsync(
         () => 
-            this.plunger.volume < maxVolume, 
+            plun.volume < maxVolume, 
         () => {
             heater.y1 =  plun.y1;
 
-            // let eps = dv / v = wanted_velo * width / 2 * this.plunger.volume ;
-            const eps = ((2)) * wanted * 100 / this.plunger.volume;
+            // Формула: eps = dv / v = wanted_velo * plun.width / (2 * plun.volume) ;
+            const eps = ((2)) * wanted_velo * plun.width / 2 / plun.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
 
             // Втручання
-            let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
-            let eps_e = q / (this.space.N  * 0.4);
-            plun.velo = wanted;
+            let q = (plun.velo**2 - wanted_velo**2) * (plun.m / 2);
+            let eps_e = q / (this.space.N * 0.4);
+            plun.velo = wanted_velo;
             heater.rate = 1 - eps_e;
             heater.warm();
         
             // replace real temperature metering with ideal one
             if (glo.pretty) {
-                let temperature =  this.plunger.volume * initP / glo.BOLTZ / this.space.N;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = initP;
-                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;
+                let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
+                plun.meterings[plun.meterings.length - 1].p = initP;
+                plun.meterings[plun.meterings.length - 1].t = temperature;
             }
         }); 
         this.space.removeDevice(heater);
     }
     
-    private async isobaricCompression(minVolume: number) {
-        const wanted = 0.1;
+    private async isobaricCompression(minVolume: number, eps: number) {
+        const wanted_velo = eps * 100;
 
         const plun = this.plunger;
-        let initP = this.plunger.pressure;  
+        let initP = plun.pressure;  
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
 
         await this.whileAsync(
         () => 
-            this.plunger.volume > minVolume, 
+            plun.volume > minVolume, 
         () => {
             heater.y1 =  plun.y1;
-            const eps = 2 * wanted * 100 / this.plunger.volume;
+            const eps = 2 * wanted_velo * plun.width / 2 / plun.volume;
             heater.rate = 1 - eps;
             heater.warm(); 
 
             // Втручання
-            let q = (plun.velo**2 - wanted**2) * (plun.m / 2);
+            let q = (plun.velo**2 - wanted_velo**2) * (plun.m / 2);
             let eps_e = q / (this.space.N  * 0.4);
-            plun.velo = wanted;
+            plun.velo = wanted_velo;
             heater.rate = 1 + eps_e;
             heater.warm();            
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
-                let temperature =  this.plunger.volume * initP / glo.BOLTZ / this.space.N;
-                this.plunger.meterings[this.plunger.meterings.length - 1].p = initP;
-                this.plunger.meterings[this.plunger.meterings.length - 1].t = temperature;           
+                let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
+                plun.meterings[plun.meterings.length - 1].p = initP;
+                plun.meterings[plun.meterings.length - 1].t = temperature;           
             }
         }); 
         this.space.removeDevice(heater);

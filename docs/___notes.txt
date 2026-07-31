@@ -1,5 +1,6 @@
 TODO
-
+isohoric isothermic
+diag class
 побудувати цикл парового двигуна
 
 кпд цикла

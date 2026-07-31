@@ -10,7 +10,8 @@ export type PlungerScales = {v: number, p: number, t: number, s: number, x: numb
 export class Plunger extends Line 
 {
    static GAP = 40;
-   
+   static BALL_M = 0.4;
+
    top: number;
    bottom: number;   
    realTop: number;
@@ -57,6 +58,9 @@ export class Plunger extends Line
       this.y1 = this.realBottom + vol / (this.x2 - this.x1);
    }
 
+   get width() {
+      return this.x2 - this.x1;
+   }
 
    getPayloadRect(): {x: number, y: number, w: number, h: number} {
       let m = 4 * this.m;
@@ -74,9 +78,7 @@ export class Plunger extends Line
    }
    
    moveByForces() {
-      // гравітація діє на навантаження
-      // let dv = (globus.g * this.m + this.impulse) / this.m
-      
+      // гравітація діє на навантаження    
       let dv = glo.g + this.impulse / this.m;
       this.velo += dv; 
 
