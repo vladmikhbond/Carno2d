@@ -16,11 +16,14 @@ export default class Diagnostic {
 
     checkPT() {
         const plun = this.plunger;
-        let temperature = plun.volume * plun.pressure / glo.BOLTZ / plun.space!.N;
-        let pressure = plun.pressure;
+        // P = M * g / s 
+        let P = plun.pressure;
+        // T = P * V / (Bo * N) 
+        let T = plun.volume * P / glo.BOLTZ / plun.space!.N;
+
         const last = plun.meterings.length - 1;  
-        this.pp += (plun.meterings[last].p - pressure)**2;
-        this.tt += (plun.meterings[last].t - temperature)**2;
+        this.pp += (plun.meterings[last].p - P)**2;
+        this.tt += (plun.meterings[last].t - T)**2;
         this.i++;
     }
 
