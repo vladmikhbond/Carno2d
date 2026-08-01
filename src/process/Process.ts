@@ -5,6 +5,7 @@ import {Plunger} from '../model/Plunger.js';
 import View from '../view/View.js';
 import Controller from '../controller/Controller.js';
 import { glo } from '../globals/globals.js';
+import Diagnostic from './Diagnostic.js';
 
 
 export enum ProcessState {
@@ -12,7 +13,6 @@ export enum ProcessState {
     Run = 1,
     Abort = 2,
 }
-
 
 export default class Process 
 {
@@ -117,7 +117,7 @@ export default class Process
 
     private async adiabaticExtention(minMass: number, eps: number) {
         const plun = this.plunger;
-        let diag_p = 0, diag_t = 0, diag_i = 0; 
+        let diag = new Diagnostic(plun); 
         let wanted_velo = -eps * 100;
         await this.whileAsync(
         () => 
@@ -125,24 +125,22 @@ export default class Process
         () => {
             // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
             const eps_m = -wanted_velo * plun.width / plun.volume;
-            console.log(eps_m);
             plun.m *= 1 - eps_m;
+
+            diag.checkPT();
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature = plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
-                diag_p += (plun.meterings[plun.meterings.length - 1].p - plun.pressure)**2;
-                diag_t += (plun.meterings[plun.meterings.length - 1].t - temperature)**2;
-                diag_i++;
                 plun.meterings[plun.meterings.length - 1].p = plun.pressure;
                 plun.meterings[plun.meterings.length - 1].t = temperature;
             }            
         });
-        console.log("EXT: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
+        console.log("EXT: p =", diag.stdP, "t =", diag.stdT, "steps =", diag.i, "eps=", eps);
     }
 
     private async adiabaticCompression(maxMass: number, eps: number) {
-        let diag_p = 0, diag_t = 0, diag_i = 0;
         const plun = this.plunger;
+        let diag = new Diagnostic(plun); 
         let wanted_velo = eps * 100;
         await this.whileAsync(
         () => 
@@ -150,20 +148,17 @@ export default class Process
         () => {
 
             const eps_m = wanted_velo * plun.width / plun.volume;
-            console.log(eps_m);
             plun.m *= 1 + eps_m;
 
+            diag.checkPT();
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature =  plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
-                diag_p += (plun.meterings[plun.meterings.length - 1].p - plun.pressure)**2;
-                diag_t += (plun.meterings[plun.meterings.length - 1].t - temperature)**2;
-                diag_i++;
                 plun.meterings[plun.meterings.length - 1].p = plun.pressure;
                 plun.meterings[plun.meterings.length - 1].t = temperature;
             }
         }); 
-        console.log("CMP: p = ", diag_p/diag_i, "t = ", diag_t/diag_i, diag_i);
+        console.log("COM:  p = ", diag.stdP, "t =", diag.stdT, "steps =", diag.i, "eps=", eps);
     }
     //#endregion
  

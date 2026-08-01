@@ -3,7 +3,6 @@ import Space from '../model/Space.js';
 import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
-import Repo from '../data/Repo.js';
 import { Interpreter} from '../process/Interpreter.js';
 import { ProcessState } from '../process/Process.js';
 
