@@ -124,7 +124,6 @@ export default class Process
             plun.m > minMass, 
         () => {
             // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
-
             const eps_m = -wanted_velo * plun.width / plun.volume;
             console.log(eps_m);
             plun.m *= 1 - eps_m;
@@ -345,7 +344,8 @@ export default class Process
 
     // Навантаження повільно зменшується до заданого значення, одночасно газ підігрівається.
     // Гасіння коливань за рахунок зменшення навантаження і за рахунок підігріву.
-    private async isothermicExtention(minMass: number, eps_m: number) {
+    private async isothermicExtention(minMass: number, eps: number) {
+        const wanted_velo = -eps * 100;
         const plun = this.plunger;
         const heater = new Heater(
             plun.x1, 
@@ -360,12 +360,17 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1);
+            // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+            const eps_m = -wanted_velo * plun.width / plun.volume;
+
             this.plunger.m *= 1 - eps_m;
             const eps_r = eps_m / 2; 
 
-            // let currT = this.plunger.measureTemperature();  
-            // heater.rate = 1 + (initT - currT) * 0.0005;
-            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1) 
+            let currT = this.plunger.measureTemperature();  
+            heater.rate = 1 + (initT - currT) * eps_m;
+            heater.warm();
+            
 
             heater.rate = 1 - eps_r;
             heater.warm();  
@@ -380,7 +385,8 @@ export default class Process
         this.space.removeDevice(heater);
     }
     
-    private async isothermicCompression(maxMass: number, eps_m: number) {
+    private async isothermicCompression(maxMass: number, eps: number) {
+        const wanted_velo = eps * 100;
         const plun = this.plunger;
         const heater = new Heater(
             plun.x1, 
@@ -391,12 +397,16 @@ export default class Process
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
+            // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+            const eps_m = wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 + eps_m;
 
-            // let currT = this.plunger.measureTemperature(); 
-            // heater.rate = 1 + (initT - currT) * 0.0005; 
+            let currT = this.plunger.measureTemperature(); 
+            heater.rate = 1 + (initT - currT) * eps_m; 
+
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
-            
+            heater.warm();
+
             heater.rate = 1 - eps_m / 2;
             heater.warm(); 
 
