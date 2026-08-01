@@ -93,30 +93,30 @@ Settings
 title adiabatic_test
 plunger m=3000, t=100
 scale   p=6, t=13.5, s=0.4, x=2.4
-adiabatic  m=550, esc=0.001
+adiabatic  m=550, eps=0.001
 calm       t=500
-adiabatic  m=3000, esc=0.001
+adiabatic  m=3000, eps=0.001
 
 title isobaric_test
 plunger m=3000, t=100
 scale   p=4.5, t=9.2, s=0.2, x=1.3, v=2.5 
-isobaric   v=50000, esc=0.001
+isobaric   v=50000, eps=0.001
 calm       t=500
-isobaric   v=22800, esc=0.001
+isobaric   v=22800, eps=0.001
 
 title isohoric_test
 plunger m=3000, t=126
 scale   p=6, t=11, s=0.16, x=2.1, v=3
-isohoric   m=900, esc=0.001
+isohoric   m=900, eps=0.001
 calm       t=500
-isohoric  m=3000, esc=0.001
+isohoric  m=3000, eps=0.001
 
 title isothermic_test
 plunger m=3000, t=126
-scale   p=6, t=18, s=0.6, x=2, v=2
-isothermic  m=1600, esc=0.001
+scale   p=6, t=18, s=0.4, x=1.7, v=1.5
+isothermic  m=1000, eps=0.001
 calm       t=500
-isothermic  m=3000, esc=0.001  
+isothermic  m=3000, eps=0.001 
 
 title         Цикл Отто (бензиновий)
 plunger m=100, n=0
