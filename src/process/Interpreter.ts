@@ -80,10 +80,10 @@ export class Interpreter
                     await this.process?.isobaric(params.v, params.eps);
                     break;
                 case 'isohoric':
-                    await this.process?.isohoric(params.m);
+                    await this.process?.isohoric(params.m, params.eps);
                     break;
                 case 'isothermic':
-                    await this.process?.isothermic(params.m);
+                    await this.process?.isothermic(params.m, params.eps);
                     break;
                 
                 //#region Цикл Отто (бензиновий)
