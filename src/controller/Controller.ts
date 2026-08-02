@@ -33,7 +33,7 @@ export default class Controller
         this.addProcessHandlers();
 
         this.setModelSize();
-        view.draw();
+        view.draw1();
         view.draw2();
     }
 
@@ -47,7 +47,7 @@ export default class Controller
             this.interpreter.process!.procState = ProcessState.Pause; 
             this.time = 0;
             this.view.showTimeAndInfo(0); 
-            this.view.draw();   
+            this.view.draw1();   
         }); 
 
         execButton.addEventListener('click', () => {
@@ -129,7 +129,7 @@ export default class Controller
             const proc = [ 1, 2, 5, 10, 25, 50, 100];
             let value: number = +(e.target as HTMLSelectElement).value;
             this.view.viz = 100 / proc[value];
-            this.view.draw();
+            this.view.draw1();
             document.getElementById("visPercentage")!.innerHTML = proc[value]! + '%';
         });
 
@@ -161,7 +161,7 @@ export default class Controller
                     this.interpreter.process!.procState = ProcessState.Run;
                     setTimeout(() => {
                         this.interpreter.process!.procState = ProcessState.Pause;
-                        this.view.draw();
+                        this.view.draw1();
                         this.view.showTimeAndInfo(this.time);                 
                     }, 10); 
                     break;                    
@@ -176,7 +176,7 @@ export default class Controller
                     // зафіксувати-розфіксувати поршень
                     if (this.space.plunger) {
                         this.space.plunger.fixed = !this.space.plunger.fixed;
-                        this.view.draw();
+                        this.view.draw1();
                     }
                     break;
             }
@@ -220,14 +220,13 @@ export default class Controller
     step() {   
         this.time++;
         this.space.step();
-        this.view.draw();
         // виміри через кожні glo.metr кроків
         if (this.time % glo.metr == 0) {
             this.view.showTimeAndInfo(this.time);
             this.space.measure();
             this.view.draw2();
         }
-        this.view.draw();
+        this.view.draw1();
     }
 
 }

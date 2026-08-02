@@ -21,7 +21,7 @@ export default class View
 
 //#region Canvas1  
 
-    draw() {   
+    draw1() {   
         const ctx = this.ctx;
         const space = this.space;
         ctx.clearRect(0, 0, doc.canvas.width, doc.canvas.height);
