@@ -5,7 +5,8 @@ import {Plunger} from '../model/Plunger.js';
 import View from '../view/View.js';
 import Controller from '../controller/Controller.js';
 import { glo } from '../globals/globals.js';
-import Diagnostic from './Diagnostic.js';
+
+import Diag from './Diag.js';
 
 
 export enum ProcessState {
@@ -117,52 +118,52 @@ export default class Process
 
     private async adiabaticExtention(minMass: number, eps: number) {
         const plun = this.plunger;
-        const diag = new Diagnostic(plun); 
-        const wanted_velo = -eps * 100;
+        const diag = new Diag(); 
+        const wanted_velo = -eps * 50;
         await this.whileAsync(
         () => 
             plun.m > minMass, 
         () => {
-            diag.checkPT();
-
             // Action. eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
-            const eps_m = -wanted_velo * plun.width / plun.volume;
+            const eps_m = -2 * wanted_velo * plun.width / plun.volume;
             plun.m *= 1 - eps_m;
 
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature = plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
-                plun.meterings[plun.meterings.length - 1].p = plun.pressure;
-                plun.meterings[plun.meterings.length - 1].t = temperature;
+                const last = plun.meterings.length - 1
+                diag.push(temperature - plun.meterings[last].t)       // diag    
+                plun.meterings[last].p = plun.pressure;
+                plun.meterings[last].t = temperature;
             }            
         });
-        diag.resume();
-        console.log("adiabaticExtention ", diag.p, diag.t, diag.v, diag.n, "eps=", eps);
+
+        console.log("adiabaticExtention: T:", diag.resume, "eps=", eps);
     }
 
     private async adiabaticCompression(maxMass: number, eps: number) {
         const plun = this.plunger;
-        const diag = new Diagnostic(plun); 
-        const wanted_velo = eps * 100;
+        const diag = new Diag(); 
+        const wanted_velo = eps * 50;
         await this.whileAsync(
         () => 
             plun.m < maxMass, 
         () => {
-            diag.checkPT();
-
             // Action
-            const eps_m = wanted_velo * plun.width / plun.volume;
+            const eps_m = 2 * wanted_velo * plun.width / plun.volume;
             plun.m *= 1 + eps_m;
 
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature =  plun.volume * plun.pressure / glo.BOLTZ / this.space.N;
-                plun.meterings[plun.meterings.length - 1].p = plun.pressure;
-                plun.meterings[plun.meterings.length - 1].t = temperature;
+                const last = plun.meterings.length - 1
+                diag.push(temperature - plun.meterings[last].t)       // diag                
+                plun.meterings[last].p = plun.pressure;
+                plun.meterings[last].t = temperature;
             }
         }); 
-        diag.resume();
-        console.log("adiabaticCompression ", diag.p, diag.t, diag.v, diag.n, "eps=", eps);
+
+        console.log("adiabaticCompression: T:", diag.resume, "eps=", eps);
     }
     //#endregion
  
@@ -181,7 +182,7 @@ export default class Process
     // Гасіння коливань за рахунок втручання в швидкість поршня
     private async isobaricExtention(maxVolume: number, eps: number) {
         const plun = this.plunger;
-        const diag = new Diagnostic(plun); 
+        const diag = new Diag(); 
         const wanted_velo = -eps * 100;
         let initP = plun.pressure;
         
@@ -191,11 +192,10 @@ export default class Process
         () => 
             plun.volume < maxVolume, 
         () => {
-            diag.checkPT();
             // Action.
             heater.y1 =  plun.y1;
             // eps = dv / v = wanted_velo * plun.width / (2 * plun.volume) ;
-            const eps_r = ((2)) * wanted_velo * plun.width / 2 / plun.volume;
+            const eps_r = wanted_velo * plun.width / plun.volume;
             heater.rate = 1 - eps_r;
             heater.warm();
 
@@ -205,7 +205,9 @@ export default class Process
             plun.velo = wanted_velo;
             heater.rate = 1 - eps_e;
             heater.warm();
-        
+            
+            diag.push(plun.meterings[plun.meterings.length - 1].p);       
+
             // replace real temperature metering with ideal one
             if (glo.pretty) {
                 let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
@@ -214,13 +216,12 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        diag.resume();
-        console.log("isobaricExtention ", diag.p, diag.t, diag.v, diag.n, "eps=", eps);
+        console.log("isobaricExtention ", diag.resume, "eps=", eps);
     }
     
     private async isobaricCompression(minVolume: number, eps: number) {
         const plun = this.plunger;
-        const diag = new Diagnostic(plun);  
+         const diag = new Diag(); 
         const wanted_velo = eps * 100;
         let initP = plun.pressure;  
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
@@ -232,7 +233,7 @@ export default class Process
         () => {
             // Action
             heater.y1 =  plun.y1;
-            const eps_r = 2 * wanted_velo * plun.width / 2 / plun.volume;
+            const eps_r = wanted_velo * plun.width / plun.volume;
             heater.rate = 1 - eps_r;
             heater.warm(); 
 
@@ -241,9 +242,10 @@ export default class Process
             let eps_e = q / (this.space.N  * 0.4);
             plun.velo = wanted_velo;
             heater.rate = 1 + eps_e;
-            heater.warm();            
+            heater.warm(); 
 
-            diag.checkPT();
+            diag.push(plun.meterings[plun.meterings.length - 1].p);
+
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
                 let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
@@ -252,9 +254,7 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        diag.resume();
-        console.log("isobaricCompression ", diag.p, diag.t, diag.v, diag.n, "eps=", eps);
-    }      
+        console.log("isobaricCompression", diag.resume, "eps=", eps);    }      
     //#endregion
 
 

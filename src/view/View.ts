@@ -343,7 +343,7 @@ export default class View
         ctx.fillStyle = 'black';
         ctx.fillText(`Q+: ${this.space.givenHeat.toFixed(1)}  Q-: ${this.space.takenHeat.toFixed(1)}  ` +
                      `A: ${plun.u.toFixed(1)}  Los: ${plun.loss.toFixed(1)}`, X, 14);
-        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toFixed(1)}  T: ${last.t.toFixed(1)}  S: ${last.s.toFixed(1)}`, 
+        ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toFixed(3)}  T: ${last.t.toFixed(1)}  S: ${last.s.toFixed(1)}`, 
                       X, 28);                    
 
         //------------inner functions -----------------
@@ -379,7 +379,7 @@ export default class View
     showVauesUnderMouse(plun: Plunger, x: number, y: number) {
         const [p, t, s, v] = ptsvUnderMouse(plun, x, y);
         const [X, _] = xywh(plun);
-        const line = `V: ${v.toFixed(0)}  P: ${p.toFixed(1)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
+        const line = `V: ${v.toFixed(0)}  P: ${p.toFixed(3)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
         const width = this.ctx2.measureText(line).width + 20;
         this.ctx2.clearRect(X, 28, width, 14);
         this.ctx2.fillText(line, X, 42);    
