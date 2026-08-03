@@ -138,7 +138,7 @@ export default class Process
             }            
         });
 
-        console.log("adiabaticExtention: T:", diag.resume, "eps=", eps);
+        console.log("adiabaticExtention: dif_T:", diag.resume, "eps=", eps);
     }
 
     private async adiabaticCompression(maxMass: number, eps: number) {
@@ -163,7 +163,7 @@ export default class Process
             }
         }); 
 
-        console.log("adiabaticCompression: T:", diag.resume, "eps=", eps);
+        console.log("adiabaticCompression: dif_T:", diag.resume, "eps=", eps);
     }
     //#endregion
  
@@ -216,12 +216,12 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isobaricExtention ", diag.resume, "eps=", eps);
+        console.log("isobaricExtention P", diag.resume, "eps=", eps);
     }
     
     private async isobaricCompression(minVolume: number, eps: number) {
         const plun = this.plunger;
-         const diag = new Diag(); 
+        const diag = new Diag(); 
         const wanted_velo = eps * 100;
         let initP = plun.pressure;  
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
@@ -254,7 +254,8 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isobaricCompression", diag.resume, "eps=", eps);    }      
+        console.log("isobaricCompression P", diag.resume, "eps=", eps);
+    }      
     //#endregion
 
 
@@ -270,8 +271,9 @@ export default class Process
 
     // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
     // Гасіння коливань за рахунок зменшення охолодження.
-    private async isohoricExtention(maxMass: number, eps_m: number) {
+    private async isohoricExtention(maxMass: number, eps: number) {
         const plan = this.plunger;
+        const diag = new Diag();
         const heater = new Heater(
             plan.x1, 
             plan.realBottom - (plan.realBottom - plan.y1), 
@@ -285,14 +287,17 @@ export default class Process
         () => 
             this.plunger.m < maxMass, 
         () => {
-            this.plunger.m *= 1 + eps_m;
-
-            const eps_v = eps_m / 2;
-            heater.rate = 1 + eps_v;
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+
+            this.plunger.m *= 1 + eps;
+
+            const eps_v = eps / 2;
+            heater.rate = 1 + eps_v;
             
             heater.warm();
             
+            diag.push(plan.volume);
+
             // replace real pressure metering with ideal one
             if (glo.pretty) {
                 const last = this.plunger.meterings.length - 1;
@@ -302,11 +307,13 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        console.log("isohoricExtention: V:", diag.resume, "eps=", eps);
     }
 
     // охолодження, маса зменшується
-    private async isohoricCompression(mimMass: number, eps_m: number) {
+    private async isohoricCompression(mimMass: number, eps: number) {
         const plan = this.plunger;
+        const diag = new Diag();
         const heater = new Heater(
             plan.x1, 
             plan.realBottom - (plan.realBottom - plan.y1), 
@@ -316,14 +323,20 @@ export default class Process
 
         this.space.addDevice(heater);
         const vol = this.plunger.volume
-        await this.whileAsync(() => this.plunger.m > mimMass, () => {
-
-            this.plunger.m *= 1 - eps_m;
-            
-            const eps_v = eps_m / 2;
-            heater.rate = 1 - eps_v ;
+        await this.whileAsync(
+        () => 
+            this.plunger.m > mimMass, 
+        () => {
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+
+            this.plunger.m *= 1 - eps;
+
+            const eps_v = eps / 2;
+            heater.rate = 1 - eps_v ;
+
             heater.warm();
+            
+            diag.push(plan.volume);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -334,6 +347,7 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        console.log("isohoricCompression: V:", diag.resume, "eps=", eps);
     }
 
     //#endregion 
@@ -354,6 +368,7 @@ export default class Process
     private async isothermicExtention(minMass: number, eps: number) {
         const wanted_velo = -eps * 100;
         const plun = this.plunger;
+        const diag = new Diag(); 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -380,7 +395,9 @@ export default class Process
             
 
             heater.rate = 1 - eps_r;
-            heater.warm();  
+            heater.warm();
+
+            diag.push(plun.meterings[plun.meterings.length - 1].t);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -390,11 +407,14 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        console.log("isothermicExtention T", diag.resume, "eps=", eps);
+
     }
     
     private async isothermicCompression(maxMass: number, eps: number) {
         const wanted_velo = eps * 100;
         const plun = this.plunger;
+        const diag = new Diag(); 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -417,6 +437,8 @@ export default class Process
             heater.rate = 1 - eps_m / 2;
             heater.warm(); 
 
+            diag.push(plun.meterings[plun.meterings.length - 1].t);
+
             // replace real pressure metering with ideal one
             if (glo.pretty) {
                 let pressure = initT *  glo.BOLTZ * this.space.N /  this.plunger.volume;
@@ -425,6 +447,7 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        console.log("isothermicCompression T", diag.resume, "eps=", eps);
     }  
       
     //#endregion

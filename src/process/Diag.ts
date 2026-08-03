@@ -3,7 +3,7 @@ export default class Diag {
     vs: number[] = []
 
     push(v: number): void {
-        if (v) 
+        if (!isNaN(v)) 
             this.vs.push(v);       
     }
 
