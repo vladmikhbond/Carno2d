@@ -195,8 +195,8 @@ export default class Process
             // Action.
             heater.y1 =  plun.y1;
             // eps = dv / v = wanted_velo * plun.width / (2 * plun.volume) ;
-            const eps_r = wanted_velo * plun.width / plun.volume;
-            heater.rate = 1 - eps_r;
+            const eps_r = - wanted_velo * plun.width / (2 * plun.volume);
+            heater.rate = 1 + eps_r;
             heater.warm();
 
             // Втручання
@@ -233,7 +233,7 @@ export default class Process
         () => {
             // Action
             heater.y1 =  plun.y1;
-            const eps_r = wanted_velo * plun.width / plun.volume;
+            const eps_r = wanted_velo * plun.width / (2 * plun.volume);
             heater.rate = 1 - eps_r;
             heater.warm(); 
 
