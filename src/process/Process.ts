@@ -72,7 +72,7 @@ export default class Process
 
     async calm(stepCount: number) {
         const plun = this.plunger;
-        this.view.showWord("Wait");
+        this.view.showWord("Calming");
 
         const arr: number[] = [];
         let remaining = stepCount;
@@ -192,18 +192,17 @@ export default class Process
         () => 
             plun.volume < maxVolume, 
         () => {
+            // Втручання
+            let q = (wanted_velo**2 - plun.velo**2) * (plun.m / 2);
+            let eps_q = q / (this.space.N * Plunger.BALL_M);
+            plun.velo = wanted_velo;
+            heater.rate = 1 + eps_q;
+
             // Action.
             heater.y1 =  plun.y1;
             // eps = dv / v = wanted_velo * plun.width / (2 * plun.volume) ;
-            const eps_r = - wanted_velo * plun.width / (2 * plun.volume);
-            heater.rate = 1 + eps_r;
-            heater.warm();
-
-            // Втручання
-            let q = (plun.velo**2 - wanted_velo**2) * (plun.m / 2);
-            let eps_e = q / (this.space.N * 0.4);
-            plun.velo = wanted_velo;
-            heater.rate = 1 - eps_e;
+            const eps_r = - wanted_velo * plun.width / plun.volume;
+            heater.rate *= 1 + eps_r;
             heater.warm();
             
             diag.push(plun.meterings[plun.meterings.length - 1].p);       
@@ -231,17 +230,16 @@ export default class Process
         () => 
             plun.volume > minVolume, 
         () => {
+            // Втручання
+            let q = (wanted_velo**2 - plun.velo**2) * (plun.m / 2);
+            let eps_q = q / (this.space.N * Plunger.BALL_M);
+            plun.velo = wanted_velo;
+            heater.rate = 1 - eps_q;
+
             // Action
             heater.y1 =  plun.y1;
-            const eps_r = wanted_velo * plun.width / (2 * plun.volume);
-            heater.rate = 1 - eps_r;
-            heater.warm(); 
-
-            // Втручання
-            let q = (plun.velo**2 - wanted_velo**2) * (plun.m / 2);
-            let eps_e = q / (this.space.N  * 0.4);
-            plun.velo = wanted_velo;
-            heater.rate = 1 + eps_e;
+            const eps_r = wanted_velo * plun.width / plun.volume;
+            heater.rate *= 1 - eps_r;
             heater.warm(); 
 
             diag.push(plun.meterings[plun.meterings.length - 1].p);

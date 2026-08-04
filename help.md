@@ -115,7 +115,7 @@ title isothermic_test
 plunger m=3000, t=126
 scale   p=6, t=18, s=0.4, x=1.7, v=1.5
 isothermic  m=1000, eps=0.001
-calm       t=500
+calm        t=500
 isothermic  m=3000, eps=0.001 
 
 title         Цикл Отто (бензиновий)

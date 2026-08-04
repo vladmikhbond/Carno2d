@@ -15,7 +15,7 @@ export default class Diag {
         let sum2 = 0;
         this.vs.forEach(v => {sum2 += (v - avg)**2;});
         let sigma = Math.sqrt(sum2 / n);
-        return `${avg.toFixed(3)}|${sigma.toFixed(3)} n:${n}`;
+        return `${avg.toFixed(3)}|${sigma.toFixed(3)} time:${n}`;
     }
 
 }
