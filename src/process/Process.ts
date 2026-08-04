@@ -380,13 +380,15 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
+            // Action
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1);
             // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
             const eps_m = -wanted_velo * plun.width / plun.volume;
 
             this.plunger.m *= 1 - eps_m;
             const eps_r = eps_m / 2; 
-
+            
+            // Втручання
             let currT = this.plunger.measureTemperature();  
             heater.rate = 1 + (initT - currT) * eps_m;
             heater.warm();
@@ -422,14 +424,17 @@ export default class Process
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
+            // Action
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
             // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
             const eps_m = wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 + eps_m;
-
+            
+            // Втручання
             let currT = this.plunger.measureTemperature(); 
             heater.rate = 1 + (initT - currT) * eps_m; 
 
-            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
+           
             heater.warm();
 
             heater.rate = 1 - eps_m / 2;
