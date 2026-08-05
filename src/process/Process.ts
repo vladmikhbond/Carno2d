@@ -200,7 +200,7 @@ export default class Process
 
             // Action.
             heater.y1 =  plun.y1;
-            // eps = dv / v = wanted_velo * plun.width / (2 * plun.volume) ;
+            // eps = dV / V 
             const eps_r = - wanted_velo * plun.width / plun.volume;
             heater.rate *= 1 + eps_r;
             heater.warm();
@@ -380,21 +380,19 @@ export default class Process
         () => 
             this.plunger.m > minMass, 
         () => {
-            // Action
+            // Action M
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1);
-            // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+            // Формула: eps_m = dV / V
             const eps_m = -wanted_velo * plun.width / plun.volume;
-
             this.plunger.m *= 1 - eps_m;
-            const eps_r = eps_m / 2; 
-            
+  
             // Втручання
             let currT = this.plunger.measureTemperature();  
-            heater.rate = 1 + (initT - currT) * eps_m;
-            heater.warm();
-            
+            heater.rate = 1 + (initT - currT) / initT / 2;
 
-            heater.rate = 1 - eps_r;
+            // Action warm
+            const eps_r = eps_m / 2;
+            heater.rate *= 1 - eps_r;
             heater.warm();
 
             diag.push(plun.meterings[plun.meterings.length - 1].t);
@@ -424,20 +422,19 @@ export default class Process
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
         await this.whileAsync(() => this.plunger.m < maxMass, () => {
-            // Action
+            // Action M
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
-            // Формула: eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+            // Формула: eps_m = dV / V
             const eps_m = wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 + eps_m;
             
             // Втручання
             let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) * eps_m; 
-
+            heater.rate = 1 + (initT - currT) / initT / 2;
            
-            heater.warm();
-
-            heater.rate = 1 - eps_m / 2;
+            // Action warm
+            const eps_r = eps_m / 2;
+            heater.rate *= 1 - eps_r;
             heater.warm(); 
 
             diag.push(plun.meterings[plun.meterings.length - 1].t);
