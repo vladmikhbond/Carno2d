@@ -388,7 +388,7 @@ export default class Process
   
             // Втручання
             let currT = this.plunger.measureTemperature();  
-            heater.rate = 1 + (initT - currT) / initT / 2;
+            heater.rate = 1 + (initT - currT) / currT / 2;
 
             // Action warm
             const eps_r = eps_m / 2;
@@ -430,7 +430,7 @@ export default class Process
             
             // Втручання
             let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) / initT / 2;
+            heater.rate = 1 + (initT - currT) / currT / 2;
            
             // Action warm
             const eps_r = eps_m / 2;
