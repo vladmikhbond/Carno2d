@@ -80,7 +80,7 @@ export class Interpreter
                     await this.process?.isobaric(params.v, params.eps);
                     break;
                 case 'isohoric':
-                    await this.process?.isohoric(params.m, params.eps);
+                    await this.process?.isohoric(params.m, params.time);
                     break;
                 case 'isothermic':
                     await this.process?.isothermic(params.m, params.eps);

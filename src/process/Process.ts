@@ -124,7 +124,7 @@ export default class Process
         () => 
             plun.m > minMass, 
         () => {
-            // Action. eps_m = dv / v = wanted_velo * plun.width / plun.volume ;
+            // Action
             const eps_m = -2 * wanted_velo * plun.width / plun.volume;
             plun.m *= 1 - eps_m;
 
@@ -259,18 +259,20 @@ export default class Process
 
     //#region isohoric 
 
-    async isohoric(mass: number, eps=0.001) {
+    async isohoric(mass: number, time=1000) {
         if (this.plunger.m < mass) {
-            await this.isohoricExtention(mass, eps);
+            await this.isohoricExtention(mass, time);
         } else if (this.plunger.m > mass) {
-            await this.isohoricCompression(mass, eps);
+            await this.isohoricCompression(mass, time);
         }
     }
 
     // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
     // Гасіння коливань за рахунок зменшення охолодження.
-    private async isohoricExtention(maxMass: number, eps: number) {
+    private async isohoricExtention(maxMass: number, time: number) {
+ 
         const plan = this.plunger;
+        const eps = Math.log(maxMass / plan.m) / time;
         const diag = new Diag();
         const heater = new Heater(
             plan.x1, 
@@ -280,18 +282,17 @@ export default class Process
             1, "red");
 
         this.space.addDevice(heater);
-        const vol = this.plunger.volume
+        const vol = this.plunger.volume;
         await this.whileAsync(
         () => 
             this.plunger.m < maxMass, 
         () => {
+            // Action
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
-
             this.plunger.m *= 1 + eps;
 
             const eps_v = eps / 2;
             heater.rate = 1 + eps_v;
-            
             heater.warm();
             
             diag.push(plan.volume);
@@ -309,8 +310,9 @@ export default class Process
     }
 
     // охолодження, маса зменшується
-    private async isohoricCompression(mimMass: number, eps: number) {
+    private async isohoricCompression(minMass: number, time: number) {
         const plan = this.plunger;
+        const eps = Math.log(plan.m / minMass) / time;
         const diag = new Diag();
         const heater = new Heater(
             plan.x1, 
@@ -323,15 +325,14 @@ export default class Process
         const vol = this.plunger.volume
         await this.whileAsync(
         () => 
-            this.plunger.m > mimMass, 
+            this.plunger.m > minMass, 
         () => {
+            // Action
             heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
-
             this.plunger.m *= 1 - eps;
 
             const eps_v = eps / 2;
             heater.rate = 1 - eps_v ;
-
             heater.warm();
             
             diag.push(plan.volume);
