@@ -74,16 +74,16 @@ export class Interpreter
                     await this.process?.calm(params.t);
                     break;
                 case 'adiabatic':
-                    await this.process?.adiabatic(params.m, params.eps);
+                    await this.process?.adiabatic(params.m, params.time);
                     break;
                 case 'isobaric':
-                    await this.process?.isobaric(params.v, params.eps);
+                    await this.process?.isobaric(params.v, params.time);
                     break;
                 case 'isohoric':
                     await this.process?.isohoric(params.m, params.time);
                     break;
                 case 'isothermic':
-                    await this.process?.isothermic(params.m, params.eps);
+                    await this.process?.isothermic(params.m, params.time);
                     break;
                 
                 //#region Цикл Отто (бензиновий)

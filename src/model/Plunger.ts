@@ -45,9 +45,15 @@ export class Plunger extends Line
       this.meterings = [this.lastMetering];
    }
     
-   // фактично маса, а не енергія до об'єму
-   get pressure(): number {
+   // фактично маса на поршні, а не енергія до об'єму
+   get pressureM(): number {
       return this.m * glo.g / (this.x2 - this.x1);
+   }
+
+   getPressure(): number {
+      const [sumE, n] = this.sumEnergyUnderPlunger();
+      const v = (this.x2 - this.x1) * (this.realBottom - this.y1);
+      return sumE / v;
    }
 
    get volume(): number {
@@ -215,20 +221,5 @@ export class Plunger extends Line
          this.scales.x /= coef;
       } 
    }
-
-   // calm(step_count: number) {
-   //    let mas: number[] = [];
-   //    while(step_count--) {
-   //       this.space!.step();
-   //       mas.push(this.y1);
-   //    }
-   //    let zero = (Math.min(...mas) + Math.max(...mas)) / 2;
-   //    let sign0 = Math.sign(this.y1 - zero);
-   //    do {
-   //       this.space!.step();
-   //    } while(Math.sign(this.y1 - zero) == sign0)    
-   //    this.loss += this.m * this.velo * this.velo / 2;  
-   //    this.velo = 0;  
-   // }
 
 }
