@@ -183,7 +183,7 @@ export default class Process
     }
 
     // Газ розширюється до певного об'єму за рахунок повільного нагрівання
-    // Гасіння коливань за рахунок втручання в швидкість поршня
+    // Гасіння коливань за рахунок стабілізації руху поршня
     private async isobaricExtention(maxVolume: number, time: number) {
         const plun = this.plunger;
         const deltaV = plun.volume - maxVolume;
@@ -206,25 +206,24 @@ export default class Process
             heater.rate = 1 + eps_r;
             heater.warm();
             
-            // Втручання у швидкість поршня
-            let velo = (wanted_velo + plun.velo) / 2
-            let q = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = q / (this.space.N * Plunger.BALL_M);
+            // Стабілізація руху поршня
+            let diff = wanted_velo - plun.velo;
+            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
+            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
+            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
             plun.velo = velo;
             heater.rate = 1 + eps_q;
             heater.warm();
-
-            this.controller.step();
 
             diag.push(plun.meterings[plun.meterings.length - 1].p);       
 
             // replace real temperature metering with ideal one
             if (glo.pretty) {
-                let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
+                let idealT =  plun.volume * initP / glo.BOLTZ / this.space.N;
                 plun.meterings[plun.meterings.length - 1].p = initP;
-                plun.meterings[plun.meterings.length - 1].t = temperature;
+                plun.meterings[plun.meterings.length - 1].t = idealT;
             }
-        }, false); 
+        }); 
         this.space.removeDevice(heater);
         console.log("isobaricExtention P", diag.resume);
     }
@@ -243,32 +242,30 @@ export default class Process
         () => 
             plun.volume > minVolume, 
         () => {
-
             // Action
             heater.y1 =  plun.y1;
             const eps_r = wanted_velo * plun.width / plun.volume;
             heater.rate = 1 - eps_r;
             heater.warm();
             
-            // Втручання у швидкість поршня
-            let velo = (wanted_velo + plun.velo) / 2
-            let q = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = q / (this.space.N * Plunger.BALL_M);
+            // Стабілізація руху поршня
+            let diff = wanted_velo - plun.velo;
+            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
+            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
+            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
             plun.velo = velo;
             heater.rate = 1 - eps_q;
             heater.warm();
-
-            this.controller.step();
 
             diag.push(plun.meterings[plun.meterings.length - 1].p);
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
-                let temperature =  plun.volume * initP / glo.BOLTZ / this.space.N;
+                let idealT =  plun.volume * initP / glo.BOLTZ / this.space.N;
                 plun.meterings[plun.meterings.length - 1].p = initP;
-                plun.meterings[plun.meterings.length - 1].t = temperature;           
+                plun.meterings[plun.meterings.length - 1].t = idealT;           
             }
-        }, false); 
+        }); 
         this.space.removeDevice(heater);
         console.log("isobaricCompression P", diag.resume);
     }      
@@ -381,7 +378,7 @@ export default class Process
     }
 
     // Навантаження повільно зменшується до заданого значення, одночасно газ підігрівається.
-    // Гасіння коливань за рахунок зменшення навантаження і за рахунок підігріву.
+
     private async isothermicExtention(minMass: number, time: number) {
 
         const plun = this.plunger;
