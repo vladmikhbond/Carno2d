@@ -1,18 +1,8 @@
 TODO
-isohoric isothermic
-diag class
+
+
+
+
 побудувати цикл парового двигуна
 
 кпд цикла
-            //            // Втручання
-            // let currP = this.plunger.getPressure();
-            // const eps_p = (initP - currP) / currP / 2;
-            // heater.rate = 1 + eps_p
-            // heater.warm();
-
-                        //             // Втручання
-            // let currP = this.plunger.getPressure();
-            // let eps_p = (initP - currP) / currP / 2;
-            // if (eps_p > eps_r / 2) eps_p = eps_r / 2
-            // heater.rate = 1 + eps_p;
-            // heater.warm(); 

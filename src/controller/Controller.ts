@@ -80,11 +80,13 @@ export default class Controller
             if (event.data?.length != 1)
                 return;          
             const { value, selectionStart } = processArea;
-            const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
-            const prefix = value.slice(lineStart, selectionStart);
+            const begOfLine = value.lastIndexOf("\n", selectionStart - 1) + 1;
+            if (selectionStart - begOfLine > 5)
+                return;
+            const prefix = value.slice(begOfLine, selectionStart);
             const filtered = lines.filter(line => line.startsWith(prefix));
             if (filtered.length == 1) {
-                let a = processArea.value.slice(0, lineStart);
+                let a = processArea.value.slice(0, begOfLine);
                 let b = filtered[0];
                 let c = processArea.value.slice(selectionStart);
                 processArea.value = a + b + c;
