@@ -272,101 +272,6 @@ export default class Process
     //#endregion
 
 
-    //#region isohoric 
-
-    async isohoric(mass: number, time=1000) {
-        if (this.plunger.m < mass) {
-            await this.isohoricExtention(mass, time);
-        } else if (this.plunger.m > mass) {
-            await this.isohoricCompression(mass, time);
-        }
-    }
-
-    // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
-    // Гасіння коливань за рахунок зменшення охолодження.
-    private async isohoricExtention(maxMass: number, time: number) {
- 
-        const plan = this.plunger;
-        const eps = Math.log(maxMass / plan.m) / time;
-        const diag = new Diag();
-        const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
-            this.plunger.x2, 
-            this.plunger.realBottom,
-            1, "red");
-
-        this.space.addDevice(heater);
-        const vol = this.plunger.volume;
-        await this.whileAsync(
-        () => 
-            this.plunger.m < maxMass, 
-        () => {
-            // Action
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
-            this.plunger.m *= 1 + eps;
-
-            const eps_v = eps / 2;
-            heater.rate = 1 + eps_v;
-            heater.warm();
-            
-            diag.push(plan.volume);
-
-            // replace real pressure metering with ideal one
-            if (glo.pretty) {
-                const last = this.plunger.meterings.length - 1;
-                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
-                this.plunger.meterings[last].p = pressure;
-                this.plunger.meterings[last].v = vol;
-            }
-        }); 
-        this.space.removeDevice(heater);
-        console.log("isohoricExtention: V:", diag.resume, "eps=", eps);
-    }
-
-    // охолодження, маса зменшується
-    private async isohoricCompression(minMass: number, time: number) {
-        const plan = this.plunger;
-        const eps = Math.log(plan.m / minMass) / time;
-        const diag = new Diag();
-        const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
-            this.plunger.x2, 
-            this.plunger.realBottom,
-            1, "red");
-
-        this.space.addDevice(heater);
-        const vol = this.plunger.volume
-        await this.whileAsync(
-        () => 
-            this.plunger.m > minMass, 
-        () => {
-            // Action
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
-            this.plunger.m *= 1 - eps;
-
-            const eps_v = eps / 2;
-            heater.rate = 1 - eps_v ;
-            heater.warm();
-            
-            diag.push(plan.volume);
-
-            // replace real pressure metering with ideal one
-            if (glo.pretty) {
-                const last = this.plunger.meterings.length - 1;
-                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
-                this.plunger.meterings[last].p = pressure;
-                this.plunger.meterings[last].v = vol;
-            }
-        }); 
-        this.space.removeDevice(heater);
-        console.log("isohoricCompression: V:", diag.resume, "eps=", eps);
-    }
-
-    //#endregion 
-
-
     //#region  isothermic 
     
     async isothermic(mass: number, time=1000) {
@@ -473,6 +378,100 @@ export default class Process
       
     //#endregion
     
+    //#region isohoric 
+
+    async isohoric(targetM: number, time=1000) {
+        if (this.plunger.m > targetM) {
+            await this.isohoricExt(targetM, time);
+        } else if (this.plunger.m < targetM) {
+            await this.isohoricCompr(targetM, time);
+        }
+    }
+    
+    // охолодження, маса зменшується
+    private async isohoricExt(minMass: number, time: number) {
+        const plan = this.plunger;
+        const eps = Math.log(plan.m / minMass) / time;        
+        const diag = new Diag();
+        const heater = new Heater(
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
+            this.plunger.x2, 
+            this.plunger.realBottom,
+            1, "red");
+
+        this.space.addDevice(heater);
+        const vol = this.plunger.volume
+        await this.whileAsync(
+        () => 
+            this.plunger.m > minMass, 
+        () => {
+            // Action
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+            // M
+            this.plunger.m *= 1 - eps;
+            // v 
+            heater.rate = 1 - eps / 2;
+            heater.warm();
+            
+            diag.push(plan.volume);
+
+            // replace real pressure metering with ideal one
+            if (glo.pretty) {
+                const last = this.plunger.meterings.length - 1;
+                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
+                this.plunger.meterings[last].p = pressure;
+                this.plunger.meterings[last].v = vol;
+            }
+        }); 
+        this.space.removeDevice(heater);
+        console.log("isohoricExt: M:", diag.resume);
+    }
+
+    // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
+    private async isohoricCompr(maxMass: number, time: number) {
+ 
+        const plan = this.plunger;
+        const eps = Math.log(maxMass / plan.m) / time;  
+        const diag = new Diag();
+        const heater = new Heater(
+            plan.x1, 
+            plan.realBottom - (plan.realBottom - plan.y1), 
+            this.plunger.x2, 
+            this.plunger.realBottom,
+            1, "red");
+
+        this.space.addDevice(heater);
+        const vol = this.plunger.volume;
+        await this.whileAsync(
+        () => 
+            this.plunger.m < maxMass, 
+        () => {
+            // Action
+            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+            // m
+            this.plunger.m *= 1 + eps;
+            // v
+            heater.rate = 1 + eps / 2;
+            heater.warm();
+            
+            diag.push(plan.volume);
+
+            // replace real pressure metering with ideal one
+            if (glo.pretty) {
+                const last = this.plunger.meterings.length - 1;
+                let pressure = this.plunger.meterings[last].t *  glo.BOLTZ * this.space.N / vol;
+                this.plunger.meterings[last].p = pressure;
+                this.plunger.meterings[last].v = vol;
+            }
+        }); 
+        this.space.removeDevice(heater);
+        console.log("isohoricCompr: M:", diag.resume);
+    }
+
+    //#endregion 
+
+
 
     //#region Otto Cicle
 
