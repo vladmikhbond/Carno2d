@@ -378,6 +378,7 @@ export default class Process
       
     //#endregion
     
+    
     //#region isohoric 
 
     async isohoric(targetM: number, time=1000) {
@@ -388,33 +389,34 @@ export default class Process
         }
     }
     
-    // охолодження, маса зменшується
+    // Тиск зменшується до заданого значення за рахунок повільного розвантаження і повільного охолодження.
     private async isohoricExt(minMass: number, time: number) {
-        const plan = this.plunger;
-        const eps = Math.log(plan.m / minMass) / time;        
+        const plun = this.plunger;
+        const eps = Math.log(plun.m / minMass) / time;        
         const diag = new Diag();
         const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
+            plun.x1, 
+            plun.realBottom - (plun.realBottom - plun.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
 
         this.space.addDevice(heater);
         const vol = this.plunger.volume
+        plun.fixed = true;
         await this.whileAsync(
         () => 
             this.plunger.m > minMass, 
         () => {
             // Action
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
             // M
             this.plunger.m *= 1 - eps;
             // v 
             heater.rate = 1 - eps / 2;
             heater.warm();
             
-            diag.push(plan.volume);
+            diag.push(plun.volume);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -425,37 +427,40 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        plun.fixed = false;
         console.log("isohoricExt: M:", diag.resume);
     }
 
     // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
     private async isohoricCompr(maxMass: number, time: number) {
  
-        const plan = this.plunger;
-        const eps = Math.log(maxMass / plan.m) / time;  
+        const plun = this.plunger;
+        const eps = Math.log(maxMass / plun.m) / time;  
         const diag = new Diag();
         const heater = new Heater(
-            plan.x1, 
-            plan.realBottom - (plan.realBottom - plan.y1), 
+            plun.x1, 
+            plun.realBottom - (plun.realBottom - plun.y1), 
             this.plunger.x2, 
             this.plunger.realBottom,
             1, "red");
 
         this.space.addDevice(heater);
         const vol = this.plunger.volume;
+        plun.fixed = true;
+
         await this.whileAsync(
         () => 
             this.plunger.m < maxMass, 
         () => {
             // Action
-            heater.y1 =  plan.realBottom - (plan.realBottom - plan.y1); 
+            heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
             // m
             this.plunger.m *= 1 + eps;
             // v
             heater.rate = 1 + eps / 2;
             heater.warm();
             
-            diag.push(plan.volume);
+            diag.push(plun.volume);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -466,6 +471,7 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
+        plun.fixed = false;
         console.log("isohoricCompr: M:", diag.resume);
     }
 
