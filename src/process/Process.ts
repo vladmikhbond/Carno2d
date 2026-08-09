@@ -528,7 +528,7 @@ export default class Process
     }
 
     // mas | vol  
-    async exhaust(mass: number, minVolume: number) { 
+    async exhaust(mass: number) { 
         this.plunger.m = mass;
         this.space.selectLine(this.plunger.x1 + 20, this.plunger.realBottom)
         let bottomLine = this.space.selectedLine!;

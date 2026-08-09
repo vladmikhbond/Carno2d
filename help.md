@@ -45,7 +45,7 @@
 Параметри подаються в форматі 'ім'я=значення' і розділяються комами.
 Справа від знаку рівняння стоїть значення за замовчанням.
 
-| Назва | Параметри | Сенс |
+| Назва | Параметри | Зміст |
 | :--- | :--- | :--- |
 | title | рядок | рядок відображується в заголовку сторінки |
 | plunger | m=100, t=100, n=10000 | створюється поршень |
@@ -54,12 +54,12 @@
 | compression | m=, v= | стиск |
 | ignition | rate=, t= | запалювання |
 | expansion | m=, v= | розширення (робочий хід) |
-| exhaust | m=, v= | випуск |
+| exhaust | m=| випуск |
 | isobaric | v= | ізобара |
 | adiabatic | m= | адіабата |
 | isohoric | m= | ізохора |
 | isothermic | m= | ізотерма |
-| calm | t= | заспокоєння коливань поршня, t - кількість тактів |
+| calm | time= | заспокоєння коливань поршня, time - кількість тактів |
 
 <a id="keruvannya-pereglyadom"></a>
 ## Керування переглядом
@@ -112,28 +112,28 @@ title adiabatic_test
 plunger m=3000, t=100
 scale   p=6, t=13.5, s=0.4, x=2.4
 adiabatic  m=550, time=2000
-calm       t=500
+calm       time=500
 adiabatic  m=3000, time=2000
 
 title isobaric_test
 plunger m=3000, t=100
 scale   p=4.5, t=8, s=0.2, x=1.3, v=2.5 
 isobaric   v=50000, time=1000
-calm       t=500
+calm       time=500
 isobaric   v=22800, time=1000
 
 title isohoric_test
 plunger m=3000, t=126
 scale   p=6, t=11, s=0.16, x=2.1, v=3
 isohoric   m=900, time=1000
-calm       t=500
+calm       time=500
 isohoric  m=3000, time=1000
 
 title isothermic_test
 plunger m=3000, t=126
 scale   p=6, t=18, s=0.4, x=1.7, v=1.5
 isothermic  m=1000, time=2000
-calm        t=500
+calm        time=500
 isothermic  m=3000, time=2000 
 
 title         Цикл Отто (бензиновий)

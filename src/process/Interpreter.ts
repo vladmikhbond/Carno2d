@@ -71,7 +71,7 @@ export class Interpreter
                     }
                     break;
                 case 'calm':
-                    await this.process?.calm(params.t);
+                    await this.process?.calm(params.time);
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m, params.time);
@@ -101,7 +101,7 @@ export class Interpreter
                     await this.process?.expansion(params.m, params.v);
                     break;
                 case 'exhaust':
-                    await this.process?.exhaust(params.m, params.v);
+                    await this.process?.exhaust(params.m);
                     break;
                 //#endregion
 
