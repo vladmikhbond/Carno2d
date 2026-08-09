@@ -50,7 +50,7 @@
 | title | рядок | рядок відображується в заголовку сторінки |
 | plunger | m=100, t=100, n=10000 | створюється поршень |
 | scale | p=1, t=1, s=1, v=1, x=1 | масштабування тиску |
-| intake | v= | впуск |
+| intake | v=, n= | впуск |
 | compression | m=, v= | стиск |
 | ignition | rate=, t= | запалювання |
 | expansion | m=, v= | розширення (робочий хід) |
@@ -141,25 +141,25 @@ plunger m=100, n=0
 scale         p=0.1, t=0.8, s=0.1, v=1.2, x=0.1
 intake      v=90000
 compression m=8500,   v=12000
-ignition    rate=1.5, t=2000
+ignition    rate=1.1, t=2000
 expansion   m=16000,  v=88000
 exhaust     m=1000,   v=8000  
 
 title   Цикл Брайтона (квазістаціонарний)
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-isobaric   v=36000
-adiabatic  m=550
-isobaric   v=57000
-adiabatic  m=3000
+isobaric   v=36000, time=1000
+adiabatic  m=550, time=1000
+isobaric   v=57000, time=1000
+adiabatic  m=3000, time=1000
 
 title   Зворотний цикл Брайтона
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-adiabatic  m=550
-isobaric   v=86000
-adiabatic  m=3000
-isobaric   v=24700
+adiabatic  m=550, time=1000
+isobaric   v=86000, time=1000
+adiabatic  m=3000, time=1000
+isobaric   v=24700, time=1000
 
 title   Цикл Карно
 plunger m=3000, t=126

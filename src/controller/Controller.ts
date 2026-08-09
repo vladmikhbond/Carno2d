@@ -66,7 +66,7 @@ export default class Controller
 'title',
 'plunger m=100, t=100, n=1000',
 'scale   p=1, t=1, s=1, v=1, x=1',
-'intake     v=',
+'intake     v=, n=',
 'compression m=,    v=',
 'ignition   rate=, t=',
 'expansion  m=,    v=',

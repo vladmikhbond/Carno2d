@@ -89,7 +89,7 @@ export class Interpreter
                 //#region Цикл Отто (бензиновий)
 
                 case 'intake':
-                    await this.process?.intake(10000, params.v);  // n = 10 000
+                    await this.process?.intake(params.v, params.n);
                     break;
                 case 'compression':
                     await this.process?.compression(params.m, params.v);

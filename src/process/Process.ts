@@ -44,7 +44,7 @@ export default class Process
                 try {
                     if (this.procState == ProcessState.Abort) {
                         clearInterval(timer);
-                        rej(new Error('stop process'));
+                        // rej(new Error('stop process'));
                         return;
                     }
 
@@ -139,8 +139,6 @@ export default class Process
                 plun.meterings[last].t = temperature;
             }            
         });
-
-        console.log("adiabaticExtention: dif_T:", diag.resume);
     }
 
     private async adiabaticCompression(maxMass: number, time: number) {
@@ -166,8 +164,6 @@ export default class Process
                 plun.meterings[last].t = temperature;
             }
         }); 
-
-        console.log("adiabaticCompression: dif_T:", diag.resume);
     }
     //#endregion
  
@@ -347,7 +343,10 @@ export default class Process
             1, "red");
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
-        await this.whileAsync(() => this.plunger.m < maxMass, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.m < maxMass, 
+        () => {
             // Action M
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
             // Формула: eps_m = dV / V
@@ -481,10 +480,13 @@ export default class Process
 
     //#region Otto Cicle
 
-    // bomb | vol
-    async intake(n: number, maxVolume: number) {       
+    // vol
+    async intake(maxVolume: number, n=10000) {       
         let [dn, x1, y1, x2, y2] = [100, this.plunger.x1 + 1, this.plunger.realBottom - 10, this.plunger.x1 + 50, this.plunger.realBottom - 1];
-        await this.whileAsync(() => this.plunger.volume < maxVolume, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.volume < maxVolume, 
+        () => {
             if (n > 0) {
                 //let t = 2.5 * 30 = 75
                 let bomb = new Bomb(dn, x1, y1, x2, y2, 0, 0, 75, 0.5, 0.4, "red", )
@@ -492,14 +494,14 @@ export default class Process
                 n -= dn; 
             }
         });
-
     }
 
     // mas | vol
     async compression(mass: number, minVolume: number) {  
         this.plunger.m = mass;
         await this.whileAsync(
-            () => this.plunger.volume > minVolume
+        () => 
+            this.plunger.volume > minVolume 
         );
     }
     
@@ -507,7 +509,10 @@ export default class Process
     async ignition(rate: number, maxTemperature: number) {  
         let heater = new Heater(this.plunger.x1, this.plunger.y1, this.plunger.x2, this.plunger.realBottom, rate, "red");
         this.space.addDevice(heater);
-        await this.whileAsync(() => this.plunger.t < maxTemperature, () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.t < maxTemperature, 
+        () => {
             heater.warm();
         });
         this.space.removeDevice(heater);
@@ -517,7 +522,8 @@ export default class Process
     async expansion(mass: number, maxVolume: number) { 
         this.plunger.m = mass;
         await this.whileAsync(
-            () => this.plunger.volume < maxVolume
+        () => 
+            this.plunger.volume < maxVolume 
         );
     }
 
@@ -525,24 +531,29 @@ export default class Process
     async exhaust(mass: number, minVolume: number) { 
         this.plunger.m = mass;
         this.space.selectLine(this.plunger.x1 + 20, this.plunger.realBottom)
-        let line = this.space.selectedLine!;
-        let width = this.plunger.x2 - this.plunger.x1;
+        let bottomLine = this.space.selectedLine!;
 
         // open bottom anime
-        let x1 = line.x1;
-        await this.whileAsync(() => line.x1 < x1 + width, () => { line.move(10, 0) } );
+        let x1 = bottomLine.x1;
+        await this.whileAsync(() => bottomLine.x1 < x1 + this.plunger.width, () => { bottomLine.move(10, 0) } );
         
         // 
-        await this.whileAsync(() => this.plunger.volume > minVolume * 2 , () => {
+        await this.whileAsync(
+        () => 
+            this.plunger.y1 < this.plunger.bottom - 80, 
+        () => {
             if (this.plunger.m > 100) this.plunger.m -= 10;
-        } );
+        });
         
         this.plunger.withFriction = true;
-        await this.whileAsync(() => this.plunger.volume > minVolume);
+        await this.whileAsync(
+        () => 
+            this.plunger.y1 < this.plunger.bottom
+        );
         this.plunger.withFriction = false;
 
         // close bottom anime
-        await this.whileAsync(() => line.x1 > x1, () => { line.move(-10, 0) } );
+        await this.whileAsync(() => bottomLine.x1 > x1, () => { bottomLine.move(-10, 0) } );
     }
 
     //#endregion Otto Cicle
