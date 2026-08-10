@@ -73,6 +73,9 @@ export class Interpreter
                 case 'calm':
                     await this.process?.calm(params.time);
                     break;
+                case 'run':
+                    await this.process?.run(params.time);
+                    break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m, params.time);
                     break;
@@ -147,12 +150,6 @@ export class Interpreter
             plun.move(0, -Plunger.GAP);
         }
     }
-
-    // private waitFrame(): Promise<void> {
-    //     return new Promise(
-    //         res => requestAnimationFrame(() => res())
-    //     );
-    // }
 
     hilightBefore(line: string ) 
     {   

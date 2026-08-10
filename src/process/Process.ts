@@ -35,11 +35,11 @@ export default class Process
     }
 
     async whileAsync(
-        condition: () => boolean,
-        action: () => void = () => {},
-        stepAfterAction: boolean = true,
+        condition = () => true,
+        action = () => {},
+        stepAfterAction = true,
     ) {
-        return new Promise<number>((res, rej) => {
+        return new Promise<void>((resolve, reject) => {
             let timer = setInterval(() => {
                 try {
                     if (this.procState == ProcessState.Abort) {
@@ -54,7 +54,7 @@ export default class Process
 
                     if (!condition()) {
                         clearInterval(timer);
-                        res(this.controller.timer);
+                        resolve();
                         return;
                     }
 
@@ -64,10 +64,22 @@ export default class Process
                     }
                 } catch (err) {
                     clearInterval(timer);
-                    rej(err);
+                    reject(err);
                 }
             }, glo.msec);
         });
+    }
+
+    
+
+    async run(stepCount=0) {
+        this.view.showWord("Running");
+        let remaining = stepCount ? stepCount : 100500;
+
+        await this.whileAsync(
+            () => remaining > 0,
+            () => {remaining--},
+        );
     }
 
     async calm(stepCount: number) {
