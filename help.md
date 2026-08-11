@@ -139,8 +139,8 @@ isothermic  m=3000, time=2000
 
 title         Цикл Отто (бензиновий)
 plunger m=100, n=0
-scale         p=0.1, t=0.8, s=0.1, v=1.2, x=0.1
-intake      v=90000
+scale       p=0.1, t=0.8, s=0.1, v=1.2, x=0.1
+intake      v=90000, nk=10
 compression m=8500,   v=12000
 ignition    rate=1.1, t=2000
 expansion   m=16000,  v=88000

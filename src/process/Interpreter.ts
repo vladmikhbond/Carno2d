@@ -65,15 +65,12 @@ export class Interpreter
                     this.createPlunger(params);
                     this.newProcess();
                     if (this.process!.space.N > 1000) { 
-                        await this.process?.calm(200);                       
+                        await this.process!.calm(200);                       
                         this.space.plunger.clearMeterings();
                     }
                     break;
                 case 'scale':
-                    const plunger = this.space.plunger;
-                    if (plunger) {
-                        Object.assign(plunger.scales, params);
-                    }
+                    Object.assign(this.space.plunger.scales, params);
                     break;
                 case 'calm':
                     await this.process?.calm(params.time);
@@ -97,7 +94,7 @@ export class Interpreter
                 //#region Цикл Отто (бензиновий)
 
                 case 'intake':
-                    await this.process?.intake(params.v, params.n);
+                    await this.process?.intake(params.v, params.nk);
                     break;
                 case 'compression':
                     await this.process?.compression(params.m, params.v);

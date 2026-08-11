@@ -33,6 +33,8 @@ export default class Process
         this.view.draw1();  
         this.view.draw2(); 
     }
+    
+    //#region common
 
     async whileAsync(
         condition = () => true,
@@ -114,6 +116,8 @@ export default class Process
         plun.loss += plun.m * plun.velo * plun.velo / 2;
         plun.velo = 0;
     }
+    
+    //#endregion
 
 
     //#region adiabatic 
@@ -278,7 +282,7 @@ export default class Process
     //#endregion
 
 
-    //#region  isothermic 
+    //#region isothermic 
     
     async isothermic(mass: number, time=1000) {
         if (this.plunger.m > mass) {
@@ -487,12 +491,17 @@ export default class Process
     //#endregion 
 
 
-
     //#region Otto Cicle
 
     // vol
-    async intake(maxVolume: number, n=10000) {       
-        let [dn, x1, y1, x2, y2] = [100, this.plunger.x1 + 1, this.plunger.realBottom - 10, this.plunger.x1 + 50, this.plunger.realBottom - 1];
+    async intake(maxVolume: number, nk=10) {       
+        let n = nk * 1000;
+        let dn = n / 100,
+            x1 = this.plunger.x1 + 1, 
+            y1 = this.plunger.realBottom - 10,
+            x2 = this.plunger.x1 + 50, 
+            y2 = this.plunger.realBottom - 1;
+
         await this.whileAsync(
         () => 
             this.plunger.volume < maxVolume, 
