@@ -59,7 +59,8 @@
 | adiabatic | m= | адіабата |
 | isohoric | m= | ізохора |
 | isothermic | m= | ізотерма |
-| calm | time= | заспокоєння коливань поршня, time - кількість тактів |
+| calm | time=400 | заспокоєння коливань поршня, time - кількість тактів |
+| run | time=1e6 | просто робить кроки, time - кількість тактів |
 
 <a id="keruvannya-pereglyadom"></a>
 ## Керування переглядом
@@ -148,18 +149,18 @@ exhaust     m=1000,   v=8000
 title   Цикл Брайтона (квазістаціонарний)
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-isobaric   v=36000, time=1000
-adiabatic  m=550, time=1000
-isobaric   v=57000, time=1000
-adiabatic  m=3000, time=1000
+isobaric   v=36000
+adiabatic  m=550
+isobaric   v=57000
+adiabatic  m=3000
 
 title   Зворотний цикл Брайтона
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-adiabatic  m=550, time=1000
-isobaric   v=86000, time=1000
-adiabatic  m=3000, time=1000
-isobaric   v=24700, time=1000
+adiabatic  m=550
+isobaric   v=86000
+adiabatic  m=3000
+isobaric   v=24700
 
 title   Цикл Карно
 plunger m=3000, t=126

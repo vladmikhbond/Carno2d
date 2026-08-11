@@ -110,8 +110,13 @@
 </tr>
 <tr>
 <td align="left">calm</td>
-<td align="left">time=</td>
+<td align="left">time=400</td>
 <td align="left">заспокоєння коливань поршня, time - кількість тактів</td>
+</tr>
+<tr>
+<td align="left">run</td>
+<td align="left">time=1e6</td>
+<td align="left">просто робить кроки, time - кількість тактів</td>
 </tr>
 </tbody></table>
 <p><a id="keruvannya-pereglyadom"></a></p>
@@ -181,18 +186,18 @@ exhaust     m=1000,   v=8000
 title   Цикл Брайтона (квазістаціонарний)
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-isobaric   v=36000, time=1000
-adiabatic  m=550, time=1000
-isobaric   v=57000, time=1000
-adiabatic  m=3000, time=1000
+isobaric   v=36000
+adiabatic  m=550
+isobaric   v=57000
+adiabatic  m=3000
 
 title   Зворотний цикл Брайтона
 plunger m=3000, t=111.4
 scale   p=5.5, t=9.2, s=0.36, x=1.5
-adiabatic  m=550, time=1000
-isobaric   v=86000, time=1000
-adiabatic  m=3000, time=1000
-isobaric   v=24700, time=1000
+adiabatic  m=550
+isobaric   v=86000
+adiabatic  m=3000
+isobaric   v=24700
 
 title   Цикл Карно
 plunger m=3000, t=126

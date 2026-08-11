@@ -44,11 +44,11 @@ export default class Process
                 try {
                     if (this.procState == ProcessState.Abort) {
                         clearInterval(timer);
-                        // rej(new Error('stop process'));
+                        resolve();
                         return;
                     }
 
-                    if (this.procState != ProcessState.Run) {
+                    if (this.procState == ProcessState.Pause) {
                         return;
                     }
 
@@ -70,19 +70,17 @@ export default class Process
         });
     }
 
-    
 
-    async run(stepCount=0) {
+    async run(stepCount=1e6) {
         this.view.showWord("Running");
-        let remaining = stepCount ? stepCount : 100500;
 
         await this.whileAsync(
-            () => remaining > 0,
-            () => {remaining--},
+            () => stepCount > 0,
+            () => {stepCount--},
         );
     }
 
-    async calm(stepCount: number) {
+    async calm(stepCount=400) {
         const plun = this.plunger;
         this.view.showWord("Calming");
 
@@ -120,7 +118,7 @@ export default class Process
 
     //#region adiabatic 
 
-    async adiabatic(mass: number, time=3000) {
+    async adiabatic(mass: number, time=1000) {
         if (this.plunger.m > mass) {
             await this.adiabaticExtention(mass, time);
         } else if (this.plunger.m < mass) {
@@ -182,7 +180,7 @@ export default class Process
     
     //#region isobaric 
 
-    async isobaric(vol: number, time: number) {
+    async isobaric(vol: number, time = 1000) {
         if (this.plunger.volume < vol) {
             await this.isobaricExtention(vol, time);
         } else if (this.plunger.volume > vol) {

@@ -30,8 +30,13 @@ export class Interpreter
     }
 
     static parse(line: string) {
+        line = line.trim();
         let pos = line.indexOf(' ');
-        let command = line.slice(0, pos).trim();
+        // command has no params
+        if (pos == -1) {
+            return [line, "", {}];
+        }
+        let command = line.slice(0, pos);
         let rest = line.slice(pos + 1).trim();
         let params = str2obj(rest);
         return [command, rest, params]
@@ -57,7 +62,7 @@ export class Interpreter
                     document.getElementById("title")!.innerHTML = restLine;
                     break;
                 case 'plunger':
-                    await this.createPlunger(params);
+                    this.createPlunger(params);
                     this.newProcess();
                     if (this.process!.space.N > 1000) { 
                         await this.process?.calm(200);                       
@@ -126,7 +131,7 @@ export class Interpreter
 
     // params = {t: temperature, m: massa, n: number of balls }
     //
-    async createPlunger(params: any) {
+    createPlunger(params: any) {
         this.space.clear();
 
         // default values
