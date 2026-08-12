@@ -64,19 +64,24 @@ export class Interpreter
                 case 'plunger':
                     this.createPlunger(params);
                     this.newProcess();
-                    if (this.process!.space.N > 1000) { 
-                        await this.process!.calm(200);                       
-                        this.space.plunger.clearMeterings();
-                    }
+                    // if (this.process!.space.N > 100) { 
+                    //     await this.process!.calm(200);                       
+                    //     this.space.plunger.clearMeterings();
+                    // }
                     break;
                 case 'scale':
                     Object.assign(this.space.plunger.scales, params);
+                    this.space.plunger.clearMeterings();
                     break;
                 case 'calm':
                     await this.process?.calm(params.time);
                     break;
                 case 'run':
                     await this.process?.run(params.time);
+                    // к к д
+                    let m = this.space.plunger.getAvgMetering(params.time / 3 | 0);
+                    let q = this.space.givenHeat;
+                    console.log(`${(100*m.u/q).toFixed(2)}%`, m.t.toFixed(2));
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m, params.time);

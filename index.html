@@ -42,16 +42,16 @@
     </section>
         
     <section> 
-        <textarea id="processArea" spellcheck="false" title="Вікно команд">
-title         Цикл Отто (бензиновий)
-plunger m=100, n=0
-scale         p=0.1, t=0.8, s=0.1, v=1.2, x=0.1
-intake      v=90000, nk=10
-compression m=8500,   v=12000
-ignition    rate=1.1, t=2000
-expansion   m=16000,  v=88000
-exhaust     m=1000,   v=8000 
-         </textarea>
+<textarea id="processArea" spellcheck="false" title="Вікно команд">
+title isobaric_test
+plunger m=3000, t=100
+run time=999
+scale   p=4.5, t=8, s=0.2, x=1.3, v=2.5 
+isobaric   v=50000, time=1000
+run time=1000
+isobaric   v=22800, time=1000
+run time=1000
+</textarea>
     </section>
 
     <!-- ------------------canvases------------------  -->

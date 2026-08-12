@@ -196,7 +196,7 @@ export default class Ball {
             // обмін швидкостей уздовж Оy
             const plung_vy = ((M - m) * nearestLine.velo + 2 * m * v.y) / (M + m);  
             const ball_vy = ((m - M) * v.y + 2 * M * nearestLine.velo) / (M + m);
-            nearestLine.impulse += M * (plung_vy - nearestLine.velo);
+            nearestLine.impulseFromBalls += M * (plung_vy - nearestLine.velo);
             
             v.y = ball_vy;
         }        

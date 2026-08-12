@@ -19,16 +19,20 @@ export default class Space
     cell = 20;         // сторона комірки
     givenHeat = 0;     // тепло, віддане усіма нагрівачами
     takenHeat = 0;     // тепло, забране усіма охолоджувачами 
+    
     // підраховує тепло при нагріванні 
-    heatAccounting (dE: number) {if (dE > 0) this.givenHeat += dE; else this.takenHeat -= dE;}
+    heatAccounting (dE: number) {
+        if (dE > 0) 
+            this.givenHeat += dE; 
+        else 
+            this.takenHeat -= dE;
+    }
 
     private bcont!: BallCont;
     private wcont!: WallCont;
     private dcont!: DevCont;
     
     selectedLine: Line | null = null;
-    // selectedBall: Ball | null = null;
-    // selectedDevice: Device | null = null;
 
     bombs: Bomb[] = [];
 

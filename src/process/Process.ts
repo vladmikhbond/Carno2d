@@ -300,7 +300,7 @@ export default class Process
         const deltaV = plun.volume - plun.volume * plun.m / minMass;
         const wanted_velo = deltaV / plun.width / time;
 
-        const diag = new Diag(); 
+        // const diag = new Diag(); 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -310,6 +310,10 @@ export default class Process
         this.space.addDevice(heater);
 
         let initT = this.plunger.measureTemperature();
+
+        // баланс тепла (забирати тепло заборонено)
+        let takenHeat = this.space.takenHeat;
+        
         await this.whileAsync(
         () => 
             this.plunger.m > minMass, 
@@ -323,13 +327,14 @@ export default class Process
             // Втручання
             let currT = this.plunger.measureTemperature();  
             heater.rate = 1 + (initT - currT) / currT / 2;
-
-            // Action warm
-            const eps_r = eps_m / 2;
-            heater.rate *= 1 - eps_r;
             heater.warm();
 
-            diag.push(plun.meterings[plun.meterings.length - 1].t);
+            // Action warm
+            // const eps_r = eps_m / 2;
+            // heater.rate = 1 - eps_r;
+            // heater.warm();
+
+            // diag.push(plun.meterings[plun.meterings.length - 1].t);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -339,8 +344,11 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isothermicExtention T", diag.resume);
-
+        // console.log("isothermicExtention T", diag.resume);
+        // баланс тепла
+        let dHeat = this.space.takenHeat - takenHeat;
+        this.space.givenHeat -= dHeat;
+        this.space.takenHeat = takenHeat
     }
     
     private async isothermicCompression(maxMass: number, time: number) {
@@ -348,7 +356,7 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume - plun.volume * plun.m / maxMass;
         const wanted_velo = deltaV / plun.width / time;
-        const diag = new Diag(); 
+        // const diag = new Diag(); 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -357,6 +365,9 @@ export default class Process
             1, "red");
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
+
+        // баланс тепла (давати тепло заборонено)
+        let givenHeat = this.space.givenHeat;
         await this.whileAsync(
         () => 
             this.plunger.m < maxMass, 
@@ -370,13 +381,14 @@ export default class Process
             // Втручання
             let currT = this.plunger.measureTemperature(); 
             heater.rate = 1 + (initT - currT) / currT / 2;
-           
-            // Action warm
-            const eps_r = eps_m / 2;
-            heater.rate *= 1 - eps_r;
-            heater.warm(); 
+            heater.warm();
 
-            diag.push(plun.meterings[plun.meterings.length - 1].t);
+            // Action warm
+            // const eps_r = eps_m / 2;
+            // heater.rate *= 1 - eps_r;
+            // heater.warm(); 
+
+            // diag.push(plun.meterings[plun.meterings.length - 1].t);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -386,7 +398,12 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isothermicCompression T", diag.resume);
+        // console.log("isothermicCompression T", diag.resume);
+
+        // баланс тепла
+        let dHeat = this.space.givenHeat - givenHeat;
+        this.space.takenHeat -= dHeat;
+        this.space.givenHeat = givenHeat;
     }  
       
     //#endregion

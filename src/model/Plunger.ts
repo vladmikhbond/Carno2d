@@ -22,7 +22,7 @@ export class Plunger extends Line
    loss = 0;   // plunger loss
    t = 0;      // temperature
    velo = 0;   // velocity
-   impulse = 0;
+   impulseFromBalls = 0;  // допоміжне тимчасове значення, не є імпульсом
    withFriction = false;
    fixed = false;
 
@@ -85,7 +85,7 @@ export class Plunger extends Line
    
    moveByForces() {
       // гравітація діє на навантаження    
-      let dv = glo.g + this.impulse / this.m;
+      let dv = glo.g /* *1 */ + this.impulseFromBalls / this.m;
       this.velo += dv; 
 
       // обмеження швидкості поршня - втрата енергії
@@ -134,7 +134,7 @@ export class Plunger extends Line
       this.u -= dy * this.m * glo.g;
 
       // очистка накопиченого імпульсу після зсуву поршня
-      this.impulse = 0;
+      this.impulseFromBalls = 0;
    }
 
    private sumEnergyUnderPlunger(): [number, number] {
@@ -167,7 +167,7 @@ export class Plunger extends Line
       // p тиск - сумарна кінетична енергія куль в одиниці об'єму
       let p = sumE / v;
       let t = sumE / (n * glo.BOLTZ);
-      let u = this.u;
+      let u = this.u - Math.sign(this.velo) * (this.m * this.velo**2 / 2);
 
       // сумарна теплота всіх нагрівачів
       let q = this.space!.givenHeat - this.space!.takenHeat; 
@@ -195,6 +195,28 @@ export class Plunger extends Line
       // clear global heat
       this.space!.givenHeat = this.space!.takenHeat = 0;
         
+   }
+
+   getAvgMetering(len: number): PlungerMetering {
+      let a: PlungerMetering = {n: 0, p: 0, v: 0, t: 0, u: 0, q: 0, s:0};
+      let ms = this.meterings.slice(-len);
+      ms.reduce((a, m) => {
+         a.p += m.p;
+         a.v += m.v;
+         a.t += m.t;
+         a.u += m.u;
+         a.q += m.q;
+         a.s += m.s;
+         return a;
+      }, a);
+      a.p /= len;
+      a.v /= len;
+      a.t /= len;
+      a.u /= len;
+      a.q /= len;
+      a.s /= len;
+     
+      return a;
    }
 
    scale(x: string) {
