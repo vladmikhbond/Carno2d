@@ -73,27 +73,41 @@ export default class Process
     }
 
 
-    async run(stepCount=1e6) {
-        this.view.showWord("Running");
+    async run(time=1e6) {
+        
+        let stepCount = time;
 
         await this.whileAsync(
             () => stepCount > 0,
             () => {stepCount--},
         );
+        ///////////////////////
+
+        let avgMet = this.space.plunger.getAvgMetering(time / 3 | 0);
+
+        const meterings = this.space.plunger.meterings
+        meterings.splice(meterings.length - time, time);
+        meterings.push(avgMet);
+        this.view.draw2();
+        //
+        let last = this.plunger.lastMetering
+        let T1 = Math.min(...meterings.slice(1).map(m => m.t))
+        let T2 = last.t
+        let Q = this.space.givenHeat;
+        let U = last.u;
+
+        console.log(`${T1}\t${T2}\t${U}\t${Q}`)
+        console.log((100*U/Q).toFixed(1), (100*(1 - T1/T2)).toFixed(1));
     }
 
-    async calM(stepCount=1e6) {
-        this.view.showWord("Running");
+    // async calM(stepCount=1e6) {
+    //     this.view.showWord("Running");
 
-        await this.whileAsync(
-            () => stepCount > 0,
-            () => {stepCount--},
-        );
-    }
-
-
-
-
+    //     await this.whileAsync(
+    //         () => stepCount > 0,
+    //         () => {stepCount--},
+    //     );
+    // }
 
     async calm(stepCount=400) {
         const plun = this.plunger;
