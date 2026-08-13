@@ -10,11 +10,11 @@ import {str2obj} from "../globals/utils.js"
 
 // local constants
 const processArea = <HTMLTextAreaElement>document.getElementById("processArea");
-export const MARK_DONE = '▌';
-export const MARK_DOING = '►';
+const MARK_DONE = '▌';
+const MARK_DOING = '►';
 
 // Інтерпретатор команд
-
+//
 export class Interpreter 
 {
     space: Space;
@@ -29,10 +29,12 @@ export class Interpreter
         this.controller = controller;
     }
 
-    static parse(line: string) {
+    // Поділяє рядок на трйку [command, rest, params]
+    //
+    static parseLine(line: string) {
         line = line.trim();
         let pos = line.indexOf(' ');
-        // command has no params
+        // if command has no params
         if (pos == -1) {
             return [line, "", {}];
         }
@@ -42,20 +44,32 @@ export class Interpreter
         return [command, rest, params]
     }
 
+    // Перетворює текст на масив команд, які очікують виконання
+    //
+    static scriptToLines(script: string) {
+        let lines = script.split('\n').map(l => l.trimEnd());
+        lines = lines.filter(
+            l => l != "" && 
+            l[0] != MARK_DONE && 
+            !l.startsWith(" ")
+        );
+        if (lines.length == 0 || lines[0][0] == MARK_DOING) 
+            return[];
+        return lines;
+    }
+
+    // Виконує ті команди скрипта, які не мають позначки MARK_DONE на початку рядка
+    // Ключове слово команди - з початку рядка і до першого пробіла.
+    // Пробіл на початку рядка перетворює рядок в коментар.
+    //
     async interpret(script: string) 
     {    
-        let lines = script.split('\n').map(l => l.trimEnd());
-        lines = lines.filter(s => s != "" && s[0] != MARK_DONE);
-        if (lines.length == 0 || lines[0][0] == MARK_DOING) 
-            return;
-
+        const lines = Interpreter.scriptToLines(script);
         for (let line of lines) {
-            if (!line || line.startsWith(" "))
-                continue;
              
             // елементи чергової команди
-            let [command, restLine, params] = Interpreter.parse(line);
-            this.hilightBefore(line);
+            let [command, restLine, params] = Interpreter.parseLine(line);
+            hilightBefore(line);
             switch (command) 
             {
                 case 'title':
@@ -116,7 +130,7 @@ export class Interpreter
                     break;
             }
             // маркування виконаних команд
-            this.hilightAfter();
+            hilightAfter();
         }
     }
 
@@ -153,23 +167,26 @@ export class Interpreter
             plun.move(0, -Plunger.GAP);
         }
     }
-
-    hilightBefore(line: string ) 
-    {   
-        // знайти першу немарковану строку
-        let start = ("\n"+processArea.value).indexOf("\n"+line);
-
-        processArea.value = processArea.value.slice(0, start) + MARK_DOING +  processArea.value.slice(start);
-    }
-
-    hilightAfter() 
-    {   
-        processArea.value = processArea.value.replace(MARK_DOING, MARK_DONE);
-    }
-    
-    removeHilights() 
-    {       
-        processArea.value = processArea.value.replaceAll(MARK_DOING, '').replaceAll(MARK_DONE, '');
-    }
-
 }
+
+//#region  Utilities ------------------------------------------
+
+function hilightBefore(line: string ) 
+{   
+    // знайти першу немарковану строку
+    let start = ("\n"+processArea.value).indexOf("\n"+line);
+
+    processArea.value = processArea.value.slice(0, start) + MARK_DOING +  processArea.value.slice(start);
+}
+
+function hilightAfter() 
+{   
+    processArea.value = processArea.value.replace(MARK_DOING, MARK_DONE);
+}
+
+export function removeHilights() 
+{       
+    processArea.value = processArea.value.replaceAll(MARK_DOING, '').replaceAll(MARK_DONE, '');
+}
+
+//#endregion

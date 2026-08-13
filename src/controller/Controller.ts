@@ -3,7 +3,7 @@ import Space from '../model/Space.js';
 import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
-import { Interpreter} from '../process/Interpreter.js';
+import { Interpreter, removeHilights} from '../process/Interpreter.js';
 import { ProcessState } from '../process/Process.js';
 
 const clearButton = <HTMLButtonElement>document.getElementById('clearButton');
@@ -42,7 +42,7 @@ export default class Controller
 
         clearButton.addEventListener('click', async (e) => {
             this.space.clear();
-            this.interpreter.removeHilights();
+            removeHilights();
             this.interpreter.newProcess();
             this.interpreter.process!.procState = ProcessState.Pause; 
             this.time = 0;
