@@ -65,11 +65,12 @@ export class Interpreter
     async interpret(script: string) 
     {    
         const lines = Interpreter.scriptToLines(script);
-        for (let line of lines) {
-             
+        for (let line of lines) 
+        {          
             // елементи чергової команди
             let [command, restLine, params] = Interpreter.parseLine(line);
             hilightBefore(line);
+
             switch (command) 
             {
                 case 'title':
@@ -89,9 +90,9 @@ export class Interpreter
                 case 'run':
                     await this.process?.run(params.time);
                     // к.к.д.
-                    let m = this.space.plunger.getAvgMetering(params.time / 3 | 0);
-                    let q = this.space.givenHeat;
-                    console.log(`${(100*m.u/q).toFixed(2)}%`, m.t.toFixed(2));
+                    let met = this.space.plunger.getAvgMetering(params.time / 3 | 0);
+                    let gQ = this.space.givenHeat;
+                    console.log(`${(100*met.u/gQ).toFixed(2)}%`, met.t.toFixed(2));
                     break;
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m, params.time);

@@ -82,6 +82,19 @@ export default class Process
         );
     }
 
+    async calM(stepCount=1e6) {
+        this.view.showWord("Running");
+
+        await this.whileAsync(
+            () => stepCount > 0,
+            () => {stepCount--},
+        );
+    }
+
+
+
+
+
     async calm(stepCount=400) {
         const plun = this.plunger;
         this.view.showWord("Calming");
@@ -205,7 +218,7 @@ export default class Process
 
         // баланс тепла для нагрівача
         let takenHeat = this.space.takenHeat;
-        
+
         await this.whileAsync(
         () => 
             plun.volume < maxVolume, 
