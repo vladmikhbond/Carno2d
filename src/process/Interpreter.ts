@@ -44,13 +44,13 @@ export class Interpreter
 
     async interpret(script: string) 
     {    
-        let lines = script.split('\n').map(l => l.trim());
+        let lines = script.split('\n').map(l => l.trimEnd());
         lines = lines.filter(s => s != "" && s[0] != MARK_DONE);
         if (lines.length == 0 || lines[0][0] == MARK_DOING) 
             return;
 
         for (let line of lines) {
-            if (!line || line.startsWith("//"))
+            if (!line || line.startsWith(" "))
                 continue;
              
             // елементи чергової команди
@@ -156,7 +156,9 @@ export class Interpreter
 
     hilightBefore(line: string ) 
     {   
-        let start = processArea.value.indexOf(line);
+        // знайти першу немарковану строку
+        let start = ("\n"+processArea.value).indexOf("\n"+line);
+
         processArea.value = processArea.value.slice(0, start) + MARK_DOING +  processArea.value.slice(start);
     }
 
