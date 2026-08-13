@@ -203,8 +203,9 @@ export default class Process
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
 
-        const diag = new Diag(); 
-
+        // баланс тепла для нагрівача
+        let takenHeat = this.space.takenHeat;
+        
         await this.whileAsync(
         () => 
             plun.volume < maxVolume, 
@@ -218,17 +219,13 @@ export default class Process
             
             // Стабілізація руху поршня
             let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
+            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
+            plun.velo = velo; 
             let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
             let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            if (eps_q > 0) {
-                heater.rate = 1 + eps_q;
-                heater.warm();
-                plun.velo = velo;/
-            }
-
-            diag.push(plun.meterings[plun.meterings.length - 1].p);       
-
+            heater.rate = 1 + eps_q;
+            heater.warm();
+            
             // replace real temperature metering with ideal one
             if (glo.pretty) {
                 let idealT =  plun.volume * initP / glo.BOLTZ / this.space.N;
@@ -237,7 +234,10 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isobaricExtention P", diag.resume);
+        // баланс тепла для нагрівача
+        let dHeat = this.space.takenHeat - takenHeat;
+        this.space.givenHeat -= dHeat;
+        this.space.takenHeat = takenHeat;
     }
     
     private async isobaricCompression(minVolume: number, time: number) {
@@ -248,7 +248,9 @@ export default class Process
 
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
-        const diag = new Diag(); 
+
+        // баланс тепла для охолоджувача
+        let givenHeat = this.space.givenHeat;
 
         await this.whileAsync(
         () => 
@@ -262,16 +264,12 @@ export default class Process
             
             // Стабілізація руху поршня
             let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
+            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
+            plun.velo = velo;
             let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
             let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            if (eps_q > 0) {
-                plun.velo = velo;
-                heater.rate = 1 - eps_q;
-                heater.warm();            
-            }
-
-            diag.push(plun.meterings[plun.meterings.length - 1].p);
+            heater.rate = 1 - eps_q;
+            heater.warm();            
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
@@ -281,7 +279,10 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        console.log("isobaricCompression P", diag.resume);
+        // баланс тепла для охолоджувача
+        let dHeat = this.space.givenHeat - givenHeat;
+        this.space.takenHeat -= dHeat;
+        this.space.givenHeat = givenHeat;
     }      
     //#endregion
 
@@ -302,9 +303,7 @@ export default class Process
 
         const plun = this.plunger;
         const deltaV = plun.volume - plun.volume * plun.m / minMass;
-        const wanted_velo = deltaV / plun.width / time;
-
-        // const diag = new Diag(); 
+        const wanted_velo = deltaV / plun.width / time; 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -315,7 +314,7 @@ export default class Process
 
         let initT = this.plunger.measureTemperature();
 
-        // баланс тепла (забирати тепло заборонено)
+        // баланс тепла для нагрівача
         let takenHeat = this.space.takenHeat;
         
         await this.whileAsync(
@@ -327,18 +326,17 @@ export default class Process
             // Формула: eps_m = dV / V
             const eps_m = -wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 - eps_m;
-  
+            
+            // Action warm
+            // const eps_r = eps_m / 2;
+            // heater.rate = 1 + eps_r;
+            // heater.warm();
+
             // Втручання
-            let currT = this.plunger.measureTemperature();  
+            let currT = this.plunger.measureTemperature();
             heater.rate = 1 + (initT - currT) / currT / 2;
             heater.warm();
 
-            // Action warm
-            // const eps_r = eps_m / 2;
-            // heater.rate = 1 - eps_r;
-            // heater.warm();
-
-            // diag.push(plun.meterings[plun.meterings.length - 1].t);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -348,19 +346,17 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        // console.log("isothermicExtention T", diag.resume);
-        // баланс тепла
+        // баланс тепла для нагрівача
         let dHeat = this.space.takenHeat - takenHeat;
         this.space.givenHeat -= dHeat;
-        this.space.takenHeat = takenHeat
+        this.space.takenHeat = takenHeat;
     }
     
     private async isothermicCompression(maxMass: number, time: number) {
 
         const plun = this.plunger;
         const deltaV = plun.volume - plun.volume * plun.m / maxMass;
-        const wanted_velo = deltaV / plun.width / time;
-        // const diag = new Diag(); 
+        const wanted_velo = deltaV / plun.width / time; 
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -370,7 +366,7 @@ export default class Process
         this.space.addDevice(heater);
         let initT = this.plunger.measureTemperature();
 
-        // баланс тепла (давати тепло заборонено)
+        // баланс тепла для охолоджувача
         let givenHeat = this.space.givenHeat;
         await this.whileAsync(
         () => 
@@ -382,17 +378,15 @@ export default class Process
             const eps_m = wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 + eps_m;
             
-            // Втручання
-            let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) / currT / 2;
-            heater.warm();
-
             // Action warm
             // const eps_r = eps_m / 2;
             // heater.rate *= 1 - eps_r;
             // heater.warm(); 
 
-            // diag.push(plun.meterings[plun.meterings.length - 1].t);
+            // Втручання
+            let currT = this.plunger.measureTemperature(); 
+            heater.rate = 1 + (initT - currT) / currT / 2;
+            heater.warm();
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -402,9 +396,8 @@ export default class Process
             }
         }); 
         this.space.removeDevice(heater);
-        // console.log("isothermicCompression T", diag.resume);
 
-        // баланс тепла
+        // баланс тепла для охолоджувача
         let dHeat = this.space.givenHeat - givenHeat;
         this.space.takenHeat -= dHeat;
         this.space.givenHeat = givenHeat;
@@ -427,7 +420,6 @@ export default class Process
     private async isohoricExt(minMass: number, time: number) {
         const plun = this.plunger;
         const eps = Math.log(plun.m / minMass) / time;        
-        const diag = new Diag();
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -446,11 +438,9 @@ export default class Process
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
             // M
             this.plunger.m *= 1 - eps;
-            // v 
+            // T 
             heater.rate = 1 - eps / 2;
             heater.warm();
-            
-            diag.push(plun.volume);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -462,7 +452,6 @@ export default class Process
         }); 
         this.space.removeDevice(heater);
         plun.fixed = false;
-        console.log("isohoricExt: M:", diag.resume);
     }
 
     // Тиск збільшується до заданого значення за рахунок повільного навантаження і повільного нагрівання.
@@ -470,7 +459,6 @@ export default class Process
  
         const plun = this.plunger;
         const eps = Math.log(maxMass / plun.m) / time;  
-        const diag = new Diag();
         const heater = new Heater(
             plun.x1, 
             plun.realBottom - (plun.realBottom - plun.y1), 
@@ -488,13 +476,11 @@ export default class Process
         () => {
             // Action
             heater.y1 =  plun.realBottom - (plun.realBottom - plun.y1); 
-            // m
+            // M
             this.plunger.m *= 1 + eps;
-            // v
+            // T
             heater.rate = 1 + eps / 2;
             heater.warm();
-            
-            diag.push(plun.volume);
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -506,7 +492,6 @@ export default class Process
         }); 
         this.space.removeDevice(heater);
         plun.fixed = false;
-        console.log("isohoricCompr: M:", diag.resume);
     }
 
     //#endregion 
