@@ -221,9 +221,11 @@ export default class Process
             let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
             let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
             let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            plun.velo = velo;
-            heater.rate = 1 + eps_q;
-            heater.warm();
+            if (eps_q > 0) {
+                heater.rate = 1 + eps_q;
+                heater.warm();
+                plun.velo = velo;/
+            }
 
             diag.push(plun.meterings[plun.meterings.length - 1].p);       
 
@@ -263,9 +265,11 @@ export default class Process
             let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff); 
             let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
             let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            plun.velo = velo;
-            heater.rate = 1 - eps_q;
-            heater.warm();
+            if (eps_q > 0) {
+                plun.velo = velo;
+                heater.rate = 1 - eps_q;
+                heater.warm();            
+            }
 
             diag.push(plun.meterings[plun.meterings.length - 1].p);
 
