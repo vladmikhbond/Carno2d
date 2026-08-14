@@ -206,13 +206,16 @@ export default class Controller
         bottomArea.value = keys.join(' | ');
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
-            const key = bottomArea.value.trim();
+            let key = bottomArea.value.trim();
             const val = processArea.value;
             localStorage.setItem(key, val);
         });
 
         document.getElementById("loadSceneButton")!.addEventListener("click", () => {
-            const key = bottomArea.value.trim();
+            let key = bottomArea.value.trim();
+            if (bottomArea.selectionEnd - bottomArea.selectionStart > 0) {
+                key = bottomArea.value.slice(bottomArea.selectionStart, bottomArea.selectionEnd)
+            }
             const val = localStorage.getItem(key);
             processArea.value = val ? val : "no script";
         });
