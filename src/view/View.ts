@@ -341,8 +341,9 @@ export default class View
            
         // captions
         ctx.fillStyle = 'black';
+        let summa = this.space.givenHeat - this.space.takenHeat - plun.u + plun.loss
         ctx.fillText(`Q+: ${this.space.givenHeat.toFixed(1)}  Q-: ${this.space.takenHeat.toFixed(1)}  ` +
-                     `A: ${plun.u.toFixed(1)}  Los: ${plun.loss.toFixed(1)}`, X, 14);
+                     `A: ${plun.u.toFixed(1)}  Los: ${plun.loss.toFixed(1)}   Σ: ${summa.toFixed(1)}`, X, 14);
         ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toFixed(3)}  T: ${last.t.toFixed(1)}  S: ${last.s.toFixed(1)}`, 
                       X, 28);                    
 

@@ -83,6 +83,7 @@ export class Interpreter
                 case 'scale':
                     Object.assign(this.space.plunger.scales, params);
                     this.space.plunger.clearMeterings();
+                    this.view.draw2();
                     break;
                 case 'calm':
                     await this.process?.calm(params.time);

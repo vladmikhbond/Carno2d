@@ -83,7 +83,7 @@ export default class Process
         );
         ///////////////////////
 
-        let avgMet = this.space.plunger.getAvgMetering(time / 3 | 0);
+        let avgMet = this.space.plunger.getAvgMetering(time);
 
         const meterings = this.space.plunger.meterings
         meterings.splice(meterings.length - time, time);
@@ -160,22 +160,24 @@ export default class Process
     private async adiabaticExtention(minMass: number, time: number) {
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / minMass));
-        const wanted_velo = deltaV / plun.width / time;
-        const diag = new Diag(); 
+        const wanted_velo = deltaV / plun.width / time; 
 
         await this.whileAsync(
         () => 
             plun.m > minMass, 
         () => {
             // Action
-            const eps_m = -2 * wanted_velo * plun.width / plun.volume;
+            const eps_m = -1 * (wanted_velo - plun.velo/2) * plun.width / plun.volume;
             plun.m *= 1 - eps_m;
+
+            if (plun.m < minMass) {
+               plun.m = minMass; 
+            }
 
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature = plun.volume * plun.pressureM / glo.BOLTZ / this.space.N;
-                const last = plun.meterings.length - 1
-                diag.push(temperature - plun.meterings[last].t)       // diag    
+                const last = plun.meterings.length - 1    
                 plun.meterings[last].p = plun.pressureM;
                 plun.meterings[last].t = temperature;
             }            
@@ -186,21 +188,22 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / maxMass));
         const wanted_velo = deltaV / plun.width / time;
-        const diag = new Diag();
 
         await this.whileAsync(
         () => 
             plun.m < maxMass, 
         () => {
             // Action
-            const eps_m = 2 * wanted_velo * plun.width / plun.volume;
+            const eps_m = 1 * (wanted_velo) * plun.width / plun.volume;
             plun.m *= 1 + eps_m;
+            if (plun.m > maxMass) {
+               plun.m = maxMass; 
+            }
 
             // replace ideal pressure with real one
             if (!glo.pretty) {
                 let temperature =  plun.volume * plun.pressureM / glo.BOLTZ / this.space.N;
-                const last = plun.meterings.length - 1
-                diag.push(temperature - plun.meterings[last].t)       // diag                
+                const last = plun.meterings.length - 1                
                 plun.meterings[last].p = plun.pressureM;
                 plun.meterings[last].t = temperature;
             }

@@ -115,10 +115,11 @@ Settings
 ```javascript
 title adiabatic_test
 plunger m=3000, t=100
+run       time=500
 scale   p=6, t=13.5, s=0.4, x=2.4
-adiabatic  m=550, time=2000
-calm       time=500
-adiabatic  m=3000, time=2000
+adiabatic  m=550, time=1000
+adiabatic  m=3000, time=1000
+run       time=500
 
 title isobaric_test
 plunger m=3000, t=100

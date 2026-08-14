@@ -18,7 +18,7 @@ export class Plunger extends Line
    realBottom: number;   
  
    m = 100;    // payload
-   u = 0;      // outer work
+   u = 0;      // outer work (potetial anergy -- M*g*h)
    loss = 0;   // plunger loss
    t = 0;      // temperature
    velo = 0;   // velocity
@@ -165,6 +165,7 @@ export class Plunger extends Line
       const v = (this.x2 - this.x1) * (this.realBottom - this.y1);
       // t температура - середня кінетична енергія куль
       // p тиск - сумарна кінетична енергія куль в одиниці об'єму
+      // u = Mgh + Mv**2/2 
       let p = sumE / v;
       let t = sumE / (n * glo.BOLTZ);
       let u = this.u - Math.sign(this.velo) * (this.m * this.velo**2 / 2);
@@ -188,35 +189,37 @@ export class Plunger extends Line
       return this.x1 < x && x < this.x2 &&  this.y1 < y && y < this.realBottom; 
    }
 
-   clearMeterings() {
-      this.meterings = [this.lastMetering];
+   clearMeterings() {  
+      this.meterings = [];
       this.u = 0;
       this.loss = 0;
       // clear global heat
-      this.space!.givenHeat = this.space!.takenHeat = 0;
-        
+      this.space!.givenHeat = this.space!.takenHeat = 0; 
+      this.velo = 0;
+      this.measure();
+      this.measure(); 
    }
 
    getAvgMetering(len: number): PlungerMetering {
-      let a: PlungerMetering = {n: 0, p: 0, v: 0, t: 0, u: 0, q: 0, s:0};
+      let res: PlungerMetering = {n: 0, p: 0, v: 0, t: 0, u: 0, q: 0, s:0};
       let ms = this.meterings.slice(-len);
-      ms.reduce((a, m) => {
-         a.p += m.p;
-         a.v += m.v;
-         a.t += m.t;
-         a.u += m.u;
-         a.q += m.q;
-         a.s += m.s;
-         return a;
-      }, a);
-      a.p /= len;
-      a.v /= len;
-      a.t /= len;
-      a.u /= len;
-      a.q /= len;
-      a.s /= len;
+      ms.reduce((ac, m) => {
+         ac.p += m.p;
+         ac.v += m.v;
+         ac.t += m.t;
+         ac.u += m.u;
+         ac.q += m.q;
+         ac.s += m.s;
+         return ac;
+      }, res);
+      res.p /= len;
+      res.v /= len;
+      res.t /= len;
+      res.u /= len;
+      res.q /= len;
+      res.s /= len;
      
-      return a;
+      return res;
    }
 
    scale(x: string) {
