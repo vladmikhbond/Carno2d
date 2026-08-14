@@ -207,6 +207,9 @@ export default class Controller
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
             let key = bottomArea.value.trim();
+            if (bottomArea.selectionEnd - bottomArea.selectionStart > 0) {
+                key = bottomArea.value.slice(bottomArea.selectionStart, bottomArea.selectionEnd)
+            }            
             const val = processArea.value;
             localStorage.setItem(key, val);
         });

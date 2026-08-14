@@ -149,7 +149,7 @@ export default class Process
 
     //#region adiabatic 
 
-    async adiabatic(mass: number, time=1000) {
+    async adiabatic(mass: number, time=1500) {
         if (this.plunger.m > mass) {
             await this.adiabaticExtention(mass, time);
         } else if (this.plunger.m < mass) {
@@ -214,7 +214,7 @@ export default class Process
     
     //#region isobaric 
 
-    async isobaric(vol: number, time = 1000) {
+    async isobaric(vol: number, time = 2000) {
         if (this.plunger.volume < vol) {
             await this.isobaricExtention(vol, time);
         } else if (this.plunger.volume > vol) {
@@ -319,7 +319,7 @@ export default class Process
 
     //#region isothermic 
     
-    async isothermic(mass: number, time=1000) {
+    async isothermic(mass: number, time=2000) {
         if (this.plunger.m > mass) {
             await this.isothermicExtention(mass, time);
         } else if (this.plunger.m < mass) {
@@ -356,7 +356,9 @@ export default class Process
             // Формула: eps_m = dV / V
             const eps_m = -wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 - eps_m;
-            
+            if (plun.m < minMass) {
+               plun.m = minMass; 
+            }
             // Action warm
             // const eps_r = eps_m / 2;
             // heater.rate = 1 + eps_r;
@@ -407,6 +409,9 @@ export default class Process
             // Формула: eps_m = dV / V
             const eps_m = wanted_velo * plun.width / plun.volume;
             this.plunger.m *= 1 + eps_m;
+            if (plun.m > maxMass) {
+               plun.m = maxMass; 
+            }            
             
             // Action warm
             // const eps_r = eps_m / 2;
