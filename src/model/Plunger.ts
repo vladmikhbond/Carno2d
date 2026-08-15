@@ -157,6 +157,11 @@ export class Plunger extends Line
       return sumE / n / glo.BOLTZ;
    }
 
+   // Вклад кінктичної енергії поршня в роботу, виконану газом
+   get kinetic() {
+      return  Math.sign(-this.velo) * (this.m * this.velo**2 / 2);
+   }
+
    // вимір робиться у прямокутнику під поршнем
    //
    measure()
@@ -168,7 +173,7 @@ export class Plunger extends Line
       // u = Mgh + Mv**2/2 
       let p = sumE / v;
       let t = sumE / (n * glo.BOLTZ);
-      let u = this.u - Math.sign(this.velo) * (this.m * this.velo**2 / 2);
+      let u = this.u + this.kinetic; 
 
       // сумарна теплота всіх нагрівачів
       let q = this.space!.givenHeat - this.space!.takenHeat; 

@@ -203,7 +203,7 @@ export default class Controller
         const bottomArea = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
 
         const keys = Object.keys(localStorage);
-        bottomArea.value = keys.join(' | ');
+        bottomArea.value = keys.join(' ');
 
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
             let key = bottomArea.value.trim();

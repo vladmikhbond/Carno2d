@@ -31,7 +31,7 @@ export class Interpreter
 
     // Поділяє рядок на трйку [command, rest, params]
     //
-    static parseLine(line: string) {
+    static parseLine(line: string): [string, string, any ] {
         line = line.trim();
         let pos = line.indexOf(' ');
         // if command has no params
@@ -85,12 +85,12 @@ export class Interpreter
                     this.space.plunger.clearMeterings();
                     this.view.draw2();
                     break;
-                case 'calm':
-                    await this.process?.calm(params.time);
-                    break;
                 case 'run':
                     await this.process?.run(params.time);
                     break;
+                case 'report':
+                    this.report(restLine);
+                    break;                
                 case 'adiabatic':
                     await this.process?.adiabatic(params.m, params.time);
                     break;
@@ -164,6 +164,42 @@ export class Interpreter
         } else {
             plun.move(0, -Plunger.GAP);
         }
+    }
+
+    report(param = "") {
+        const HALF_ISOTERM = 1000;
+        const HALF_ISOBAR = 1000; 
+        const ms = this.space.plunger.meterings;
+        // per heat and work
+        const met = ms[ms.length - 1]
+        const Q = this.space.givenHeat;
+        const etaQ = met.u / Q;
+        const epsQ = Q / (-met.u) // - 2 * this.space.plunger.kinetic); // ????????????
+        
+        if (param == 'carnot' || param == 'rcarnot') { 
+            const ts = ms.map(m => m.t);
+            ts.sort((a, b) => a - b);
+            const Tmin = ts[HALF_ISOTERM], Tmax = ts[ts.length - HALF_ISOTERM];
+            if (param == 'carnot') {
+                const etaT = (Tmax - Tmin) / Tmax;
+                const e = `  ${(100 * (etaT - etaQ) / etaQ).toFixed(0)}%`;
+                console.log("etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e);
+            } else {
+                const epsT = Tmin / (Tmax - Tmin);
+                const e = `  ${(100 * (epsT - epsQ) / epsQ).toFixed(0)}%`;
+                console.log("epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e);
+            }
+        }
+        if (param == 'brython' || param == 'rbrython') { 
+            const ps = this.space.plunger.meterings.map(m => m.p);
+            ps.sort((a, b) => a - b);
+            
+        }
+
+
+        
+        
+
     }
 }
 
