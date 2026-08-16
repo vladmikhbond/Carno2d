@@ -168,23 +168,23 @@ isobaric   v=24700
 
 title   Цикл Карно
 plunger m=3000, t=126
-run time=999
+run time=500
 scale   p=6, t=10, s=0.6, x=1.6
 isothermic  m=1600
 adiabatic   m=600
 isothermic  m=1100
 adiabatic   m=3000
-run time=1000
+report carnot
 
 title   Зворотний цикл Карно
 plunger m=3000, t=126
-run time=999
+run time=500
 scale   p=6, t=10, s=0.7, x=1.6
 adiabatic   m=1100
 isothermic  m=600
 adiabatic   m=1600
 isothermic  m=3000
-run time=1000
+report rcarnot
 
 title   Цикл Отто (квазістаціонарний)
 plunger m=3000, t=126

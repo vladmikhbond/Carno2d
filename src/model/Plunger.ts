@@ -17,7 +17,7 @@ export class Plunger extends Line
    realTop: number;
    realBottom: number;   
  
-   m = 100;    // payload
+   m = 0;      // payload
    u = 0;      // outer work (potetial anergy -- M*g*h)
    loss = 0;   // plunger loss
    t = 0;      // temperature
@@ -139,7 +139,7 @@ export class Plunger extends Line
 
    private sumEnergyUnderPlunger(): [number, number] {
       if (!this.space) {
-         throw Error('No reference to the space in the heater.');
+         throw Error('No reference to the space in the plunger.');
       }
       let n = 0, doublesumE = 0;
       for (let ball of this.space!.balls()) {

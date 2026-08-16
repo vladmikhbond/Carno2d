@@ -170,7 +170,7 @@ export class Interpreter
         const HALF_ISOTERM = 1000;
         const HALF_ISOBAR = 1000; 
         const ms = this.space.plunger.meterings;
-        // per heat and work
+        // ккд через роботу
         const met = ms[ms.length - 1]
         const Q = this.space.givenHeat;
         const etaQ = met.u / Q;
@@ -182,18 +182,28 @@ export class Interpreter
             const Tmin = ts[HALF_ISOTERM], Tmax = ts[ts.length - HALF_ISOTERM];
             if (param == 'carnot') {
                 const etaT = (Tmax - Tmin) / Tmax;
-                const e = `  ${(100 * (etaT - etaQ) / etaQ).toFixed(0)}%`;
-                console.log("etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e);
+                const e = `  ${(100 * (etaT - etaQ) / etaQ).toFixed(1)}%`;
+                console.log("carnot> etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e, "| T:", Tmin, Tmax);
             } else {
                 const epsT = Tmin / (Tmax - Tmin);
                 const e = `  ${(100 * (epsT - epsQ) / epsQ).toFixed(0)}%`;
-                console.log("epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e);
+                console.log("rcarnot> epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e, "| T:", Tmin, Tmax);
             }
         }
         if (param == 'brython' || param == 'rbrython') { 
             const ps = this.space.plunger.meterings.map(m => m.p);
             ps.sort((a, b) => a - b);
-            
+            const Pmin = ps[HALF_ISOBAR], Pmax = ps[ps.length - HALF_ISOBAR];
+            if (param == 'brython') {
+                const etaP = 1 - (Pmin / Pmax)**0.5;
+                const e = `  ${(100 * (etaP - etaQ) / etaQ).toFixed(1)}%`;
+                console.log("brython> etaQ:", etaQ.toFixed(3), "etaP:", etaP.toFixed(3), e, "| T:", Pmin, Pmax);
+            } else {
+                const epsP = 1 / ((Pmax/Pmin)**0.5 - 1)
+                const e = `  ${(100 * (epsP - epsQ) / epsQ).toFixed(0)}%`;
+                console.log("rbrython> epsQ:", epsQ.toFixed(3), "epsP:", epsP.toFixed(3), e, "| T:", Pmin, Pmax);
+            }
+
         }
 
 

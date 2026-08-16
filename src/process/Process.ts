@@ -214,6 +214,7 @@ export default class Process
         let dHeat = this.space.takenHeat - takenHeat;
         this.space.givenHeat -= dHeat;
         this.space.takenHeat = takenHeat;
+        this.view.draw2();
     }
     
     private async isobaricCompression(minVolume: number, time: number) {
@@ -259,6 +260,7 @@ export default class Process
         let dHeat = this.space.givenHeat - givenHeat;
         this.space.takenHeat -= dHeat;
         this.space.givenHeat = givenHeat;
+        this.view.draw2();
     }      
     //#endregion
 
@@ -328,6 +330,7 @@ export default class Process
         let dHeat = this.space.takenHeat - takenHeat;
         this.space.givenHeat -= dHeat;
         this.space.takenHeat = takenHeat;
+        this.view.draw2();
     }
     
     private async isothermicCompression(maxMass: number, time: number) {
@@ -382,6 +385,7 @@ export default class Process
         let dHeat = this.space.givenHeat - givenHeat;
         this.space.takenHeat -= dHeat;
         this.space.givenHeat = givenHeat;
+        this.view.draw2();
     }  
       
     //#endregion
