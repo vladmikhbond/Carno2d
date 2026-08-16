@@ -196,20 +196,26 @@ isothermic  m=3000
 report rcarnot
 
 
-
 title   Цикл Отто (квазістаціонарний)
 plunger m=3000, t=126
+run time=1000
 scale   p=6, t=11, s=0.33, x=1.6
 adiabatic  m=1000
 isohoric   m=300
 adiabatic  m=900
 isohoric   m=3000
+report otto
+
 
 title   Зворотний цикл Отто (квазістаціонарний)
 plunger m=3000, t=126
+run time=1000
 scale   p=6, t=11, s=0.33, x=1.6
 isohoric   m=900
 adiabatic  m=300
 isohoric   m=1000
 adiabatic  m=3000
+report rotto
+
+
 ```

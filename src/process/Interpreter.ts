@@ -166,46 +166,65 @@ export class Interpreter
         }
     }
 
+    // Розраховує Efficiency і COP ()
     report(param = "") {
         const HALF_ISOTERM = 1000;
         const HALF_ISOBAR = 1000; 
+        const HALF_ISOCHOR = 500; 
+        
         const ms = this.space.plunger.meterings;
         // ккд через роботу
         const met = ms[ms.length - 1]
         const Q = this.space.givenHeat;
-        const etaQ = met.u / Q;
-        const epsQ = Q / (-met.u);
-        
+        const effQ = met.u / Q;
+        const copQ = Q / (-met.u);
+
+        // carnot
         if (param == 'carnot' || param == 'rcarnot') { 
             const ts = ms.map(m => m.t);
             ts.sort((a, b) => a - b);
             const Tmin = ts[HALF_ISOTERM], Tmax = ts[ts.length - HALF_ISOTERM];
             if (param == 'carnot') {
-                const etaT = (Tmax - Tmin) / Tmax;
-                const e = `  ${(100 * (etaT - etaQ) / etaQ).toFixed(1)}%`;
-                console.log("carnot> etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
+                const effT = 1 - Tmin / Tmax;
+                const e = `  ${(100 * (effT - effQ) / effQ).toFixed(1)}%`;
+                console.log("carnot> Q:", effQ.toFixed(3), "T:", effT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
             } else {
-                const epsT = Tmin / (Tmax - Tmin);
-                const e = `  ${(100 * (epsT - epsQ) / epsQ).toFixed(0)}%`;
-                console.log("rcarnot> epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
+                const copT = Tmin / (Tmax - Tmin);
+                const e = `  ${(100 * (copT - copQ) / copQ).toFixed(0)}%`;
+                console.log("rcarnot> Q:", copQ.toFixed(3), "T:", copT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
             }
         }
-
+        // brython
         if (param == 'brython' || param == 'rbrython') { 
-            const ps = this.space.plunger.meterings.map(m => m.p);
+            const ps = ms.map(m => m.p);
             ps.sort((a, b) => a - b);
             const Pmin = ps[HALF_ISOBAR], Pmax = ps[ps.length - HALF_ISOBAR];
             if (param == 'brython') {
-                const etaP = 1 - (Pmin / Pmax)**0.5;
-                const e = `  ${(100 * (etaP - etaQ) / etaQ).toFixed(1)}%`;
-                console.log("brython> etaQ:", etaQ.toFixed(3), "etaP:", etaP.toFixed(3), e, "| P:", Pmin.toFixed(3), Pmax.toFixed(3));
+                const effP = 1 - (Pmin / Pmax)**0.5;
+                const e = `  ${(100 * (effP - effQ) / effQ).toFixed(1)}%`;
+                console.log("brython> Q:", effQ.toFixed(3), "P:", effP.toFixed(3), e, "|", Pmin.toFixed(3), Pmax.toFixed(3));
             } else {
-                const epsP = 1 / ((Pmax/Pmin)**0.5 - 1)
-                const e = `  ${(100 * (epsP - epsQ) / epsQ).toFixed(0)}%`;
-                console.log("rbrython> epsQ:", epsQ.toFixed(3), "epsP:", epsP.toFixed(3), e, "| P:", Pmin.toFixed(3), Pmax.toFixed(3));
+                const copP = 1 / ((Pmax/Pmin)**0.5 - 1)
+                const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
+                console.log("rbrython> Q:", copQ.toFixed(3), "P:", copP.toFixed(3), e, "| ", Pmin.toFixed(3), Pmax.toFixed(3));
             }
         }
 
+        // otto
+        if (param == 'otto' || param == 'rotto') { 
+            const vs = ms.map(m => m.v);
+            vs.sort((a, b) => a - b);
+            const Vmin = vs[HALF_ISOCHOR], Vmax = vs[vs.length - HALF_ISOCHOR];
+            if (param == 'otto') {
+                const effV = 1 - (Vmin / Vmax);
+                const e = `  ${(100 * (effV - effQ) / effQ).toFixed(1)}%`;
+                console.log("otto> Q:", effQ.toFixed(3), "V:", effV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
+            } else {
+                const copP = 1 / (Vmax / Vmin - 1)
+                const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
+                console.log("rotto>Q:", copQ.toFixed(3), "V:", copP.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
+            }
+        }
 
         
         
