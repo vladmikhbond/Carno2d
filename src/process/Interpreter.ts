@@ -174,7 +174,7 @@ export class Interpreter
         const met = ms[ms.length - 1]
         const Q = this.space.givenHeat;
         const etaQ = met.u / Q;
-        const epsQ = Q / (-met.u) // - 2 * this.space.plunger.kinetic); // ????????????
+        const epsQ = Q / (-met.u);
         
         if (param == 'carnot' || param == 'rcarnot') { 
             const ts = ms.map(m => m.t);
@@ -183,13 +183,14 @@ export class Interpreter
             if (param == 'carnot') {
                 const etaT = (Tmax - Tmin) / Tmax;
                 const e = `  ${(100 * (etaT - etaQ) / etaQ).toFixed(1)}%`;
-                console.log("carnot> etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e, "| T:", Tmin, Tmax);
+                console.log("carnot> etaQ:", etaQ.toFixed(3), "etaT:", etaT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
             } else {
                 const epsT = Tmin / (Tmax - Tmin);
                 const e = `  ${(100 * (epsT - epsQ) / epsQ).toFixed(0)}%`;
-                console.log("rcarnot> epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e, "| T:", Tmin, Tmax);
+                console.log("rcarnot> epsQ:", epsQ.toFixed(3), "epsT:", epsT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
             }
         }
+
         if (param == 'brython' || param == 'rbrython') { 
             const ps = this.space.plunger.meterings.map(m => m.p);
             ps.sort((a, b) => a - b);
@@ -197,13 +198,12 @@ export class Interpreter
             if (param == 'brython') {
                 const etaP = 1 - (Pmin / Pmax)**0.5;
                 const e = `  ${(100 * (etaP - etaQ) / etaQ).toFixed(1)}%`;
-                console.log("brython> etaQ:", etaQ.toFixed(3), "etaP:", etaP.toFixed(3), e, "| T:", Pmin, Pmax);
+                console.log("brython> etaQ:", etaQ.toFixed(3), "etaP:", etaP.toFixed(3), e, "| P:", Pmin.toFixed(3), Pmax.toFixed(3));
             } else {
                 const epsP = 1 / ((Pmax/Pmin)**0.5 - 1)
                 const e = `  ${(100 * (epsP - epsQ) / epsQ).toFixed(0)}%`;
-                console.log("rbrython> epsQ:", epsQ.toFixed(3), "epsP:", epsP.toFixed(3), e, "| T:", Pmin, Pmax);
+                console.log("rbrython> epsQ:", epsQ.toFixed(3), "epsP:", epsP.toFixed(3), e, "| P:", Pmin.toFixed(3), Pmax.toFixed(3));
             }
-
         }
 
 
