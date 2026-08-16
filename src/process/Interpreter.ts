@@ -222,7 +222,7 @@ export class Interpreter
             } else {
                 const copP = 1 / (Vmax / Vmin - 1)
                 const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
-                console.log("rotto>Q:", copQ.toFixed(3), "V:", copP.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
+                console.log("rotto> Q:", copQ.toFixed(3), "V:", copP.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
             }
         }
 
