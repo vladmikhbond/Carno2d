@@ -72,22 +72,19 @@ export default class Process
         });
     }
 
-
     async run(time=1e6) {
-        
+        const plun = this.space.plunger;
         let stepCount = time;
-
         await this.whileAsync(
             () => stepCount > 0,
-            () => {stepCount--},
+            () => {
+                stepCount--;
+                //console.log(plun.velo);
+            },
         );
-        // заміна всіх зроблених вимірів одним середнім значенням
-        let avgMet = this.space.plunger.getAvgMetering(time);
-        
-        const meterings = this.space.plunger.meterings
-        meterings.splice(meterings.length - time, time);
-        meterings.push(avgMet);
 
+        // видалення time зроблених вимірів         
+        plun.meterings.splice(plun.meterings.length - time, time);
         this.view.draw2();
     }
     

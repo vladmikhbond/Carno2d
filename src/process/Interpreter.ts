@@ -7,6 +7,7 @@ import { Plunger } from '../model/Plunger.js';
 import Space from '../model/Space.js';
 import View from '../view/View.js';
 import {str2obj} from "../globals/utils.js"
+import { Heater } from '../model/Heater.js';
 
 // local constants
 const processArea = <HTMLTextAreaElement>document.getElementById("processArea");
@@ -161,9 +162,29 @@ export class Interpreter
         if (n) {
             this.space.clearBalls();
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
+            this.calm();
         } else {
             plun.move(0, -Plunger.GAP);
         }
+    }
+
+    calm() {
+        const plun = this.space.plunger;
+        let pv = plun.pressureM * plun.volume
+        const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
+        this.space.addDevice(heater);
+        for (let i = 0; i < 5; i++){
+            let [en, _] = plun.sumEnergyUnderPlunger();    
+            heater.rate = Math.sqrt(pv/en);
+            heater.warm();
+        }
+        this.space.removeDevice(heater);
+
+        // for (let i = 0; i < 500; i++){
+        //     this.space.step();
+        // }
+
+        
     }
 
     // Розраховує Efficiency і COP ()

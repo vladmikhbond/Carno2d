@@ -172,14 +172,6 @@ export default class Space
 
     step()
     {
-        // зсуваються вертикальні поршні
-        for (let plunger of this.lines()) {
-            if (plunger instanceof Plunger) {
-                if (!plunger.fixed)
-                    plunger.moveByForces();
-            }
-        }
-        
         // всі кулі роблять крок (з перекладанням до нового контейнеру тих, що зосталися в полі зору) 
         const cont = new BallCont(this);
         this.N = 0;
@@ -194,8 +186,14 @@ export default class Space
         }        
         this.bcont = cont;
 
-        // зміна швидкості куль від нагріву або охолодження
-        // this.warming(); // !!!!!!!!!
+        // зсуваються вертикальні поршні
+        for (let plunger of this.lines()) {
+            if (plunger instanceof Plunger) {
+                if (!plunger.fixed)
+                    plunger.moveByForces();
+            }
+        }
+
     }
 
 

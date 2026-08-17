@@ -56,7 +56,7 @@ export class Plunger extends Line
    }
 
    getPressure(): number {
-      const [sumE, n] = this.sumEnergyUnderPlunger();
+      const [sumE, _ ] = this.sumEnergyUnderPlunger();
       const v = (this.x2 - this.x1) * (this.realBottom - this.y1);
       return sumE / v;
    }
@@ -142,7 +142,7 @@ export class Plunger extends Line
       this.impulseFromBalls = 0;
    }
 
-   private sumEnergyUnderPlunger(): [number, number] {
+   sumEnergyUnderPlunger(): [number, number] {
       if (!this.space) {
          throw Error('No reference to the space in the plunger.');
       }
@@ -207,7 +207,6 @@ export class Plunger extends Line
       this.space!.givenHeat = this.space!.takenHeat = 0; 
       this.velo = 0;
       this.measure();
-      this.measure(); 
    }
 
    getAvgMetering(len: number): PlungerMetering {
