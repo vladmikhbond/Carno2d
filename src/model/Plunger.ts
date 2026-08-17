@@ -20,7 +20,7 @@ export class Plunger extends Line
    m = 0;      // payload
    u = 0;      // outer work (potetial anergy -- M*g*h)
    loss = 0;   // plunger loss
-   t = 0;      // temperature
+
    velo = 0;   // velocity
    impulseFromBalls = 0;  // допоміжне тимчасове значення, не є імпульсом
    withFriction = false;
@@ -44,7 +44,12 @@ export class Plunger extends Line
       this.lastMetering = {n: 0, p: 0, v: this.volume, t: 0, u: 0, q: 0, s:0};
       this.meterings = [this.lastMetering];
    }
-    
+
+   // temperature 
+   get t() {
+      return this.lastMetering.t
+   }      
+
    // фактично маса на поршні, а не енергія до об'єму
    get pressureM(): number {
       return this.m * glo.g / (this.x2 - this.x1);
@@ -180,11 +185,11 @@ export class Plunger extends Line
       
       // ентропія  ds = dq / t
       let ds = (q - this.lastMetering.q) / t;
-      if (!ds) 
+      if (!ds) { 
          ds = 0;
+      }
       let s = this.lastMetering.s + ds;
-
-      this.t = t;
+      
       this.lastMetering = {n, p, v, t, u, q, s};
       this.meterings.push(this.lastMetering);
    }
@@ -218,7 +223,7 @@ export class Plunger extends Line
          return ac;
       }, res);
       res.p /= len;
-      res.v /= len;
+      res.v = this.volume;
       res.t /= len;
       res.u /= len;
       res.q /= len;

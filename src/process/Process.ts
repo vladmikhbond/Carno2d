@@ -83,6 +83,7 @@ export default class Process
         );
         // заміна всіх зроблених вимірів одним середнім значенням
         let avgMet = this.space.plunger.getAvgMetering(time);
+        
         const meterings = this.space.plunger.meterings
         meterings.splice(meterings.length - time, time);
         meterings.push(avgMet);
