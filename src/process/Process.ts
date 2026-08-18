@@ -307,11 +307,11 @@ export default class Process
                plun.m = minMass; 
             }
             // Action warm
-            // const eps_r = eps_m / 2;
-            // heater.rate = 1 + eps_r;
-            // heater.warm();
+            const eps_r = eps_m / 2;
+            heater.rate = 1 + eps_r;
+            heater.warm();
 
-            // Втручання
+            // Стабілізація температури
             let currT = this.plunger.measureTemperature();
             heater.rate = 1 + (initT - currT) / currT / 2;
             heater.warm();
@@ -362,11 +362,11 @@ export default class Process
             }            
             
             // Action warm
-            // const eps_r = eps_m / 2;
-            // heater.rate *= 1 - eps_r;
-            // heater.warm(); 
+            const eps_r = eps_m / 2;
+            heater.rate *= 1 - eps_r;
+            heater.warm(); 
 
-            // Втручання
+            // Стабілізація температури
             let currT = this.plunger.measureTemperature(); 
             heater.rate = 1 + (initT - currT) / currT / 2;
             heater.warm();
