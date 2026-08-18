@@ -181,11 +181,11 @@ export class Interpreter
             heater.warm();
         }
         this.space.removeDevice(heater);
-        
+
         // plun.withFriction = true;
-        // for (let i = 0; i < 100; i++){
-        //     this.space.step();
-        // }
+        for (let i = 0; i < 45; i++){
+            this.space.step();
+        }
         // plun.withFriction = false;
 
         
