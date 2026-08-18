@@ -87,6 +87,7 @@ export class Interpreter
                     this.view.draw2();
                     break;
                 case 'run':
+                    // this.initCalm();
                     await this.process?.run(params.time);
                     break;
                 case 'report':
@@ -162,13 +163,14 @@ export class Interpreter
         if (n) {
             this.space.clearBalls();
             this.space.addBomb(new Bomb(n, x1, plun.realBottom - y, x2, plun.realBottom, 0, 0, t, gas_r, gas_m, gas_c));
-            this.calm();
+            this.initCalm();
         } else {
             plun.move(0, -Plunger.GAP);
         }
     }
 
-    calm() {
+    // Первісне грязне заспокоювання поршня
+    initCalm() {
         const plun = this.space.plunger;
         let pv = plun.pressureM * plun.volume
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
@@ -179,10 +181,12 @@ export class Interpreter
             heater.warm();
         }
         this.space.removeDevice(heater);
-
-        // for (let i = 0; i < 500; i++){
+        
+        // plun.withFriction = true;
+        // for (let i = 0; i < 100; i++){
         //     this.space.step();
         // }
+        // plun.withFriction = false;
 
         
     }

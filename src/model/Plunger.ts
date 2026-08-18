@@ -89,13 +89,15 @@ export class Plunger extends Line
    }
    
    moveByForces() {
-      // гравітація діє на навантаження    
+
+      // M dv = imp = M g dt + ifb ,    ifb = impulseFromBalls
+      // dv = g dt + ifb / M 
       let dv = glo.g /* *1 */ + this.impulseFromBalls / this.m;
       this.velo += dv; 
 
       // обмеження швидкості поршня - втрата енергії
       if (this.withFriction) {         
-         const k = 1.1**-((5 * this.velo)**2);
+         const k = 1 - 0.01;
          this.velo *= k;
          // підрахунок втрат    
          this.loss += (1 - k**2) * this.velo**2 * this.m / 2;

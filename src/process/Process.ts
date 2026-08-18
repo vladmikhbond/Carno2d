@@ -75,11 +75,12 @@ export default class Process
     async run(time=1e6) {
         const plun = this.space.plunger;
         let stepCount = time;
+
         await this.whileAsync(
             () => stepCount > 0,
             () => {
                 stepCount--;
-                //console.log(plun.velo);
+                console.log(plun.velo);
             },
         );
 
