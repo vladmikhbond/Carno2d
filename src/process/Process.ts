@@ -173,7 +173,7 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume - maxVolume;
         const wanted_velo = deltaV / plun.width / time;
-        const initP = plun.pressureM;
+        const initP = plun.getPressure();
 
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
@@ -220,7 +220,7 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume - minVolume;
         const wanted_velo = deltaV / plun.width / time;
-        const initP = plun.pressureM;
+        const initP = plun.getPressure();
 
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);      
@@ -314,7 +314,8 @@ export default class Process
 
             // Стабілізація температури
             let currT = this.plunger.measureTemperature();
-            heater.rate = 1 + (initT - currT) / currT / 2;
+            const eps_t = (initT - currT) / currT / 2;
+            heater.rate = 1 + eps_t;
             heater.warm();
 
 
@@ -364,12 +365,13 @@ export default class Process
             
             // Action warm
             const eps_r = eps_m / 2;
-            heater.rate *= 1 - eps_r;
+            heater.rate = 1 - eps_r;
             heater.warm(); 
 
             // Стабілізація температури
-            let currT = this.plunger.measureTemperature(); 
-            heater.rate = 1 + (initT - currT) / currT / 2;
+            let currT = this.plunger.measureTemperature();
+            const eps_t = (initT - currT) / currT / 2;
+            heater.rate = 1 + eps_t;
             heater.warm();
 
             // replace real pressure metering with ideal one

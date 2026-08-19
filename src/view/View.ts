@@ -339,13 +339,18 @@ export default class View
         if (plun.scales.t > 0) diagram(3, 1, 'black');  // VT
         if (plun.scales.s > 0) diagram(4, 2, 'green');  // XS
            
-        // captions
+        // params as text
         ctx.fillStyle = 'black';
         let summa = this.space.givenHeat - this.space.takenHeat - plun.u + plun.loss
         ctx.fillText(`Q+: ${this.space.givenHeat.toFixed(1)}  Q-: ${this.space.takenHeat.toFixed(1)}  ` +
                      `A: ${plun.u.toFixed(1)}  Los: ${plun.loss.toFixed(1)}   Σ: ${summa.toFixed(1)}`, X, 14);
         ctx.fillText(`V: ${last.v.toFixed(0)}  P: ${last.p.toFixed(3)}  T: ${last.t.toFixed(1)}  S: ${last.s.toFixed(1)}`, 
-                      X, 28);                    
+                      X, 28);
+                      
+        // valuesUnderMouse
+        const width = this.ctx2.measureText(this.valuesUnderMouse).width + 20;
+        this.ctx2.clearRect(X, 28, width, 14);
+        this.ctx2.fillText(this.valuesUnderMouse, X, 42);            
 
         //------------inner functions -----------------
         function getScaled(metering: PlungerMetering) {
@@ -377,13 +382,12 @@ export default class View
         }    
     }
 
+    private valuesUnderMouse = "";
+
     showVauesUnderMouse(plun: Plunger, x: number, y: number) {
         const [p, t, s, v] = ptsvUnderMouse(plun, x, y);
         const [X, _] = xywh(plun);
-        const line = `V: ${v.toFixed(0)}  P: ${p.toFixed(3)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
-        const width = this.ctx2.measureText(line).width + 20;
-        this.ctx2.clearRect(X, 28, width, 14);
-        this.ctx2.fillText(line, X, 42);    
+        this.valuesUnderMouse = `V: ${v.toFixed(0)}  P: ${p.toFixed(3)}  T: ${t.toFixed(1)}  S: ${s.toFixed(1)}`;
     }
 //#endregion Canvas2
 
