@@ -191,7 +191,7 @@ export default class Process
             const eps_r = - wanted_velo * plun.width / plun.volume;
             heater.rate = 1 + eps_r;
             heater.warm();
-            
+
             // Стабілізація руху поршня
             let diff = wanted_velo - plun.velo;
             let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
@@ -223,7 +223,7 @@ export default class Process
         const initP = plun.pressureM;
 
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
-        this.space.addDevice(heater);
+        this.space.addDevice(heater);      
 
         // баланс тепла для охолоджувача
         let givenHeat = this.space.givenHeat;
@@ -232,12 +232,13 @@ export default class Process
         () => 
             plun.volume > minVolume, 
         () => {
+
             // Action
             heater.y1 =  plun.y1;
             const eps_r = wanted_velo * plun.width / plun.volume;
             heater.rate = 1 - eps_r;
             heater.warm();
-            
+
             // Стабілізація руху поршня
             let diff = wanted_velo - plun.velo;
             let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
@@ -245,7 +246,7 @@ export default class Process
             let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
             let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
             heater.rate = 1 - eps_q;
-            heater.warm();            
+            heater.warm();   
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {

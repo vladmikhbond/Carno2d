@@ -147,7 +147,6 @@ exhaust     m=1000,   v=8000
 
 title   Цикл Брайтона (квазістаціонарний)
 plunger m=3000, t=111.4
-run time=1500
 scale   p=5.5, t=9.2, s=0.36, x=1.5
 isobaric   v=36000
 adiabatic  m=550
@@ -158,7 +157,6 @@ report brython
 
 title   Зворотний цикл Брайтона
 plunger m=3000, t=111.4
-run time=1500
 scale   p=5.5, t=9.2, s=0.36, x=1.5
 adiabatic  m=550
 isobaric   v=86000
@@ -169,31 +167,25 @@ report rbrython
 
 title   Цикл Карно
 plunger m=3000, t=126
-run time=1000
 scale   p=6, t=10, s=0.6, x=1.6
 isothermic  m=1600
 adiabatic   m=600
-run time=1000
 isothermic  m=1100
 adiabatic   m=3000
 report carnot
 
 title   Зворотний цикл Карно
 plunger m=3000, t=126
-run time=1000
 scale   p=6, t=10, s=0.7, x=1.6
 adiabatic   m=1100
-run time=1000
 isothermic  m=600
 adiabatic   m=1600
-run time=1000
 isothermic  m=3000
 report rcarnot
 
 
 title   Цикл Отто (квазістаціонарний)
 plunger m=3000, t=126
-run time=1000
 scale   p=6, t=11, s=0.33, x=1.6
 adiabatic  m=1000
 isohoric   m=300
@@ -204,7 +196,6 @@ report otto
 
 title   Зворотний цикл Отто (квазістаціонарний)
 plunger m=3000, t=126
-run time=1000
 scale   p=6, t=11, s=0.33, x=1.6
 isohoric   m=900
 adiabatic  m=300
@@ -212,5 +203,9 @@ isohoric   m=1000
 adiabatic  m=3000
 report rotto
 
+title oscillation_test 
+plunger m=3000, t=100
+scale   p=6, t=13.5, s=0.4, x=2.4
+run       time=3000
 
 ```
