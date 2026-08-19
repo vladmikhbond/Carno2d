@@ -191,6 +191,7 @@ export default class Controller
         doc.canvas.addEventListener("mousemove", (e: MouseEvent) => {
             if (this.space.plunger) {
                 this.view.showVauesUnderMouse(this.space.plunger, e.offsetX, e.offsetY);
+                this.view.draw2();
             }
         });
 
