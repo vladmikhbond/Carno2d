@@ -6,9 +6,6 @@ import View from '../view/View.js';
 import Controller from '../controller/Controller.js';
 import { glo } from '../globals/globals.js';
 
-import Diag from './Diag.js';
-
-
 export enum ProcessState {
     Pause = 0,
     Run = 1,
@@ -448,7 +445,7 @@ export default class Process
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         plun.fixed = true;
-        
+
         await this.whileAsync(
         () => 
             this.plunger.m > minMass, 

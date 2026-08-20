@@ -172,10 +172,11 @@ export class Interpreter
     // Первісне грязне заспокоювання поршня
     initCalm() {
         const plun = this.space.plunger;
+
         let pv = plun.pressureM * plun.volume
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
-        // довести  n*B*T до 
+        // довести  n*B*T до P*V 
         for (let i = 0; i < 5; i++){
             let [en, _] = plun.sumEnergyUnderPlunger();    
             heater.rate = Math.sqrt(pv/en);
@@ -183,18 +184,16 @@ export class Interpreter
         }
         this.space.removeDevice(heater);
 
-        // plun.withFriction = true;
-        for (let i = 0; i < 45; i++){
+        // розрахувати період коливань
+        let T = 2 * Math.PI * Math.sqrt((plun.realBottom - plun.y1) / 2 / glo.g);
+        for (let i = 0; i < T/4; i++){
             this.space.step();
         }
-        // plun.withFriction = false; 
     }
 
     // Розраховує Efficiency і COP ()
     report(param = "") {
-        const HALF_ISOTERM = 1000;
-        const HALF_ISOBAR = 1000; 
-        const HALF_ISOCHOR = 500; 
+        const HALF_DEFAULT_DURATION = 500; 
         
         const ms = this.space.plunger.meterings;
         // ккд через роботу
@@ -207,7 +206,7 @@ export class Interpreter
         if (param == 'carnot' || param == 'rcarnot') { 
             const ts = ms.map(m => m.t);
             ts.sort((a, b) => a - b);
-            const Tmin = ts[HALF_ISOTERM], Tmax = ts[ts.length - HALF_ISOTERM];
+            const Tmin = ts[HALF_DEFAULT_DURATION], Tmax = ts[ts.length - HALF_DEFAULT_DURATION];
             if (param == 'carnot') {
                 const effT = 1 - Tmin / Tmax;
                 const e = `  ${(100 * (effT - effQ) / effQ).toFixed(1)}%`;
@@ -218,11 +217,12 @@ export class Interpreter
                 console.log("rcarnot> Q:", copQ.toFixed(3), "T:", copT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
             }
         }
+
         // brython
         if (param == 'brython' || param == 'rbrython') { 
             const ps = ms.map(m => m.p);
             ps.sort((a, b) => a - b);
-            const Pmin = ps[HALF_ISOBAR], Pmax = ps[ps.length - HALF_ISOBAR];
+            const Pmin = ps[HALF_DEFAULT_DURATION], Pmax = ps[ps.length - HALF_DEFAULT_DURATION];
             if (param == 'brython') {
                 const effP = 1 - (Pmin / Pmax)**0.5;
                 const e = `  ${(100 * (effP - effQ) / effQ).toFixed(1)}%`;
@@ -238,7 +238,7 @@ export class Interpreter
         if (param == 'otto' || param == 'rotto') { 
             const vs = ms.map(m => m.v);
             vs.sort((a, b) => a - b);
-            const Vmin = vs[HALF_ISOCHOR], Vmax = vs[vs.length - HALF_ISOCHOR];
+            const Vmin = vs[HALF_DEFAULT_DURATION], Vmax = vs[vs.length - HALF_DEFAULT_DURATION];
             if (param == 'otto') {
                 const effV = 1 - (Vmin / Vmax);
                 const e = `  ${(100 * (effV - effQ) / effQ).toFixed(1)}%`;
