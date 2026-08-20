@@ -94,7 +94,7 @@ export default class Process
 
     //#region adiabatic 
 
-    async adiabatic(mass: number, time=1500) {
+    async adiabatic(mass: number, time=1000) {
         if (this.plunger.m > mass) {
             await this.adiabaticExtention(mass, time);
         } else if (this.plunger.m < mass) {
@@ -112,15 +112,16 @@ export default class Process
             plun.m > minMass, 
         () => {
             // Action
-            const eps_m = wanted_velo * plun.width / plun.volume;
+            const eps_m = 2 * wanted_velo * plun.width / plun.volume;
             plun.m *= 1 + eps_m;
 
             // Стабілізація руху поршня
-            let diff = (wanted_velo - plun.velo);
-            const eps_d = diff * plun.width / plun.volume;
-            plun.m *= 1 + eps_d;
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU
+
             
-            // не суттєва поправка маси
+            // несуттєва поправка маси
             if (plun.m < minMass) {
                 plun.u -= plun.kinetic;
                 plun.m = minMass; 
@@ -147,15 +148,15 @@ export default class Process
             plun.m < maxMass, 
         () => {
             // Action
-            const eps_m = wanted_velo * plun.width / plun.volume;
+            const eps_m = 2 * wanted_velo * plun.width / plun.volume;
             plun.m *= 1 + eps_m;
 
             // Стабілізація руху поршня
-            let diff = (wanted_velo - plun.velo);
-            const eps_d = diff * plun.width / plun.volume;
-            plun.m *= 1 + eps_d;
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU;
 
-            // не суттєва поправка маси
+            // несуттєва поправка маси
             if (plun.m > maxMass) {
                 plun.u -= plun.kinetic;
                 plun.m = maxMass; 
@@ -176,7 +177,7 @@ export default class Process
     
     //#region isobaric 
 
-    async isobaric(vol: number, time = 2000) {
+    async isobaric(vol: number, time = 1000) {
         if (this.plunger.volume < vol) {
             await this.isobaricExtention(vol, time);
         } else if (this.plunger.volume > vol) {
@@ -207,17 +208,16 @@ export default class Process
             // eps = dV / V 
             const eps_r = - wanted_velo * plun.width / plun.volume;
             heater.rate = 1 + eps_r;
-            heater.warm();
+            // heater.warm();
 
             // Стабілізація руху поршня
-            let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
-            plun.velo = velo; 
-            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            heater.rate = 1 + eps_q;
-            heater.warm();
-            
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU
+            let eps_q = diffU / (this.space.N * Plunger.BALL_M);
+            heater.rate *= 1 + eps_q;
+            heater.warm();  
+
             // replace real temperature metering with ideal one
             if (glo.pretty) {
                 let idealT =  plun.volume * initP / glo.BOLTZ / this.space.N;
@@ -254,16 +254,15 @@ export default class Process
             heater.y1 =  plun.y1;
             const eps_r = wanted_velo * plun.width / plun.volume;
             heater.rate = 1 - eps_r;
-            heater.warm();
+            // heater.warm();
 
-            // Стабілізація руху поршня
-            let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
-            plun.velo = velo;
-            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            heater.rate = 1 - eps_q;
-            heater.warm();   
+            // Стабілізація руху поршня   
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU
+            let eps_q = diffU / (this.space.N * Plunger.BALL_M);
+            heater.rate *= 1 - eps_q;
+            heater.warm();  
 
             // replace real temperature  metering with ideal one
             if (glo.pretty) {
@@ -284,7 +283,7 @@ export default class Process
 
     //#region isothermic 
     
-    async isothermic(mass: number, time=2000) {
+    async isothermic(mass: number, time=1000) {
         if (this.plunger.m > mass) {
             await this.isothermicExtention(mass, time);
         } else if (this.plunger.m < mass) {
@@ -329,19 +328,18 @@ export default class Process
             heater.rate = 1 + eps_r;
             heater.warm();
 
+            // Стабілізація руху поршня
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU
+            let eps_q = diffU / (this.space.N * Plunger.BALL_M);
+            heater.rate = 1 + eps_q;
+            heater.warm();  
+
             // Стабілізація температури
             let currT = this.plunger.measureTemperature();
             const eps_t = (initT - currT) / currT / 2;
             heater.rate = 1 + eps_t;
-            heater.warm();
-
-            // Стабілізація руху поршня
-            let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
-            plun.velo = velo; 
-            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            heater.rate = 1 + eps_q;
             heater.warm();
 
             // replace real pressure metering with ideal one
@@ -393,20 +391,19 @@ export default class Process
             heater.rate = 1 - eps_r;
             heater.warm(); 
 
+            // Стабілізація руху поршня
+            let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+            plun.velo = wanted_velo;
+            plun.u -= diffU
+            let eps_q = diffU / (this.space.N * Plunger.BALL_M);
+            heater.rate = 1 - eps_q;
+            heater.warm();
+
             // Стабілізація температури
             let currT = this.plunger.measureTemperature();
             const eps_t = (initT - currT) / currT / 2;
             heater.rate = 1 + eps_t;
             heater.warm();
-
-            // Стабілізація руху поршня
-            let diff = wanted_velo - plun.velo;
-            let velo = Math.abs(diff) < 0.01 ? wanted_velo : plun.velo + 0.01 * Math.sign(diff);
-            plun.velo = velo;
-            let deltaQ = (velo**2 - plun.velo**2) * (plun.m / 2);
-            let eps_q = deltaQ / (this.space.N * Plunger.BALL_M);
-            heater.rate = 1 - eps_q;
-            heater.warm(); 
 
             // replace real pressure metering with ideal one
             if (glo.pretty) {
@@ -451,6 +448,7 @@ export default class Process
         this.space.addDevice(heater);
         const vol = this.plunger.volume
         plun.fixed = true;
+        
         await this.whileAsync(
         () => 
             this.plunger.m > minMass, 

@@ -175,6 +175,7 @@ export class Interpreter
         let pv = plun.pressureM * plun.volume
         const heater = new Heater(plun.x1, plun.y1, plun.x2, plun.realBottom, 1, "red");
         this.space.addDevice(heater);
+        // довести  n*B*T до 
         for (let i = 0; i < 5; i++){
             let [en, _] = plun.sumEnergyUnderPlunger();    
             heater.rate = Math.sqrt(pv/en);
@@ -186,9 +187,7 @@ export class Interpreter
         for (let i = 0; i < 45; i++){
             this.space.step();
         }
-        // plun.withFriction = false;
-
-        
+        // plun.withFriction = false; 
     }
 
     // Розраховує Efficiency і COP ()
