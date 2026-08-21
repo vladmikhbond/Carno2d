@@ -105,7 +105,6 @@ export default class Process
         const wanted_velo = deltaV / plun.width / time; 
         
         let A0 = plun.m * (plun.realBottom - plun.y1);
-        let T0 = plun.measureTemperature();
 
         await this.whileAsync(
         () => 
@@ -117,18 +116,9 @@ export default class Process
 
             // Стабілізація руху поршня
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
-
-            // let dM = diffU / glo.g / wanted_velo;
-            // plun.m += dM;
-            plun.loss += diffU;
-
             plun.velo = wanted_velo;
-            plun.u += diffU;
-            // охолодити або вкрасти вантажу
-           
-
-
-            
+            plun.loss += diffU;
+                                 
             // несуттєва поправка маси
             if (plun.m < minMass) {
                 plun.u -= plun.kinetic;
@@ -145,15 +135,18 @@ export default class Process
             }            
         });
 
-        let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g
+// TODO охолодити або вкрасти вантажу
+let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g;
+console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
 
-        console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA )
     }
 
     private async adiabaticCompression(maxMass: number, time: number) {
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / maxMass));
         const wanted_velo = deltaV / plun.width / time;
+        
+        let A0 = plun.m * (plun.realBottom - plun.y1);
 
         await this.whileAsync(
         () => 
@@ -166,7 +159,7 @@ export default class Process
             // Стабілізація руху поршня
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
             plun.velo = wanted_velo;
-            plun.u -= diffU;
+            plun.loss -= diffU;
 
             // несуттєва поправка маси
             if (plun.m > maxMass) {
@@ -183,6 +176,11 @@ export default class Process
                 plun.meterings[last].t = temperature;
             }
         }); 
+// TODO нагріти або ljlfnb вантажу
+let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g;
+console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
+
+
     }
     //#endregion
  
