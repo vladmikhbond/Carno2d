@@ -1,13 +1,13 @@
 import Process, { ProcessState } from './Process.js';
-import Controller from '../controller/Controller.js';
+import Controller from '../../controller/Controller.js';
 
-import Bomb from '../model/Bomb.js';
-import {glo} from '../globals/globals.js';
-import { Plunger } from '../model/Plunger.js';
-import Space from '../model/Space.js';
-import View from '../view/View.js';
-import {str2obj} from "../globals/utils.js"
-import { Heater } from '../model/Heater.js';
+import Bomb from '../Bomb.js';
+import {glo} from '../../globals/globals.js';
+import { Plunger } from '../Plunger.js';
+import Space from '../Space.js';
+import View from '../../view/View.js';
+import {str2obj} from "../../globals/utils.js"
+import { Heater } from '../Heater.js';
 
 // local constants
 const processArea = <HTMLTextAreaElement>document.getElementById("processArea");

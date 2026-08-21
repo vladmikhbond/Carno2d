@@ -3,8 +3,8 @@ import Space from '../model/Space.js';
 import View from '../view/View.js';
 
 import { getSizeParams} from './params.js';
-import { Interpreter, removeHilights} from '../process/Interpreter.js';
-import { ProcessState } from '../process/Process.js';
+import { Interpreter, removeHilights} from '../model/process/Interpreter.js';
+import { ProcessState } from '../model/process/Process.js';
 
 const clearButton = <HTMLButtonElement>document.getElementById('clearButton');
 const execButton = <HTMLButtonElement>document.getElementById('execButton');

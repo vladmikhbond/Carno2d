@@ -18,7 +18,7 @@ export class Plunger extends Line
    realBottom: number;   
  
    m = 0;      // payload
-   u = 0;      // outer work (potetial anergy -- M*g*h)
+   u = 0;      // робота газу при розширенні (при стисканні вона від'ємна)
    loss = 0;   // plunger loss
 
    velo = 0;   // velocity

@@ -1,10 +1,10 @@
-import { Heater} from '../model/Heater.js';
-import Bomb from '../model/Bomb.js';
-import Space from '../model/Space.js';
-import {Plunger} from '../model/Plunger.js';
-import View from '../view/View.js';
-import Controller from '../controller/Controller.js';
-import { glo } from '../globals/globals.js';
+import { Heater} from '../Heater.js';
+import Bomb from '../Bomb.js';
+import Space from '../Space.js';
+import {Plunger} from '../Plunger.js';
+import View from '../../view/View.js';
+import Controller from '../../controller/Controller.js';
+import { glo } from '../../globals/globals.js';
 
 export enum ProcessState {
     Pause = 0,
@@ -103,6 +103,9 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / minMass));
         const wanted_velo = deltaV / plun.width / time; 
+        
+        let A0 = plun.m * (plun.realBottom - plun.y1);
+        let T0 = plun.measureTemperature();
 
         await this.whileAsync(
         () => 
@@ -114,8 +117,16 @@ export default class Process
 
             // Стабілізація руху поршня
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
+
+            // let dM = diffU / glo.g / wanted_velo;
+            // plun.m += dM;
+            plun.loss += diffU;
+
             plun.velo = wanted_velo;
-            plun.u -= diffU
+            plun.u += diffU;
+            // охолодити або вкрасти вантажу
+           
+
 
             
             // несуттєва поправка маси
@@ -133,6 +144,10 @@ export default class Process
                 plun.meterings[last].t = temperature;
             }            
         });
+
+        let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g
+
+        console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA )
     }
 
     private async adiabaticCompression(maxMass: number, time: number) {
