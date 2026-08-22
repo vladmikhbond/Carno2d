@@ -176,7 +176,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
                 plun.meterings[last].t = temperature;
             }
         }); 
-// TODO нагріти або ljlfnb вантажу
+// TODO нагріти або додати вантажу
 let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g;
 console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
 
