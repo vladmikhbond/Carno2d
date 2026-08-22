@@ -18,8 +18,11 @@ export class Heater extends Device
 
       for (let ball of this.space!.balls()) 
       {
-         if (this.c && ball.c != this.c)
+         // нагріває частки одного коліру з нагрівачем
+         if (this.c && ball.c != this.c) {
             continue;
+         }
+
          if (this.isInside(ball.x, ball.y)) {
             const oldEnergy = (ball.vx**2 + ball.vy**2) * ball.m / 2;
 

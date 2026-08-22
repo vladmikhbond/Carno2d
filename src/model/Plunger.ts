@@ -211,27 +211,27 @@ export class Plunger extends Line
       this.measure();
    }
 
-   getAvgMetering(len: number): PlungerMetering {
-      let res: PlungerMetering = {n: 0, p: 0, v: 0, t: 0, u: 0, q: 0, s:0};
-      let ms = this.meterings.slice(-len);
-      ms.reduce((ac, m) => {
-         ac.p += m.p;
-         ac.v += m.v;
-         ac.t += m.t;
-         ac.u += m.u;
-         ac.q += m.q;
-         ac.s += m.s;
-         return ac;
-      }, res);
-      res.p /= len;
-      res.v = this.volume;
-      res.t /= len;
-      res.u /= len;
-      res.q /= len;
-      res.s /= len;
+   // getAvgMetering(len: number): PlungerMetering {
+   //    let res: PlungerMetering = {n: 0, p: 0, v: 0, t: 0, u: 0, q: 0, s:0};
+   //    let ms = this.meterings.slice(-len);
+   //    ms.reduce((ac, m) => {
+   //       ac.p += m.p;
+   //       ac.v += m.v;
+   //       ac.t += m.t;
+   //       ac.u += m.u;
+   //       ac.q += m.q;
+   //       ac.s += m.s;
+   //       return ac;
+   //    }, res);
+   //    res.p /= len;
+   //    res.v = this.volume;
+   //    res.t /= len;
+   //    res.u /= len;
+   //    res.q /= len;
+   //    res.s /= len;
      
-      return res;
-   }
+   //    return res;
+   // }
 
    scale(x: string) {
       const coef = 1.1;
