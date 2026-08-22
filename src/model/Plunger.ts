@@ -164,7 +164,7 @@ export class Plunger extends Line
       return sumE / n / glo.BOLTZ;
    }
 
-   // Вклад кінктичної енергії поршня в роботу, виконану газом
+   // Вклад кінетичної енергії поршня в роботу, виконану газом
    get kinetic() {
       return  Math.sign(-this.velo) * (this.m * this.velo**2 / 2);
    }

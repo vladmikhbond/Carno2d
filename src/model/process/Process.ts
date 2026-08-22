@@ -104,7 +104,7 @@ export default class Process
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / minMass));
         const wanted_velo = deltaV / plun.width / time; 
         
-        let A0 = plun.m * (plun.realBottom - plun.y1);
+        let A0= plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
 
         await this.whileAsync(
         () => 
@@ -136,8 +136,8 @@ export default class Process
         });
 
 // TODO охолодити або вкрасти вантажу
-let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g;
-console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
+let A1 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
+console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
 
     }
 
@@ -146,7 +146,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / maxMass));
         const wanted_velo = deltaV / plun.width / time;
         
-        let A0 = plun.m * (plun.realBottom - plun.y1);
+        let A0 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
 
         await this.whileAsync(
         () => 
@@ -177,9 +177,8 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
             }
         }); 
 // TODO нагріти або додати вантажу
-let deltaA = (plun.m * (plun.realBottom - plun.y1) - A0) * glo.g;
-console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
-
+let A1 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
+console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
 
     }
     //#endregion
@@ -224,6 +223,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
             plun.velo = wanted_velo;
             plun.u -= diffU
+            // компенсація теплотою
             let eps_q = diffU / (this.space.N * Plunger.BALL_M);
             heater.rate *= 1 + eps_q;
             heater.warm();  
@@ -270,6 +270,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
             plun.velo = wanted_velo;
             plun.u -= diffU
+            // компенсація теплотою
             let eps_q = diffU / (this.space.N * Plunger.BALL_M);
             heater.rate *= 1 - eps_q;
             heater.warm();  
@@ -342,6 +343,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
             plun.velo = wanted_velo;
             plun.u -= diffU
+            // компенсація теплотою
             let eps_q = diffU / (this.space.N * Plunger.BALL_M);
             heater.rate = 1 + eps_q;
             heater.warm();  
@@ -405,6 +407,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", deltaA);
             let diffU = (wanted_velo**2 - plun.velo**2) * plun.m / 2;
             plun.velo = wanted_velo;
             plun.u -= diffU
+            // компенсація теплотою
             let eps_q = diffU / (this.space.N * Plunger.BALL_M);
             heater.rate = 1 - eps_q;
             heater.warm();
