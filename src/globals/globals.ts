@@ -19,5 +19,5 @@ export const glo =
 export const doc = { 
     canvas: <HTMLCanvasElement>document.getElementById('canvas'),
     canvas2: <HTMLCanvasElement>document.getElementById('canvas2'),
-   
+    scriptArea: <HTMLTextAreaElement>document.getElementById('processArea'),
 }

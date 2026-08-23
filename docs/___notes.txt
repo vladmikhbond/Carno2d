@@ -3,3 +3,9 @@ TODO
 побудувати цикл парового двигуна
 
 кпд цикла
+ carnot>  PerAQ = 0.411    Theor = 0.393    err =   -4.5%
+ rcarnot>  PerAQ = 1.448    Theor = 1.545    err =   6.3%
+ otto>  PerAQ = 0.429    Theor = 0.419    err =   -2.4%
+ rotto>  PerAQ = 1.258    Theor = 1.373    err =   8.4%
+ brython>  PerAQ = 0.595    Theor = 0.566    err =   -5.2%
+ rbrython>  PerAQ = 0.735    Theor = 0.732    err =   -0.4%

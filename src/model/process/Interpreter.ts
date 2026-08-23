@@ -209,12 +209,10 @@ export class Interpreter
             const Tmin = ts[HALF_DEFAULT_DURATION], Tmax = ts[ts.length - HALF_DEFAULT_DURATION];
             if (param == 'carnot') {
                 const effT = 1 - Tmin / Tmax;
-                const e = `  ${(100 * (effT - effQ) / effQ).toFixed(1)}%`;
-                console.log("carnot> Q:", effQ.toFixed(3), "T:", effT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
+                this.view.report("carnot", effQ, effT);
             } else {
                 const copT = Tmin / (Tmax - Tmin);
-                const e = `  ${(100 * (copT - copQ) / copQ).toFixed(0)}%`;
-                console.log("rcarnot> Q:", copQ.toFixed(3), "T:", copT.toFixed(3), e, "| T:", Tmin.toFixed(3), Tmax.toFixed(3));
+                this.view.report("rcarnot", copQ, copT);
             }
         }
 
@@ -225,12 +223,14 @@ export class Interpreter
             const Pmin = ps[HALF_DEFAULT_DURATION], Pmax = ps[ps.length - HALF_DEFAULT_DURATION];
             if (param == 'brython') {
                 const effP = 1 - (Pmin / Pmax)**0.5;
-                const e = `  ${(100 * (effP - effQ) / effQ).toFixed(1)}%`;
-                console.log("brython> Q:", effQ.toFixed(3), "P:", effP.toFixed(3), e, "|", Pmin.toFixed(3), Pmax.toFixed(3));
+                this.view.report("brython", effQ, effP);
+                // const e = `  ${(100 * (effP - effQ) / effQ).toFixed(1)}%`;
+                // console.log("brython> Q:", effQ.toFixed(3), "P:", effP.toFixed(3), e, "|", Pmin.toFixed(3), Pmax.toFixed(3));
             } else {
                 const copP = 1 / ((Pmax/Pmin)**0.5 - 1)
-                const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
-                console.log("rbrython> Q:", copQ.toFixed(3), "P:", copP.toFixed(3), e, "| ", Pmin.toFixed(3), Pmax.toFixed(3));
+                this.view.report("rbrython", copQ, copP);
+                // const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
+                // console.log("rbrython> Q:", copQ.toFixed(3), "P:", copP.toFixed(3), e, "| ", Pmin.toFixed(3), Pmax.toFixed(3));
             }
         }
 
@@ -241,12 +241,14 @@ export class Interpreter
             const Vmin = vs[HALF_DEFAULT_DURATION], Vmax = vs[vs.length - HALF_DEFAULT_DURATION];
             if (param == 'otto') {
                 const effV = 1 - (Vmin / Vmax);
-                const e = `  ${(100 * (effV - effQ) / effQ).toFixed(1)}%`;
-                console.log("otto> Q:", effQ.toFixed(3), "V:", effV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
+                this.view.report("otto", effQ, effV);
+                // const e = `  ${(100 * (effV - effQ) / effQ).toFixed(1)}%`;
+                // console.log("otto> Q:", effQ.toFixed(3), "V:", effV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
             } else {
-                const copP = 1 / (Vmax / Vmin - 1)
-                const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
-                console.log("rotto> Q:", copQ.toFixed(3), "V:", copP.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
+                const copV = 1 / (Vmax / Vmin - 1)
+                this.view.report("rotto", copQ, copV);
+                // const e = `  ${(100 * (copV - copQ) / copQ).toFixed(0)}%`;
+                // console.log("rotto> Q:", copQ.toFixed(3), "V:", copV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
             }
         }
 

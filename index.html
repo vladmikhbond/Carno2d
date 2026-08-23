@@ -43,11 +43,14 @@
         
     <section> 
 <textarea id="processArea" spellcheck="false" title="Вікно команд">
-title isothermic_test
+title   Цикл Карно
 plunger m=3000, t=126
-scale   p=6, t=18, s=0.4, x=1.7, v=1.5
-isothermic  m=1000, time=1000
-isothermic  m=3000, time=1000 
+scale   p=6, t=10, s=0.6, x=1.6
+isothermic  m=1600
+adiabatic   m=600
+isothermic  m=1100
+adiabatic   m=3000
+report carnot
 </textarea>
     </section>
 

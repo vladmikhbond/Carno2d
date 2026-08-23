@@ -437,6 +437,11 @@ export default class View
         el.innerHTML = `T=${time} &nbsp;&nbsp; N=${this.space.N}, &nbsp;&nbsp; strikes=${strikes}%`;
     } 
 
+    report(who: string, Eq: number, E: number) {
+        const percent = `  ${(100 * (E - Eq) / E).toFixed(1)}`;
+        let info = `\n ${who}>  PerAQ = ${Eq.toFixed(3)}    Theor = ${E.toFixed(3)}    err = ${percent}%`;
+        doc.scriptArea.value += info;
+    }
 //#endregion DOM
 
 }
