@@ -591,26 +591,21 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
         let bottomLine = this.space.selectedLine!;
 
         // open bottom anime
-        let x1 = bottomLine.x1;
-        await this.whileAsync(() => bottomLine.x1 < x1 + this.plunger.width, () => { bottomLine.move(10, 0) } );
-        
-                this.plunger.withFriction = true;
-        // await this.whileAsync(
-        // () => 
-        //     this.plunger.y1 < this.plunger.bottom - 80, 
-        // () => {
-        //     if (this.plunger.m > 100) this.plunger.m -= 1;
-        // });
-        
-        this.plunger.withFriction = true;
+        let closedX = bottomLine.x1;
+        await this.whileAsync(() => bottomLine.x1 < closedX + this.plunger.width, () => { bottomLine.move(10, 0) } );
+ 
+        // process
         await this.whileAsync(
         () => 
-            this.plunger.y1 < this.plunger.bottom
+            this.plunger.y1 < this.plunger.bottom,
+        () => { 
+            if (this.plunger.velo > 1 ) 
+                this.plunger.velo = 1;
+        }
         );
-        this.plunger.withFriction = false;
 
         // close bottom anime
-        await this.whileAsync(() => bottomLine.x1 > x1, () => { bottomLine.move(-10, 0) } );
+        await this.whileAsync(() => bottomLine.x1 > closedX, () => { bottomLine.move(-10, 0) } );
     }
 
     //#endregion Otto Cicle
