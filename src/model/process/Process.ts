@@ -532,9 +532,8 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
     //#region Otto Cicle
 
     // vol
-    async intake(maxVolume: number, nk=10) {       
-        let n = nk * 1000;
-        let dn = n / 100,
+    async intake(maxVolume: number, n=10000) {       
+        let dn = Math.round(n / 100),
             x1 = this.plunger.x1 + 1, 
             y1 = this.plunger.realBottom - 10,
             x2 = this.plunger.x1 + 50, 
@@ -594,13 +593,13 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
         let x1 = bottomLine.x1;
         await this.whileAsync(() => bottomLine.x1 < x1 + this.plunger.width, () => { bottomLine.move(10, 0) } );
         
-        // 
-        await this.whileAsync(
-        () => 
-            this.plunger.y1 < this.plunger.bottom - 80, 
-        () => {
-            if (this.plunger.m > 100) this.plunger.m -= 10;
-        });
+                this.plunger.withFriction = true;
+        // await this.whileAsync(
+        // () => 
+        //     this.plunger.y1 < this.plunger.bottom - 80, 
+        // () => {
+        //     if (this.plunger.m > 100) this.plunger.m -= 1;
+        // });
         
         this.plunger.withFriction = true;
         await this.whileAsync(
