@@ -532,8 +532,9 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
     //#region Otto Cicle
 
     // vol
-    async intake(maxVolume: number, n=10000) {       
-        let dn = Math.round(n / 100),
+    async intake(maxVolume: number, n=10000) { 
+        const timeForGas = 50      
+        let dn = Math.round(n / timeForGas ),
             x1 = this.plunger.x1 + 1, 
             y1 = this.plunger.realBottom - 10,
             x2 = this.plunger.x1 + 50, 
@@ -544,7 +545,7 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
             this.plunger.volume < maxVolume, 
         () => {
             if (n > 0) {
-                //let t = 2.5 * 30 = 75
+                // temperature=75
                 let bomb = new Bomb(dn, x1, y1, x2, y2, 0, 0, 75, 0.5, 0.4, "red", )
                 this.space.addBomb(bomb)
                 n -= dn; 
