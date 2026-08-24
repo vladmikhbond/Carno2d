@@ -39,7 +39,7 @@ export default class Process
         stepAfterAction = true,
     ) {
         return new Promise<void>((resolve, reject) => {
-            let timer = setInterval(() => {
+            const timer = setInterval(() => {
                 try {
                     if (this.procState == ProcessState.Abort) {
                         clearInterval(timer);
@@ -531,22 +531,22 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
 
     //#region Otto Cicle
 
-    // vol
+    // vol | n
     async intake(maxVolume: number, n=10000) { 
-        const timeForGas = 50      
-        let dn = Math.round(n / timeForGas ),
-            x1 = this.plunger.x1 + 1, 
-            y1 = this.plunger.realBottom - 10,
-            x2 = this.plunger.x1 + 50, 
-            y2 = this.plunger.realBottom - 1;
+        const x1 = this.plunger.x1 + 1;
+        const y1 = this.plunger.realBottom - 10;
+        const x2 = this.plunger.x1 + 5;
+        const y2 = this.plunger.realBottom - 1;
+        let dn = 200;
 
         await this.whileAsync(
         () => 
             this.plunger.volume < maxVolume, 
         () => {
             if (n > 0) {
+                if (n < dn) dn = n;  // the rest in the last portion
                 // temperature=75
-                let bomb = new Bomb(dn, x1, y1, x2, y2, 0, 0, 75, 0.5, 0.4, "red", )
+                const bomb = new Bomb(dn, x1, y1, x2, y2, 0, 0, 75, 0.5, 0.4, "red", )
                 this.space.addBomb(bomb)
                 n -= dn; 
             }
@@ -563,8 +563,8 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
     }
     
     // rate | t 
-    async ignition(rate: number, maxTemperature: number) {  
-        let heater = new Heater(this.plunger.x1, this.plunger.y1, this.plunger.x2, this.plunger.realBottom, rate, "red");
+    async ignition(maxTemperature: number, rate=1.1 ) {  
+        const heater = new Heater(this.plunger.x1, this.plunger.y1, this.plunger.x2, this.plunger.realBottom, rate**0.5, "red");
         this.space.addDevice(heater);
         await this.whileAsync(
         () => 
@@ -584,14 +584,14 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
         );
     }
 
-    // mas | vol  
+    // mas 
     async exhaust(mass: number) { 
         this.plunger.m = mass;
         this.space.selectLine(this.plunger.x1 + 20, this.plunger.realBottom)
-        let bottomLine = this.space.selectedLine!;
+        const bottomLine = this.space.selectedLine!;
 
         // open bottom anime
-        let closedX = bottomLine.x1;
+        const closedX = bottomLine.x1;
         await this.whileAsync(() => bottomLine.x1 < closedX + this.plunger.width, () => { bottomLine.move(10, 0) } );
  
         // process
