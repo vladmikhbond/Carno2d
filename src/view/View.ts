@@ -438,8 +438,9 @@ export default class View
     } 
 
     report(who: string, Eq: number, E: number) {
-        const percent = `  ${(100 * (E - Eq) / E).toFixed(1)}`;
-        let info = `\n ${who}>  PerAQ = ${Eq.toFixed(3)}    Theor = ${E.toFixed(3)}    err = ${percent}%`;
+        const error = `  ${((E - Eq) / (E + Eq) / 2).toFixed(1)}`;
+        // let info = `\n ${who}>  PerAQ = ${Eq.toFixed(3)}    Theor = ${E.toFixed(3)}    err = ${error}%`;
+        let info = `\n ${who},  ${Eq.toFixed(3)}, ${E.toFixed(3)}, ${error}`;
         doc.scriptArea.value += info;
     }
 //#endregion DOM

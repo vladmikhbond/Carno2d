@@ -103,8 +103,6 @@ export default class Process
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / minMass));
         const wanted_velo = deltaV / plun.width / time; 
-        
-        let A0= plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
 
         await this.whileAsync(
         () => 
@@ -134,19 +132,12 @@ export default class Process
                 plun.meterings[last].t = temperature;
             }            
         });
-
-// TODO охолодити або вкрасти вантажу
-let A1 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
-console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
-
     }
 
     private async adiabaticCompression(maxMass: number, time: number) {
         const plun = this.plunger;
         const deltaV = plun.volume * (1 - Math.sqrt(plun.m / maxMass));
         const wanted_velo = deltaV / plun.width / time;
-        
-        let A0 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
 
         await this.whileAsync(
         () => 
@@ -176,9 +167,6 @@ console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
                 plun.meterings[last].t = temperature;
             }
         }); 
-// TODO нагріти або додати вантажу
-let A1 = plun.m * glo.g * (plun.y1 - plun.realBottom) + plun.kinetic;
-console.log("plun.u", plun.u, "plun.loss", plun.loss, "A", A1 - A0);
 
     }
     //#endregion

@@ -203,6 +203,16 @@ isohoric   m=1000
 adiabatic  m=3000
 report rotto
 
+
+title   Цикл Дізеля (квазістаціонарний)
+plunger m=400, n=10000, t=50
+scale      p=1.6, t=2.8, s=0.2, v=1.6, x=0.4
+adiabatic  m=10000
+isobaric   v=40000
+adiabatic  m=2300
+isohoric   m=400
+
+
 title oscillation_test 
 plunger m=3000, t=100
 scale   p=6, t=13.5, s=0.4, x=2.4
