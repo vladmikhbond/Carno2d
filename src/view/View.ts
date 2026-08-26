@@ -437,10 +437,10 @@ export default class View
         el.innerHTML = `T=${time} &nbsp;&nbsp; N=${this.space.N}, &nbsp;&nbsp; strikes=${strikes}%`;
     } 
 
+    // Eq = A/Q, E -теоретично
     report(who: string, Eq: number, E: number) {
-        const error = `  ${((E - Eq) / (E + Eq) / 2).toFixed(1)}`;
-        // let info = `\n ${who}>  PerAQ = ${Eq.toFixed(3)}    Theor = ${E.toFixed(3)}    err = ${error}%`;
-        let info = `\n ${who},  ${Eq.toFixed(3)}, ${E.toFixed(3)}, ${error}`;
+
+        let info = `\n${who}\t${Eq}\t${E}`;
         doc.scriptArea.value += info;
     }
 //#endregion DOM
