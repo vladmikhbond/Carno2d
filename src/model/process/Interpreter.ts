@@ -224,13 +224,9 @@ export class Interpreter
             if (param == 'brython') {
                 const effP = 1 - (Pmin / Pmax)**0.5;
                 this.view.report("brython", effQ, effP);
-                // const e = `  ${(100 * (effP - effQ) / effQ).toFixed(1)}%`;
-                // console.log("brython> Q:", effQ.toFixed(3), "P:", effP.toFixed(3), e, "|", Pmin.toFixed(3), Pmax.toFixed(3));
             } else {
                 const copP = 1 / ((Pmax/Pmin)**0.5 - 1)
                 this.view.report("rbrython", copQ, copP);
-                // const e = `  ${(100 * (copP - copQ) / copQ).toFixed(0)}%`;
-                // console.log("rbrython> Q:", copQ.toFixed(3), "P:", copP.toFixed(3), e, "| ", Pmin.toFixed(3), Pmax.toFixed(3));
             }
         }
 
@@ -242,18 +238,11 @@ export class Interpreter
             if (param == 'otto') {
                 const effV = 1 - (Vmin / Vmax);
                 this.view.report("otto", effQ, effV);
-                // const e = `  ${(100 * (effV - effQ) / effQ).toFixed(1)}%`;
-                // console.log("otto> Q:", effQ.toFixed(3), "V:", effV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
             } else {
                 const copV = 1 / (Vmax / Vmin - 1)
                 this.view.report("rotto", copQ, copV);
-                // const e = `  ${(100 * (copV - copQ) / copQ).toFixed(0)}%`;
-                // console.log("rotto> Q:", copQ.toFixed(3), "V:", copV.toFixed(3), e, "|", Vmin.toFixed(3), Vmax.toFixed(3));
             }
         }
-
-        
-        
 
     }
 }
