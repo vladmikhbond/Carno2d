@@ -200,29 +200,58 @@ export default class Controller
 
     addDataHandlers() 
     {
-        const processArea = <HTMLTextAreaElement>document.getElementById('processArea');
-        const bottomArea = <HTMLTextAreaElement>document.getElementById("savedSceneText"); 
+        const processArea = <HTMLTextAreaElement>document.getElementById('processArea'); 
+        const savedSelect = <HTMLSelectElement>document.getElementById("savedInStore"); 
+        fillSavedSelect();
 
-        const keys = Object.keys(localStorage);
-        bottomArea.value = keys.join(' ');
-
+        // Put script to local store
+        //
         document.getElementById("saveSceneButton")!.addEventListener("click", () => {
-            let key = bottomArea.value.trim();
-            if (bottomArea.selectionEnd - bottomArea.selectionStart > 0) {
-                key = bottomArea.value.slice(bottomArea.selectionStart, bottomArea.selectionEnd)
-            }            
-            const val = processArea.value;
-            localStorage.setItem(key, val);
+            const script = processArea.value;
+            let regex = /^title\s(.*)$/gm;
+            let res = regex.exec(script)
+            if (res) {
+                let key = res[1].trim();          
+                localStorage.setItem(key, script);
+                fillSavedSelect();
+            } else {
+                alert ('No title command in the script.')
+            }
         });
 
-        document.getElementById("loadSceneButton")!.addEventListener("click", () => {
-            let key = bottomArea.value.trim();
-            if (bottomArea.selectionEnd - bottomArea.selectionStart > 0) {
-                key = bottomArea.value.slice(bottomArea.selectionStart, bottomArea.selectionEnd)
-            }
+        // Get script from local store
+        // 
+        savedSelect.addEventListener("change",   () => {
+            let key = savedSelect.selectedOptions[0].value
             const val = localStorage.getItem(key);
             processArea.value = val ? val : "no script";
+        });     
+ 
+        // Remove script from local store
+        //
+        document.getElementById("loadSceneButton")!.addEventListener("click", () => {
+            let key = savedSelect.selectedOptions[0].value
+            const val = localStorage.getItem(key);
+            if (val) {
+                processArea.value = val;
+                localStorage.removeItem(key);
+                fillSavedSelect();
+            }
         });
+
+
+        function fillSavedSelect() {
+            const keys = Object.keys(localStorage);
+            keys.sort();
+            savedSelect.innerHTML = "";
+            // Add options to savedSelect element. One option for every key.
+            keys.forEach((key) => {
+                const option = document.createElement("option");
+                option.value = key;
+                option.textContent = key;
+                savedSelect.appendChild(option);
+            });
+        }
     }
  
      

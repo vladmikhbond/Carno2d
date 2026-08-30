@@ -100,11 +100,11 @@ section {
    width: var(--canvas-width);
 } 
 
-#savedSceneText {
+#savedInStore {
     display: inline; 
     height: var(--element-height);
     width: calc(var(--canvas-width) - 154px);
-    font-size:smaller;
+    font-size: smaller;
 }
 
 .scene-btn {
@@ -118,7 +118,7 @@ section {
     display: none;
 }
 
-/*  -------------------- for hlp.html ------------------- */
+/*  -------------------- for help.html ------------------- */
 
 h1, h2 {
     color:dodgerblue
