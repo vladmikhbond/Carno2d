@@ -104,6 +104,7 @@ section {
     display: inline; 
     height: var(--element-height);
     width: calc(var(--canvas-width) - 154px);
+    font-size:smaller;
 }
 
 .scene-btn {
