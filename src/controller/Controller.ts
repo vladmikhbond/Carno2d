@@ -75,7 +75,8 @@ export default class Controller
 'adiabatic  m=',
 'isothermic m=',
 'isohoric   m=',
-'calm       time=',
+'run       time=',
+'report ',
 ];
             if (event.data?.length != 1)
                 return;          
